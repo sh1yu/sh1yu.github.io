@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>archlinux使用操作拾遗 - shiyupeng2021 - code life.</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="sypeng" /><meta name="description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.80.0 with theme even" />
+
+
+<link rel="canonical" href="https://shiyupeng2021.github.io/post/archlinux-operation/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="archlinux使用操作拾遗" />
+<meta property="og:description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://shiyupeng2021.github.io/post/archlinux-operation/" />
+<meta property="article:published_time" content="2019-02-13T11:22:54+08:00" />
+<meta property="article:modified_time" content="2019-02-13T11:22:54+08:00" />
+<meta itemprop="name" content="archlinux使用操作拾遗">
+<meta itemprop="description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc">
+<meta itemprop="datePublished" content="2019-02-13T11:22:54+08:00" />
+<meta itemprop="dateModified" content="2019-02-13T11:22:54+08:00" />
+<meta itemprop="wordCount" content="1111">
+
+
+
+<meta itemprop="keywords" content="archlinux,linux," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="archlinux使用操作拾遗"/>
+<meta name="twitter:description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">P.S.Y - with great passion</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">P.S.Y - with great passion</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">archlinux使用操作拾遗</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-02-13 </span>
+        <div class="post-category">
+            <a href="/categories/devops/"> devops </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。</p>
+<h1 id="archlinux无线联网问题">archlinux无线联网问题</h1>
+<p>我安装的archinux是命令行版本，只能无线联网。</p>
+<p>检测网卡的PCI-ID</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">lspci -vnn <span class="p">|</span> grep 14e4:
+</code></pre></td></tr></table>
+</div>
+</div><p>获取驱动</p>
+<table>
+<thead>
+<tr>
+<th>驱动</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>brcmsmac/brcmfmac</td>
+<td>开源内核驱动</td>
+</tr>
+<tr>
+<td>b43</td>
+<td>逆向工程内核驱动</td>
+</tr>
+<tr>
+<td>broadcom-wl</td>
+<td>专有的 Broadcom STA 驱动</td>
+</tr>
+</tbody>
+</table>
+<p>b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">lsmod <span class="p">|</span>grep b43
+</code></pre></td></tr></table>
+</div>
+</div><p>发现b43驱动已经安装</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">systemctl status NetworkManager
+</code></pre></td></tr></table>
+</div>
+</div><p>发现<code>NetworkManager</code>已经安装（<code>pacman</code>安装包为<code>networkmanager</code>）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">nmcli dev
+</code></pre></td></tr></table>
+</div>
+</div><p>发现无线网尚未连接。使用如下命令成功连接wifi：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">nmcli dev wifi connect &lt;SSID&gt; password &lt;password&gt;
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="archlinux-软件全部升级签名问题">archlinux 软件全部升级签名问题</h1>
+<p>使用<code>sudo pacman -Syu</code>遇到了 <code>invalid or corrupted package ... unknown trust</code>的问题，应该是签名验证不通过，使用如下方法解决了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo pacman-key --init
+sudo vim /etc/pacman.conf <span class="c1">#设置SigLevel = Optional TrustAll</span>
+sudo vim /etc/pacman.d/gnupg/gpg.conf <span class="c1">#设置keyserver hkp://pgp.mit.edu</span>
+sudo pacman -Syu 
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="archlinux-防火墙配置问题">archlinux 防火墙配置问题</h1>
+<p>archlinux的iptable使用systemctl启动时需要先创建<code>iptables.rules</code>文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo touch /etc/iptables/iptables.rules
+sudo systemctl start iptables
+</code></pre></td></tr></table>
+</div>
+</div><p>使用<code>systemctl</code>启动<code>iptables</code>或者<code>sudo iptables -L</code>时遇到问题：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">can&#39;t initialize iptables table `filter&#39;: Table does not exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.
+</code></pre></td></tr></table>
+</div>
+</div><p>使用如下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">modprobe ip_tables
+</code></pre></td></tr></table>
+</div>
+</div><p>得到如下错误：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">FATAL: Module ip_tables not found
+</code></pre></td></tr></table>
+</div>
+</div><p>最后发现<code>/boot/</code>下<code>config-*</code>文件表示的内核版本与<code>uname -r</code>的版本不一致，原来是 <code>sudo pacman -Syu</code>升级了内核，系统没有重启。重启系统后问题解决。</p>
+<h1 id="mariadb初始化与远程访问配置问题">mariaDB初始化与远程访问配置问题</h1>
+<p>archlinux下安装了mariaDB，需要执行初始化才能正常启动服务：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo pacman -S mariadb
+sudo mysql_install_db --user<span class="o">=</span>mysql --basedir<span class="o">=</span>/usr --datadir<span class="o">=</span>/var/lib/mysql
+sudo systemctl start mariadb
+mysqladmin -u root password <span class="s1">&#39;12345678&#39;</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>允许远程访问，需要首先确保防火墙配置正常，<code>my.cnf</code>的<code>bind-address</code>配置不为<code>localhost</code>，没有配置<code>skip-networking </code>； 之后配置权限：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">PRIVILEGES</span> <span class="k">ON</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;root&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span><span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s1">&#39;123456&#39;</span> <span class="k">WITH</span> <span class="k">GRANT</span> <span class="k">OPTION</span><span class="p">;</span>
+<span class="n">flush</span> <span class="k">privileges</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h1 id="go语言访问mariadb日期格式datetime映射">go语言访问mariaDB日期格式DATETIME映射</h1>
+<p>go语言连接mariaDB时如果没有配置<code>parseTime=true</code>，scan到的日期数据为[]int8格式，使用string类型接收时为日期的&quot;2006-01-02 15:04:05&quot;格式化字符串（可以使用sql.NullString接收处理空值）。如果配置了<code>parseTime=true</code>，<code>scan</code>时可以直接使用<code>time.Time</code> ，但是时间为空时会抛出异常。如果使用<code>string</code>类型接收，则字符串格式为<code>time.RFC3339</code>(<code>2006-01-02T15:04:05Z07:00</code>)</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/archlinux/">archlinux</a>
+          <a href="/tags/linux/">linux</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/vert.x-and-future/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Vert.x线程与Future</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/run-gogs-with-docker/">
+            <span class="next-text nav-default">使用docker运行gogs服务</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="psyucc@163.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/shiyupeng2021/" class="iconfont icon-github" title="github"></a>
+  <a href="https://shiyupeng2021.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>sypeng</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

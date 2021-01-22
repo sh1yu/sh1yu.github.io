@@ -1,1 +1,2 @@
 User-agent: *
+Sitemap: https://shiyupeng2021.github.io/sitemap.xml

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes之StatefulSet - shiyupeng2021 - code life.</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="sypeng" /><meta name="description" content="概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.80.0 with theme even" />
+
+
+<link rel="canonical" href="https://shiyupeng2021.github.io/post/kubernetes-statefulset/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="kubernetes之StatefulSet" />
+<meta property="og:description" content="概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://shiyupeng2021.github.io/post/kubernetes-statefulset/" />
+<meta property="article:published_time" content="2020-08-22T12:47:25+08:00" />
+<meta property="article:modified_time" content="2020-08-22T12:47:25+08:00" />
+<meta itemprop="name" content="kubernetes之StatefulSet">
+<meta itemprop="description" content="概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef">
+<meta itemprop="datePublished" content="2020-08-22T12:47:25+08:00" />
+<meta itemprop="dateModified" content="2020-08-22T12:47:25+08:00" />
+<meta itemprop="wordCount" content="3667">
+
+
+
+<meta itemprop="keywords" content="kubernetes," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes之StatefulSet"/>
+<meta name="twitter:description" content="概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">P.S.Y - with great passion</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">P.S.Y - with great passion</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes之StatefulSet</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-08-22 </span>
+        <div class="post-category">
+            <a href="/categories/devops/"> devops </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <h2 id="概述">概述</h2>
+<p>RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而StatefulSet是什么？顾名思义，有状态的集合，管理所有有状态的服务，比如MySQL、MongoDB集群等。</p>
+<p>StatefulSet本质上是Deployment的一种变体，在v1.9版本中已成为<strong>GA</strong>版本，它为了解决有状态服务的问题，它所管理的Pod拥有固定的Pod名称，启停顺序，在StatefulSet中，Pod名字称为网络标识(hostname)，还必须要用到共享存储。</p>
+<p>在Deployment中，与之对应的服务是service，而在StatefulSet中与之对应的headless service，headless service，即无头服务，与service的区别就是它没有Cluster IP，解析它的名称时将返回该Headless Service对应的全部Pod的Endpoint列表。</p>
+<p>除此之外，StatefulSet在Headless Service的基础上又为StatefulSet控制的每个Pod副本创建了一个DNS域名，这个域名的格式为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$(podname).(headless server name)   
+FQDN： $(podname).(headless server name).namespace.svc.cluster.local
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="statefulset示例">StatefulSet示例</h2>
+<p>接下来看一些示例，演示下上面所说的特性，以加深理解。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: nginx # has to match .spec.template.metadata.labels
+  serviceName: &#34;nginx&#34;  #声明它属于哪个Headless Service.
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: nginx # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: k8s.gcr.io/nginx-slim:0.8
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:   #可看作pvc的模板
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ &#34;ReadWriteOnce&#34; ]
+      storageClassName: &#34;gluster-heketi&#34;  #存储类名，改为集群中已存在的
+      resources:
+        requests:
+          storage: 1Gi
+</code></pre></td></tr></table>
+</div>
+</div><p>通过该配置文件，可看出StatefulSet的三个组成部分：</p>
+<ul>
+<li>Headless Service：名为nginx，用来定义Pod网络标识( DNS domain)。</li>
+<li>StatefulSet：定义具体应用，名为Nginx，有三个Pod副本，并为每个Pod定义了一个域名。</li>
+<li>volumeClaimTemplates： 存储卷申请模板，创建PVC，指定pvc名称大小，将自动创建pvc，且pvc必须由存储类供应。</li>
+</ul>
+<blockquote>
+<p><strong>为什么需要 headless service 无头服务？</strong>
+在用Deployment时，每一个Pod名称是没有顺序的，是随机字符串，因此是Pod名称是无序的，但是在statefulset中要求必须是有序 ，每一个pod不能被随意取代，pod重建后pod名称还是一样的。而pod IP是变化的，所以是以Pod名称来识别。pod名称是pod唯一性的标识符，必须持久稳定有效。这时候要用到无头服务，它可以给每个Pod一个唯一的名称 。</p>
+</blockquote>
+<blockquote>
+<p><strong>为什么需要volumeClaimTemplate？</strong>
+对于有状态的副本集都会用到持久存储，对于分布式系统来讲，它的最大特点是数据是不一样的，所以各个节点不能使用同一存储卷，每个节点有自已的专用存储，但是如果在Deployment中的Pod template里定义的存储卷，是所有副本集共用一个存储卷，数据是相同的，因为是基于模板来的 ，而statefulset中每个Pod都要自已的专有存储卷，所以statefulset的存储卷就不能再用Pod模板来创建了，于是statefulSet使用volumeClaimTemplate，称为卷申请模板，它会为每个Pod生成不同的pvc，并绑定pv， 从而实现各pod有专用存储。这就是为什么要用volumeClaimTemplate的原因。</p>
+</blockquote>
+<p>创建：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl create -f nginx.yaml 
+service &#34;nginx&#34; created
+statefulset &#34;web&#34; created
+</code></pre></td></tr></table>
+</div>
+</div><p>看下这三个Pod创建过程：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">#第一个是创建web-0
+$ kubectl get pod
+web-0                     1/1       ContainerCreating   0          51s
+
+#待web-0 running且ready时，创建web-1
+$ kubectl get pod
+web-0                     1/1       Running             0          51s
+web-1                     0/1       ContainerCreating   0          42s
+
+#待web-1 running且ready时，创建web-2
+$ kubectl get pod
+web-0                     1/1       Running             0          1m
+web-1                     1/1       Running             0          45s
+web-2                     1/1       ContainerCreating   0          36s
+
+#最后三个Pod全部running且ready
+$ kubectl get pod
+NAME                      READY     STATUS    RESTARTS   AGE
+web-0                     1/1       Running   0          4m
+web-1                     1/1       Running   0          3m
+web-2                     1/1       Running   0          1m
+</code></pre></td></tr></table>
+</div>
+</div><p>根据volumeClaimTemplates自动创建的PVC</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl get pvc
+NAME              STATUS    VOLUME                                  CAPACITY   ACCESS MODES   STORAGECLASS     AGE
+www-web-0         Bound     pvc-ecf003f3-828d-11e8-8815-000c29774d39   2G        RWO          gluster-heketi   7m
+www-web-1         Bound     pvc-0615e33e-828e-11e8-8815-000c29774d39   2G        RWO          gluster-heketi   6m
+www-web-2         Bound     pvc-43a97acf-828e-11e8-8815-000c29774d39   2G        RWO          gluster-heketi   4m
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>如果集群中没有StorageClass的动态供应PVC的机制，也可以提前手动创建多个PV、PVC，手动创建的PVC名称必须符合之后创建的StatefulSet命名规则：<strong>(volumeClaimTemplates.name)-(pod_name)</strong></p>
+</blockquote>
+<p>Statefulset名称为web 三个Pod副本: web-0，web-1,web-2，volumeClaimTemplates名称为：www，那么自动创建出来的PVC名称为www-web[0-2]，为每个Pod创建一个PVC。
+<strong>规律总结：</strong></p>
+<ul>
+<li>匹配Pod name(网络标识)的模式为：<strong>$(statefulset名称)-$(序号)</strong>，比如上面的示例：web-0，web-1，web-2。</li>
+<li>StatefulSet为每个Pod副本创建了一个DNS域名，这个域名的格式为： <strong>$(podname).(headless server name)</strong>，也就意味着服务间是通过Pod域名来通信而非Pod IP，因为当Pod所在Node发生故障时，Pod会被飘移到其它Node上，Pod IP会发生变化，但是Pod域名不会有变化。</li>
+<li>StatefulSet使用Headless服务来控制Pod的域名，这个域名的FQDN为：<strong>$(service name).$(namespace).svc.cluster.local</strong>，其中，“cluster.local”指的是集群的域名。</li>
+<li>根据volumeClaimTemplates，为每个Pod创建一个pvc，pvc的命名规则匹配模式：<strong>(volumeClaimTemplates.name)-(pod_name)</strong>，比如上面的volumeMounts.name=www， Pod name=web-[0-2]，因此创建出来的PVC是www-web-0、www-web-1、www-web-2。</li>
+<li>删除Pod不会删除其pvc，手动删除pvc将自动释放pv。
+关于Cluster Domain、headless service名称、StatefulSet 名称如何影响StatefulSet的Pod的DNS域名的示例：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Cluster Domain</th>
+<th>Service (ns/name)</th>
+<th>StatefulSet (ns/name)</th>
+<th>StatefulSet Domain</th>
+<th>Pod DNS</th>
+<th>Pod Hostname</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cluster.local</td>
+<td>default/nginx</td>
+<td>default/web</td>
+<td>nginx.default.svc.cluster.local</td>
+<td>web-{0..N-1}.nginx.default.svc.cluster.local</td>
+<td>web-{0..N-1}</td>
+</tr>
+<tr>
+<td>cluster.local</td>
+<td>foo/nginx</td>
+<td>foo/web</td>
+<td>nginx.foo.svc.cluster.local</td>
+<td>web-{0..N-1}.nginx.foo.svc.cluster.local</td>
+<td>web-{0..N-1}</td>
+</tr>
+<tr>
+<td>kube.local</td>
+<td>foo/nginx</td>
+<td>foo/web</td>
+<td>nginx.foo.svc.kube.local</td>
+<td>web-{0..N-1}.nginx.foo.svc.kube.local</td>
+<td>web-{0..N-1}</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Statefulset的启停顺序：</strong></p>
+<ul>
+<li>有序部署：部署StatefulSet时，如果有多个Pod副本，它们会被顺序地创建（从0到N-1）并且，在下一个Pod运行之前所有之前的Pod必须都是Running和Ready状态。</li>
+<li>有序删除：当Pod被删除时，它们被终止的顺序是从N-1到0。</li>
+<li>有序扩展：当对Pod执行扩展操作时，与部署一样，它前面的Pod必须都处于Running和Ready状态。　</li>
+</ul>
+<p><strong>Statefulset Pod管理策略：</strong>
+在v1.7以后，通过允许修改Pod排序策略，同时通过.spec.podManagementPolicy字段确保其身份的唯一性。</p>
+<ul>
+<li>OrderedReady：上述的启停顺序，默认设置。</li>
+<li>Parallel：告诉StatefulSet控制器并行启动或终止所有Pod，并且在启动或终止另一个Pod之前不等待前一个Pod变为Running and Ready或完全终止。</li>
+</ul>
+<p><strong>StatefulSet使用场景：</strong></p>
+<ul>
+<li>稳定的持久化存储，即Pod重新调度后还是能访问到相同的持久化数据，基于PVC来实现。</li>
+<li>稳定的网络标识符，即Pod重新调度后其PodName和HostName不变。</li>
+<li>有序部署，有序扩展，基于init containers来实现。</li>
+<li>有序收缩。</li>
+</ul>
+<h2 id="更新策略">更新策略</h2>
+<p>在Kubernetes 1.7及更高版本中，通过.spec.updateStrategy字段允许配置或禁用Pod、labels、source request/limits、annotations自动滚动更新功能。</p>
+<p><strong>OnDelete</strong>：通过.spec.updateStrategy.type 字段设置为OnDelete，StatefulSet控制器不会自动更新StatefulSet中的Pod。用户必须手动删除Pod，以使控制器创建新的Pod。</p>
+<p><strong>RollingUpdate</strong>：通过.spec.updateStrategy.type 字段设置为RollingUpdate，实现了Pod的自动滚动更新，如果.spec.updateStrategy未指定，则此为默认策略。</p>
+<p>StatefulSet控制器将删除并重新创建StatefulSet中的每个Pod。它将以Pod终止（从最大序数到最小序数）的顺序进行，一次更新每个Pod。在更新下一个Pod之前，必须等待这个Pod Running and Ready。</p>
+<p><strong>Partitions</strong>: 通过指定 .spec.updateStrategy.rollingUpdate.partition 来对 RollingUpdate 更新策略进行分区，如果指定了分区，则当 StatefulSet 的 .spec.template 更新时，具有大于或等于分区序数的所有 Pod 将被更新。</p>
+<p>具有小于分区的序数的所有 Pod 将不会被更新，即使删除它们也将被重新创建。如果 StatefulSet 的 .spec.updateStrategy.rollingUpdate.partition 大于其 .spec.replicas，则其 .spec.template 的更新将不会传播到 Pod。在大多数情况下，不需要使用分区。</p>
+
+    </div>
+
+    
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/kubernetes/">kubernetes</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/iceberg-model/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">冰山模型</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/vert.x-and-future/">
+            <span class="next-text nav-default">Vert.x线程与Future</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="psyucc@163.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/shiyupeng2021/" class="iconfont icon-github" title="github"></a>
+  <a href="https://shiyupeng2021.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>sypeng</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
