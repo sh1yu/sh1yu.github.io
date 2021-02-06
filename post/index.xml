@@ -6,7 +6,16 @@
     <description>Recent content in Posts on shiyupeng2021 - code life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 22 Aug 2020 12:54:56 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Feb 2021 12:33:49 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Vscode配置cpp外部头文件依赖</title>
+      <link>https://shiyupeng2021.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</link>
+      <pubDate>Sat, 06 Feb 2021 12:33:49 +0800</pubDate>
+      
+      <guid>https://shiyupeng2021.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</guid>
+      <description>最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下： vscode的settings.json中可以通过配置项C_Cpp.def</description>
+    </item>
+    
     <item>
       <title>SIGN模型找到天赋</title>
       <link>https://shiyupeng2021.github.io/post/sign-model/</link>
