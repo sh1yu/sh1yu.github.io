@@ -6,16 +6,7 @@
     <description>Recent content on shiyupeng2021 - code life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 23 Jan 2021 00:13:56 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>在k8s集群中部署mysql</title>
-      <link>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</link>
-      <pubDate>Sat, 23 Jan 2021 00:13:56 +0800</pubDate>
-      
-      <guid>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</guid>
-      <description>本篇文章参考了官方kubenetes部署mysql的过程，对如何在k8s环境下安装mysql进行了实践。 首先快速安装一个只有master节点</description>
-    </item>
-    
+    <lastBuildDate>Sat, 22 Aug 2020 12:54:56 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>SIGN模型找到天赋</title>
       <link>https://shiyupeng2021.github.io/post/sign-model/</link>

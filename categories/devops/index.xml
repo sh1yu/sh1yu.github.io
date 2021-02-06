@@ -6,7 +6,16 @@
     <description>Recent content in devops on shiyupeng2021 - code life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 13 Feb 2019 11:22:54 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/categories/devops/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 22 Aug 2020 12:47:25 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/categories/devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes之StatefulSet</title>
+      <link>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</link>
+      <pubDate>Sat, 22 Aug 2020 12:47:25 +0800</pubDate>
+      
+      <guid>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</guid>
+      <description>概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef</description>
+    </item>
+    
     <item>
       <title>archlinux使用操作拾遗</title>
       <link>https://shiyupeng2021.github.io/post/archlinux-operation/</link>
