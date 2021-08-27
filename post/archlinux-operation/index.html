@@ -6,7 +6,7 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="sypeng" />
+  <meta name="author" content="sh1yu" />
   <meta property="og:url" content="https://sh1yu.github.io/post/archlinux-operation/" />
   <link rel="canonical" href="https://sh1yu.github.io/post/archlinux-operation/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="sh1yu - better code, better life.">
 
@@ -21,13 +21,13 @@
       "articleSection" : "post",
       "name" : "archlinux使用操作拾遗",
       "headline" : "archlinux使用操作拾遗",
-      "description" : "这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc",
+      "description" : "这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。\narchlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。\n检测网卡的PCI-ID\nlspci -vnn | grep 14e4: 获取驱动\n   驱动 描述     brcmsmac\/brcmfmac 开源内核驱动   b43 逆向工程内核驱动   broadcom-wl 专有的 Broadcom STA 驱动    b43\/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。\nlsmod |grep b43 发现b43驱动已经安装\nsystemctl status NetworkManager 发现NetworkManager已经安装（pacman安装包为networkmanager）\nnmcli dev 发现无线网尚未连接。使用如下命令成功连接wifi：\nnmcli dev wifi connect \u0026lt;SSID\u0026gt; password \u0026lt;password\u0026gt; archlinux 软件全部升级签名问题 使用sudo pacman -Syu遇到了 invalid or corrupted package ... unknown trust的问题，应该是签名验证不通过，使用如下方法解决了：\nsudo pacman-key --init sudo vim \/etc\/pacman.",
       "inLanguage" : "en-US",
-      "author" : "sypeng",
-      "creator" : "sypeng",
-      "publisher": "sypeng",
-      "accountablePerson" : "sypeng",
-      "copyrightHolder" : "sypeng",
+      "author" : "sh1yu",
+      "creator" : "sh1yu",
+      "publisher": "sh1yu",
+      "accountablePerson" : "sh1yu",
+      "copyrightHolder" : "sh1yu",
       "copyrightYear" : "2019",
       "datePublished": "2019-02-13 11:22:54 \u002b0800 CST",
       "dateModified" : "2019-02-13 11:22:54 \u002b0800 CST",
@@ -38,8 +38,26 @@
 <title>archlinux使用操作拾遗</title>
   <meta property="og:title" content="archlinux使用操作拾遗" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc" />
-  <meta name="description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc" />
+  <meta property="og:description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。
+archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。
+检测网卡的PCI-ID
+lspci -vnn | grep 14e4: 获取驱动
+   驱动 描述     brcmsmac/brcmfmac 开源内核驱动   b43 逆向工程内核驱动   broadcom-wl 专有的 Broadcom STA 驱动    b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。
+lsmod |grep b43 发现b43驱动已经安装
+systemctl status NetworkManager 发现NetworkManager已经安装（pacman安装包为networkmanager）
+nmcli dev 发现无线网尚未连接。使用如下命令成功连接wifi：
+nmcli dev wifi connect &amp;lt;SSID&amp;gt; password &amp;lt;password&amp;gt; archlinux 软件全部升级签名问题 使用sudo pacman -Syu遇到了 invalid or corrupted package ... unknown trust的问题，应该是签名验证不通过，使用如下方法解决了：
+sudo pacman-key --init sudo vim /etc/pacman." />
+  <meta name="description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。
+archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。
+检测网卡的PCI-ID
+lspci -vnn | grep 14e4: 获取驱动
+   驱动 描述     brcmsmac/brcmfmac 开源内核驱动   b43 逆向工程内核驱动   broadcom-wl 专有的 Broadcom STA 驱动    b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。
+lsmod |grep b43 发现b43驱动已经安装
+systemctl status NetworkManager 发现NetworkManager已经安装（pacman安装包为networkmanager）
+nmcli dev 发现无线网尚未连接。使用如下命令成功连接wifi：
+nmcli dev wifi connect &amp;lt;SSID&amp;gt; password &amp;lt;password&amp;gt; archlinux 软件全部升级签名问题 使用sudo pacman -Syu遇到了 invalid or corrupted package ... unknown trust的问题，应该是签名验证不通过，使用如下方法解决了：
+sudo pacman-key --init sudo vim /etc/pacman." />
   <meta property="og:locale" content="zh-cn" />
 
   
@@ -60,7 +78,7 @@
   
 
   
-  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
 </head>
 
 
@@ -81,10 +99,6 @@
 <div class="row end-md center-xs header-items">
   
   <div class="header-item">
-    <a href="https://sh1yu.github.io" target="_blank">Home</a>
-  </div>
-  
-  <div class="header-item">
     <a href="https://github.com/sh1yu" target="_blank">Github</a>
   </div>
   
@@ -98,23 +112,6 @@
         <header class="post-header">
           <h1 class="post-title">archlinux使用操作拾遗</h1>
           
-          <div class="row post-desc">
-            <div class="col-xs-6">
-              
-              <time class="post-date" datetime="2019-02-13 11:22:54 CST">
-                13 Feb 2019
-              </time>
-              
-            </div>
-            <div class="col-xs-6">
-              
-              <div class="post-author">
-                <a target="_blank" href="">@sypeng</a>
-              </div>
-              
-            </div>
-          </div>
-          
         </header>
 
         <div class="post-content markdown-body">
@@ -123,15 +120,8 @@
 <h1 id="archlinux无线联网问题">archlinux无线联网问题</h1>
 <p>我安装的archinux是命令行版本，只能无线联网。</p>
 <p>检测网卡的PCI-ID</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">lspci -vnn <span class="p">|</span> grep 14e4:
-</code></pre></td></tr></table>
-</div>
-</div><p>获取驱动</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">lspci -vnn | grep 14e4:
+</code></pre></div><p>获取驱动</p>
 <table>
 <thead>
 <tr>
@@ -155,127 +145,41 @@
 </tbody>
 </table>
 <p>b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">lsmod <span class="p">|</span>grep b43
-</code></pre></td></tr></table>
-</div>
-</div><p>发现b43驱动已经安装</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">systemctl status NetworkManager
-</code></pre></td></tr></table>
-</div>
-</div><p>发现<code>NetworkManager</code>已经安装（<code>pacman</code>安装包为<code>networkmanager</code>）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">nmcli dev
-</code></pre></td></tr></table>
-</div>
-</div><p>发现无线网尚未连接。使用如下命令成功连接wifi：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">nmcli dev wifi connect &lt;SSID&gt; password &lt;password&gt;
-</code></pre></td></tr></table>
-</div>
-</div><h1 id="archlinux-软件全部升级签名问题">archlinux 软件全部升级签名问题</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">lsmod |grep b43
+</code></pre></div><p>发现b43驱动已经安装</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">systemctl status NetworkManager
+</code></pre></div><p>发现<code>NetworkManager</code>已经安装（<code>pacman</code>安装包为<code>networkmanager</code>）</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">nmcli dev
+</code></pre></div><p>发现无线网尚未连接。使用如下命令成功连接wifi：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">nmcli dev wifi connect &lt;SSID&gt; password &lt;password&gt;
+</code></pre></div><h1 id="archlinux-软件全部升级签名问题">archlinux 软件全部升级签名问题</h1>
 <p>使用<code>sudo pacman -Syu</code>遇到了 <code>invalid or corrupted package ... unknown trust</code>的问题，应该是签名验证不通过，使用如下方法解决了：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo pacman-key --init
-sudo vim /etc/pacman.conf <span class="c1">#设置SigLevel = Optional TrustAll</span>
-sudo vim /etc/pacman.d/gnupg/gpg.conf <span class="c1">#设置keyserver hkp://pgp.mit.edu</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">sudo pacman-key --init
+sudo vim /etc/pacman.conf <span style="font-style:italic">#设置SigLevel = Optional TrustAll</span>
+sudo vim /etc/pacman.d/gnupg/gpg.conf <span style="font-style:italic">#设置keyserver hkp://pgp.mit.edu</span>
 sudo pacman -Syu 
-</code></pre></td></tr></table>
-</div>
-</div><h1 id="archlinux-防火墙配置问题">archlinux 防火墙配置问题</h1>
+</code></pre></div><h1 id="archlinux-防火墙配置问题">archlinux 防火墙配置问题</h1>
 <p>archlinux的iptable使用systemctl启动时需要先创建<code>iptables.rules</code>文件</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo touch /etc/iptables/iptables.rules
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">sudo touch /etc/iptables/iptables.rules
 sudo systemctl start iptables
-</code></pre></td></tr></table>
-</div>
-</div><p>使用<code>systemctl</code>启动<code>iptables</code>或者<code>sudo iptables -L</code>时遇到问题：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">can&#39;t initialize iptables table `filter&#39;: Table does not exist (do you need to insmod?)
+</code></pre></div><p>使用<code>systemctl</code>启动<code>iptables</code>或者<code>sudo iptables -L</code>时遇到问题：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">can&#39;t initialize iptables table `filter&#39;: Table does not exist (do you need to insmod?)
 Perhaps iptables or your kernel needs to be upgraded.
-</code></pre></td></tr></table>
-</div>
-</div><p>使用如下命令：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">modprobe ip_tables
-</code></pre></td></tr></table>
-</div>
-</div><p>得到如下错误：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">FATAL: Module ip_tables not found
-</code></pre></td></tr></table>
-</div>
-</div><p>最后发现<code>/boot/</code>下<code>config-*</code>文件表示的内核版本与<code>uname -r</code>的版本不一致，原来是 <code>sudo pacman -Syu</code>升级了内核，系统没有重启。重启系统后问题解决。</p>
+</code></pre></div><p>使用如下命令：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">modprobe ip_tables
+</code></pre></div><p>得到如下错误：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">FATAL: Module ip_tables not found
+</code></pre></div><p>最后发现<code>/boot/</code>下<code>config-*</code>文件表示的内核版本与<code>uname -r</code>的版本不一致，原来是 <code>sudo pacman -Syu</code>升级了内核，系统没有重启。重启系统后问题解决。</p>
 <h1 id="mariadb初始化与远程访问配置问题">mariaDB初始化与远程访问配置问题</h1>
 <p>archlinux下安装了mariaDB，需要执行初始化才能正常启动服务：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo pacman -S mariadb
-sudo mysql_install_db --user<span class="o">=</span>mysql --basedir<span class="o">=</span>/usr --datadir<span class="o">=</span>/var/lib/mysql
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">sudo pacman -S mariadb
+sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 sudo systemctl start mariadb
-mysqladmin -u root password <span class="s1">&#39;12345678&#39;</span> 
-</code></pre></td></tr></table>
-</div>
-</div><p>允许远程访问，需要首先确保防火墙配置正常，<code>my.cnf</code>的<code>bind-address</code>配置不为<code>localhost</code>，没有配置<code>skip-networking </code>； 之后配置权限：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="o">*</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;root&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;123456&#39;</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">GRANT</span><span class="w"> </span><span class="k">OPTION</span><span class="p">;</span><span class="w">
-</span><span class="w"></span><span class="n">flush</span><span class="w"> </span><span class="k">privileges</span><span class="p">;</span><span class="w">
-</span></code></pre></td></tr></table>
-</div>
-</div><h1 id="go语言访问mariadb日期格式datetime映射">go语言访问mariaDB日期格式DATETIME映射</h1>
+mysqladmin -u root password <span style="font-style:italic">&#39;12345678&#39;</span> 
+</code></pre></div><p>允许远程访问，需要首先确保防火墙配置正常，<code>my.cnf</code>的<code>bind-address</code>配置不为<code>localhost</code>，没有配置<code>skip-networking </code>； 之后配置权限：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-sql" data-lang="sql"><span style="font-weight:bold">GRANT</span> <span style="font-weight:bold">ALL</span> <span style="font-weight:bold">PRIVILEGES</span> <span style="font-weight:bold">ON</span> *.* <span style="font-weight:bold">TO</span> <span style="font-style:italic">&#39;root&#39;</span>@<span style="font-style:italic">&#39;%&#39;</span>IDENTIFIED <span style="font-weight:bold">BY</span> <span style="font-style:italic">&#39;123456&#39;</span> <span style="font-weight:bold">WITH</span> <span style="font-weight:bold">GRANT</span> <span style="font-weight:bold">OPTION</span>;
+flush <span style="font-weight:bold">privileges</span>;
+</code></pre></div><h1 id="go语言访问mariadb日期格式datetime映射">go语言访问mariaDB日期格式DATETIME映射</h1>
 <p>go语言连接mariaDB时如果没有配置<code>parseTime=true</code>，scan到的日期数据为[]int8格式，使用string类型接收时为日期的&quot;2006-01-02 15:04:05&quot;格式化字符串（可以使用sql.NullString接收处理空值）。如果配置了<code>parseTime=true</code>，<code>scan</code>时可以直接使用<code>time.Time</code> ，但是时间为空时会抛出异常。如果使用<code>string</code>类型接收，则字符串格式为<code>time.RFC3339</code>(<code>2006-01-02T15:04:05Z07:00</code>)</p>
 
         </div>
@@ -297,21 +201,6 @@ mysqladmin -u root password <span class="s1">&#39;12345678&#39;</span>
             
           </div>
         </div>
-        
-          <div class="row">
-            <div class="col-xs-12">
-              
-            </div>
-          </div>
-
-          
-
-
-
-          
-          
-          <div style="height: 50px;"></div>
-          
         
 
         <div class="site-footer">

@@ -13,7 +13,16 @@
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
       <guid>https://sh1yu.github.io/post/archlinux-operation/</guid>
-      <description>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc</description>
+      <description>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。
+archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。
+检测网卡的PCI-ID
+lspci -vnn | grep 14e4: 获取驱动
+   驱动 描述     brcmsmac/brcmfmac 开源内核驱动   b43 逆向工程内核驱动   broadcom-wl 专有的 Broadcom STA 驱动    b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。
+lsmod |grep b43 发现b43驱动已经安装
+systemctl status NetworkManager 发现NetworkManager已经安装（pacman安装包为networkmanager）
+nmcli dev 发现无线网尚未连接。使用如下命令成功连接wifi：
+nmcli dev wifi connect &amp;lt;SSID&amp;gt; password &amp;lt;password&amp;gt; archlinux 软件全部升级签名问题 使用sudo pacman -Syu遇到了 invalid or corrupted package ... unknown trust的问题，应该是签名验证不通过，使用如下方法解决了：
+sudo pacman-key --init sudo vim /etc/pacman.</description>
     </item>
     
   </channel>

@@ -6,7 +6,7 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="sypeng" />
+  <meta name="author" content="sh1yu" />
   <meta property="og:url" content="https://sh1yu.github.io/post/run-gogs-with-docker/" />
   <link rel="canonical" href="https://sh1yu.github.io/post/run-gogs-with-docker/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="sh1yu - better code, better life.">
 
@@ -21,13 +21,13 @@
       "articleSection" : "post",
       "name" : "使用docker运行gogs服务",
       "headline" : "使用docker运行gogs服务",
-      "description" : "学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。 目标 使用",
+      "description" : "学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。\n 目标   使用 docker 和 docker-compose 运行并管理 gogs 服务\n  使用 caddy 为 gogs 搭建反向代理\n  简单配置 caddy 与 gogs 容器的 docker 网络\n  工具与组件  docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令 gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx  创建caddy配置 创建caddy文件夹，并在文件夹下创建文件Caddyfile\nlocalhost { proxy \/ gogs:3000 { header_upstream Host {host} header_upstream X-Real-IP {remote} header_upstream X-Forwarded-For {remote} header_upstream X-Forwarded-Proto {scheme} } log \/var\/log\/caddy.",
       "inLanguage" : "en-US",
-      "author" : "sypeng",
-      "creator" : "sypeng",
-      "publisher": "sypeng",
-      "accountablePerson" : "sypeng",
-      "copyrightHolder" : "sypeng",
+      "author" : "sh1yu",
+      "creator" : "sh1yu",
+      "publisher": "sh1yu",
+      "accountablePerson" : "sh1yu",
+      "copyrightHolder" : "sh1yu",
       "copyrightYear" : "2019",
       "datePublished": "2019-02-13 11:22:54 \u002b0800 CST",
       "dateModified" : "2019-02-13 11:22:54 \u002b0800 CST",
@@ -38,8 +38,18 @@
 <title>使用docker运行gogs服务</title>
   <meta property="og:title" content="使用docker运行gogs服务" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。 目标 使用" />
-  <meta name="description" content="学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。 目标 使用" />
+  <meta property="og:description" content="学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。
+ 目标   使用 docker 和 docker-compose 运行并管理 gogs 服务
+  使用 caddy 为 gogs 搭建反向代理
+  简单配置 caddy 与 gogs 容器的 docker 网络
+  工具与组件  docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令 gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx  创建caddy配置 创建caddy文件夹，并在文件夹下创建文件Caddyfile
+localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Real-IP {remote} header_upstream X-Forwarded-For {remote} header_upstream X-Forwarded-Proto {scheme} } log /var/log/caddy." />
+  <meta name="description" content="学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。
+ 目标   使用 docker 和 docker-compose 运行并管理 gogs 服务
+  使用 caddy 为 gogs 搭建反向代理
+  简单配置 caddy 与 gogs 容器的 docker 网络
+  工具与组件  docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令 gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx  创建caddy配置 创建caddy文件夹，并在文件夹下创建文件Caddyfile
+localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Real-IP {remote} header_upstream X-Forwarded-For {remote} header_upstream X-Forwarded-Proto {scheme} } log /var/log/caddy." />
   <meta property="og:locale" content="zh-cn" />
 
   
@@ -60,7 +70,7 @@
   
 
   
-  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
 </head>
 
 
@@ -81,10 +91,6 @@
 <div class="row end-md center-xs header-items">
   
   <div class="header-item">
-    <a href="https://sh1yu.github.io" target="_blank">Home</a>
-  </div>
-  
-  <div class="header-item">
     <a href="https://github.com/sh1yu" target="_blank">Github</a>
   </div>
   
@@ -97,23 +103,6 @@
         </div>
         <header class="post-header">
           <h1 class="post-title">使用docker运行gogs服务</h1>
-          
-          <div class="row post-desc">
-            <div class="col-xs-6">
-              
-              <time class="post-date" datetime="2019-02-13 11:22:54 CST">
-                13 Feb 2019
-              </time>
-              
-            </div>
-            <div class="col-xs-6">
-              
-              <div class="post-author">
-                <a target="_blank" href="">@sypeng</a>
-              </div>
-              
-            </div>
-          </div>
           
         </header>
 
@@ -142,273 +131,104 @@
 </ul>
 <h1 id="创建caddy配置">创建caddy配置</h1>
 <p>创建<code>caddy</code>文件夹，并在文件夹下创建文件<code>Caddyfile</code></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="k">localhost</span> <span class="p">{</span>
-    <span class="kn">proxy</span> <span class="s">/</span> <span class="n">gogs</span><span class="p">:</span><span class="mi">3000</span> <span class="p">{</span>
-        <span class="kn">header_upstream</span> <span class="s">Host</span> <span class="p">{</span><span class="kn">host}</span>
-        <span class="s">header_upstream</span> <span class="s">X-Real-IP</span> <span class="p">{</span><span class="kn">remote}</span>
-        <span class="s">header_upstream</span> <span class="s">X-Forwarded-For</span> <span class="p">{</span><span class="kn">remote}</span>
-        <span class="s">header_upstream</span> <span class="s">X-Forwarded-Proto</span> <span class="p">{</span><span class="kn">scheme}</span>
-    <span class="err">}</span>
-    <span class="s">log</span> <span class="s">/var/log/caddy.log</span>
-    <span class="s">gzip</span>
-    <span class="c1">#tls name@domain.com # 你的邮箱
-</span><span class="c1"></span><span class="err">}</span>
-</code></pre></td></tr></table>
-</div>
-</div><h1 id="使用-docker-compose-编排服务">使用 docker-compose 编排服务</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-nginx" data-lang="nginx"><span style="font-weight:bold">localhost</span> {
+    <span style="font-weight:bold">proxy</span> <span style="font-style:italic">/</span> gogs:3000 {
+        <span style="font-weight:bold">header_upstream</span> <span style="font-style:italic">Host</span> {<span style="font-weight:bold">host}</span>
+        <span style="font-style:italic">header_upstream</span> <span style="font-style:italic">X-Real-IP</span> {<span style="font-weight:bold">remote}</span>
+        <span style="font-style:italic">header_upstream</span> <span style="font-style:italic">X-Forwarded-For</span> {<span style="font-weight:bold">remote}</span>
+        <span style="font-style:italic">header_upstream</span> <span style="font-style:italic">X-Forwarded-Proto</span> {<span style="font-weight:bold">scheme}</span>
+    <span style="">}</span>
+    <span style="font-style:italic">log</span> <span style="font-style:italic">/var/log/caddy.log</span>
+    <span style="font-style:italic">gzip</span>
+    <span style="font-style:italic">#tls name@domain.com # 你的邮箱
+</span><span style="font-style:italic"></span><span style="">}</span>
+</code></pre></div><h1 id="使用-docker-compose-编排服务">使用 docker-compose 编排服务</h1>
 <p>创建<code>docker-compose.yml</code>配置文件</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3&#39;</span><span class="w">
-</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">caddy</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">caddy</span><span class="w">
-</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">abiosoft/caddy</span><span class="w">
-</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="s2">&#34;/home/caddy/Caddyfile:/etc/Caddyfile&#34;</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="s2">&#34;8081:2015&#34;</span><span class="w">
-</span><span class="w"></span><span class="c">#    links:</span><span class="w">
-</span><span class="w"></span><span class="c">#      - gogs</span><span class="w">
-</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
-</span><span class="w">  </span><span class="nt">gogs</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">gogs</span><span class="w">
-</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">gogs/gogs</span><span class="w">
-</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="l">/home/gogs/data:/data</span><span class="w">
-</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="s2">&#34;3022:22&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
-</span></code></pre></td></tr></table>
-</div>
-</div><h1 id="docker-compose-启动服务">docker-compose 启动服务</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="font-weight:bold">version</span>: <span style="font-style:italic">&#39;3&#39;</span>
+<span style="font-weight:bold">services</span>:
+  <span style="font-weight:bold">caddy</span>:
+    <span style="font-weight:bold">container_name</span>: caddy
+    <span style="font-weight:bold">image</span>: abiosoft/caddy
+    <span style="font-weight:bold">volumes</span>:
+      - <span style="font-style:italic">&#34;/home/caddy/Caddyfile:/etc/Caddyfile&#34;</span> 
+    <span style="font-weight:bold">ports</span>:
+      - <span style="font-style:italic">&#34;8081:2015&#34;</span>
+<span style="font-style:italic">#    links:</span>
+<span style="font-style:italic">#      - gogs</span>
+    <span style="font-weight:bold">restart</span>: always
+  <span style="font-weight:bold">gogs</span>:
+    <span style="font-weight:bold">container_name</span>: gogs
+    <span style="font-weight:bold">image</span>: gogs/gogs
+    <span style="font-weight:bold">volumes</span>:
+      - /home/gogs/data:/data
+    <span style="font-weight:bold">ports</span>:
+      - <span style="font-style:italic">&#34;3022:22&#34;</span>
+    <span style="font-weight:bold">restart</span>: always
+</code></pre></div><h1 id="docker-compose-启动服务">docker-compose 启动服务</h1>
 <p>在<code>docker-compose.yml</code>所在文件夹下运行命令</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker-compose up -d
-</code></pre></td></tr></table>
-</div>
-</div><p>查看运行的容器，使用</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker-compose ps
-</code></pre></td></tr></table>
-</div>
-</div><p>或者</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker ps
-</code></pre></td></tr></table>
-</div>
-</div><p>其中 gogs 服务会使用<code>3000</code>端口，但是没有进行端口绑定，无法从外部访问。caddy 使用<code>2015</code>端口，并对外绑定<code>8081</code>端口，该访问通过<code>Caddyfile</code>配置文件转发到了 gogs 机器的<code>3000</code>端口。docker-compose 可以自动发现主机名称的地址，无需通过IP。通过如下地址访问 gogs 服务：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-http" data-lang="http"><span class="err">http://127.0.0.1:8081
-</span></code></pre></td></tr></table>
-</div>
-</div><p>查看容器详细状态</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker inspect gogs
-</code></pre></td></tr></table>
-</div>
-</div><p>也可以进入正在运行的容器进行系统的状态、文件查看等操作</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker <span class="nb">exec</span> -it gogs /bin/bash
-docker <span class="nb">exec</span> -it caddy /bin/sh
-</code></pre></td></tr></table>
-</div>
-</div><p>关闭服务</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker-compose stop
-</code></pre></td></tr></table>
-</div>
-</div><p>正常情况下关闭服务时容器不会被删除，重新启动时如果容器存在则不会再创建。<code>docker-compose.yml</code>有修改时旧的容器不会自动更新，需要关闭服务并删除容器，然后重新创建容器启动</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker-compose down
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker-compose up -d
+</code></pre></div><p>查看运行的容器，使用</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker-compose ps
+</code></pre></div><p>或者</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker ps
+</code></pre></div><p>其中 gogs 服务会使用<code>3000</code>端口，但是没有进行端口绑定，无法从外部访问。caddy 使用<code>2015</code>端口，并对外绑定<code>8081</code>端口，该访问通过<code>Caddyfile</code>配置文件转发到了 gogs 机器的<code>3000</code>端口。docker-compose 可以自动发现主机名称的地址，无需通过IP。通过如下地址访问 gogs 服务：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-http" data-lang="http"><span style="">http://127.0.0.1:8081
+</span></code></pre></div><p>查看容器详细状态</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker inspect gogs
+</code></pre></div><p>也可以进入正在运行的容器进行系统的状态、文件查看等操作</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker exec -it gogs /bin/bash
+docker exec -it caddy /bin/sh
+</code></pre></div><p>关闭服务</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker-compose stop
+</code></pre></div><p>正常情况下关闭服务时容器不会被删除，重新启动时如果容器存在则不会再创建。<code>docker-compose.yml</code>有修改时旧的容器不会自动更新，需要关闭服务并删除容器，然后重新创建容器启动</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker-compose down
 docker-compose up -d
-</code></pre></td></tr></table>
-</div>
-</div><p>或者直接强制重新创建容器启动</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker-compose up -d --force-recreate
-</code></pre></td></tr></table>
-</div>
-</div><h1 id="网络配置固定ip">网络配置固定IP</h1>
+</code></pre></div><p>或者直接强制重新创建容器启动</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker-compose up -d --force-recreate
+</code></pre></div><h1 id="网络配置固定ip">网络配置固定IP</h1>
 <p>也可以自定义网络，然后给 gogs 和 caddy 容器分配固定的ip。</p>
 <p>查看当前的docker网络</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker network ls
-</code></pre></td></tr></table>
-</div>
-</div><p><code>docker-compose.yml</code>配置网络</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3&#39;</span><span class="w">
-</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">caddy</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">caddy</span><span class="w">
-</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">abiosoft/caddy</span><span class="w">
-</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="s2">&#34;/home/caddy/Caddyfile:/etc/Caddyfile&#34;</span><span class="w"> 
-</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="s2">&#34;8081:2015&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">default</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span><span class="nt">ipv4_address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.23</span><span class="w">
-</span><span class="w"></span><span class="c">#    links:</span><span class="w">
-</span><span class="w"></span><span class="c">#      - gogs</span><span class="w">
-</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
-</span><span class="w">  </span><span class="nt">gogs</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">gogs</span><span class="w">
-</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">gogs/gogs</span><span class="w">
-</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="l">/home/gogs/data:/data</span><span class="w">
-</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="s2">&#34;3022:22&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">default</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span><span class="nt">ipv4_address</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.25</span><span class="w">
-</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="nt">networks</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">ipam</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">config</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">subnet</span><span class="p">:</span><span class="w"> </span><span class="m">172.18.0.0</span><span class="l">/16</span><span class="w">
-</span><span class="w"></span><span class="c">#          gateway: 172.18.0.1</span><span class="w">
-</span><span class="w"></span><span class="c">#          ip_range: 172.18.0.0/24</span><span class="w">
-</span></code></pre></td></tr></table>
-</div>
-</div><p>查看网络配置详情</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker network inspect gogs_default
-</code></pre></td></tr></table>
-</div>
-</div><p><code>docker-compose down</code>命令会同时移除网络。也可以手动移除网络:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">docker network rm gogs_default
-</code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker network ls
+</code></pre></div><p><code>docker-compose.yml</code>配置网络</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-yaml" data-lang="yaml"><span style="font-weight:bold">version</span>: <span style="font-style:italic">&#39;3&#39;</span>
+<span style="font-weight:bold">services</span>:
+  <span style="font-weight:bold">caddy</span>:
+    <span style="font-weight:bold">container_name</span>: caddy
+    <span style="font-weight:bold">image</span>: abiosoft/caddy
+    <span style="font-weight:bold">volumes</span>:
+      - <span style="font-style:italic">&#34;/home/caddy/Caddyfile:/etc/Caddyfile&#34;</span> 
+    <span style="font-weight:bold">ports</span>:
+      - <span style="font-style:italic">&#34;8081:2015&#34;</span>
+    <span style="font-weight:bold">networks</span>:
+        <span style="font-weight:bold">default</span>:
+            <span style="font-weight:bold">ipv4_address</span>: 172.18.0.23
+<span style="font-style:italic">#    links:</span>
+<span style="font-style:italic">#      - gogs</span>
+    <span style="font-weight:bold">restart</span>: always
+  <span style="font-weight:bold">gogs</span>:
+    <span style="font-weight:bold">container_name</span>: gogs
+    <span style="font-weight:bold">image</span>: gogs/gogs
+    <span style="font-weight:bold">volumes</span>:
+      - /home/gogs/data:/data
+    <span style="font-weight:bold">ports</span>:
+      - <span style="font-style:italic">&#34;3022:22&#34;</span>
+    <span style="font-weight:bold">networks</span>:
+        <span style="font-weight:bold">default</span>:
+            <span style="font-weight:bold">ipv4_address</span>: 172.18.0.25
+    <span style="font-weight:bold">restart</span>: always
+
+<span style="font-weight:bold">networks</span>:
+  <span style="font-weight:bold">default</span>:
+    <span style="font-weight:bold">ipam</span>:
+      <span style="font-weight:bold">config</span>:
+        - <span style="font-weight:bold">subnet</span>: 172.18.0.0/16
+<span style="font-style:italic">#          gateway: 172.18.0.1</span>
+<span style="font-style:italic">#          ip_range: 172.18.0.0/24</span>
+</code></pre></div><p>查看网络配置详情</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker network inspect gogs_default
+</code></pre></div><p><code>docker-compose down</code>命令会同时移除网络。也可以手动移除网络:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-bash" data-lang="bash">docker network rm gogs_default
+</code></pre></div>
         </div>
 
         <div class="row middle-xs">
@@ -440,21 +260,6 @@ docker-compose up -d
             
           </div>
         </div>
-        
-          <div class="row">
-            <div class="col-xs-12">
-              
-            </div>
-          </div>
-
-          
-
-
-
-          
-          
-          <div style="height: 50px;"></div>
-          
         
 
         <div class="site-footer">

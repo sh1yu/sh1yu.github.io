@@ -6,7 +6,7 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="sypeng" />
+  <meta name="author" content="sh1yu" />
   <meta property="og:url" content="https://sh1yu.github.io/post/vert.x-and-future/" />
   <link rel="canonical" href="https://sh1yu.github.io/post/vert.x-and-future/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="sh1yu - better code, better life.">
 
@@ -21,13 +21,13 @@
       "articleSection" : "post",
       "name" : "Vert.x线程与Future",
       "headline" : "Vert.x线程与Future",
-      "description" : "Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。 Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环",
+      "description" : "Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。\n Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个Vertx实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：\nVertx vertx = Vertx.vertx(new VertxOptions().setEventLoopPoolSize(5)); 这种模式称为Multi-Reactor模式（多反应器模式）。但是需要注意的是，即使一个Vertx实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了Worker Verticle以外）它们总是在同一个Event Loop 线程中被调用。\nHandler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。\nWorker线程池 不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。Vert.x的Worker Pool数量默认为20，可以通过如下方式设置：\nVertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(5)); 有两种方式可以使代码使用woker线程执行：\n **通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。 使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。  vertx.executeBlocking(future -\u0026gt; { \/\/ 调用一些需要耗费显著执行时间返回结果的阻塞式API  String result = someAPI.blockingMethod(\u0026#34;hello\u0026#34;); future.complete(result); }, res -\u0026gt; { System.out.println(\u0026#34;The result is: \u0026#34; \u002b res.result()); }); 可以为不同的用途创建不同的池:\nWorkerExecutor executor = vertx.",
       "inLanguage" : "en-US",
-      "author" : "sypeng",
-      "creator" : "sypeng",
-      "publisher": "sypeng",
-      "accountablePerson" : "sypeng",
-      "copyrightHolder" : "sypeng",
+      "author" : "sh1yu",
+      "creator" : "sh1yu",
+      "publisher": "sh1yu",
+      "accountablePerson" : "sh1yu",
+      "copyrightHolder" : "sh1yu",
       "copyrightYear" : "2019",
       "datePublished": "2019-02-13 11:29:12 \u002b0000 UTC",
       "dateModified" : "2019-02-13 11:29:12 \u002b0000 UTC",
@@ -38,8 +38,22 @@
 <title>Vert.x线程与Future</title>
   <meta property="og:title" content="Vert.x线程与Future" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。 Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环" />
-  <meta name="description" content="Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。 Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环" />
+  <meta property="og:description" content="Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。
+ Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个Vertx实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：
+Vertx vertx = Vertx.vertx(new VertxOptions().setEventLoopPoolSize(5)); 这种模式称为Multi-Reactor模式（多反应器模式）。但是需要注意的是，即使一个Vertx实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了Worker Verticle以外）它们总是在同一个Event Loop 线程中被调用。
+Handler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。
+Worker线程池 不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。Vert.x的Worker Pool数量默认为20，可以通过如下方式设置：
+Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(5)); 有两种方式可以使代码使用woker线程执行：
+ **通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。 使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。  vertx.executeBlocking(future -&amp;gt; { // 调用一些需要耗费显著执行时间返回结果的阻塞式API  String result = someAPI.blockingMethod(&amp;#34;hello&amp;#34;); future.complete(result); }, res -&amp;gt; { System.out.println(&amp;#34;The result is: &amp;#34; &#43; res.result()); }); 可以为不同的用途创建不同的池:
+WorkerExecutor executor = vertx." />
+  <meta name="description" content="Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。
+ Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个Vertx实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：
+Vertx vertx = Vertx.vertx(new VertxOptions().setEventLoopPoolSize(5)); 这种模式称为Multi-Reactor模式（多反应器模式）。但是需要注意的是，即使一个Vertx实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了Worker Verticle以外）它们总是在同一个Event Loop 线程中被调用。
+Handler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。
+Worker线程池 不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。Vert.x的Worker Pool数量默认为20，可以通过如下方式设置：
+Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(5)); 有两种方式可以使代码使用woker线程执行：
+ **通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。 使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。  vertx.executeBlocking(future -&amp;gt; { // 调用一些需要耗费显著执行时间返回结果的阻塞式API  String result = someAPI.blockingMethod(&amp;#34;hello&amp;#34;); future.complete(result); }, res -&amp;gt; { System.out.println(&amp;#34;The result is: &amp;#34; &#43; res.result()); }); 可以为不同的用途创建不同的池:
+WorkerExecutor executor = vertx." />
   <meta property="og:locale" content="zh-cn" />
 
   
@@ -60,7 +74,7 @@
   
 
   
-  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
 </head>
 
 
@@ -81,10 +95,6 @@
 <div class="row end-md center-xs header-items">
   
   <div class="header-item">
-    <a href="https://sh1yu.github.io" target="_blank">Home</a>
-  </div>
-  
-  <div class="header-item">
     <a href="https://github.com/sh1yu" target="_blank">Github</a>
   </div>
   
@@ -98,23 +108,6 @@
         <header class="post-header">
           <h1 class="post-title">Vert.x线程与Future</h1>
           
-          <div class="row post-desc">
-            <div class="col-xs-6">
-              
-              <time class="post-date" datetime="2019-02-13 11:29:12 UTC">
-                13 Feb 2019
-              </time>
-              
-            </div>
-            <div class="col-xs-6">
-              
-              <div class="post-author">
-                <a target="_blank" href="">@sypeng</a>
-              </div>
-              
-            </div>
-          </div>
-          
         </header>
 
         <div class="post-content markdown-body">
@@ -124,85 +117,37 @@
 </blockquote>
 <h1 id="event-loop线程池">Event loop线程池</h1>
 <p>在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个<code>Vertx</code>实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Vertx</span> <span class="n">vertx</span> <span class="o">=</span> <span class="n">Vertx</span><span class="o">.</span><span class="na">vertx</span><span class="o">(</span><span class="k">new</span> <span class="n">VertxOptions</span><span class="o">().</span><span class="na">setEventLoopPoolSize</span><span class="o">(</span><span class="n">5</span><span class="o">));</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>这种模式称为<strong>Multi-Reactor</strong>模式（多反应器模式）。但是需要注意的是，即使一个<code>Vertx</code>实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了<code>Worker Verticle</code>以外）它们总是在同一个Event Loop 线程中被调用。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Vertx vertx = Vertx.vertx(<span style="font-weight:bold">new</span> VertxOptions().setEventLoopPoolSize(5));
+</code></pre></div><p>这种模式称为<strong>Multi-Reactor</strong>模式（多反应器模式）。但是需要注意的是，即使一个<code>Vertx</code>实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了<code>Worker Verticle</code>以外）它们总是在同一个Event Loop 线程中被调用。</p>
 <p>Handler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。</p>
 <h1 id="worker线程池">Worker线程池</h1>
 <p>不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。<code>Vert.x</code>的Worker Pool数量默认为20，可以通过如下方式设置：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Vertx</span> <span class="n">vertx</span> <span class="o">=</span> <span class="n">Vertx</span><span class="o">.</span><span class="na">vertx</span><span class="o">(</span><span class="k">new</span> <span class="n">VertxOptions</span><span class="o">().</span><span class="na">setWorkerPoolSize</span><span class="o">(</span><span class="n">5</span><span class="o">));</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>有两种方式可以使代码使用woker线程执行：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Vertx vertx = Vertx.vertx(<span style="font-weight:bold">new</span> VertxOptions().setWorkerPoolSize(5));
+</code></pre></div><p>有两种方式可以使代码使用woker线程执行：</p>
 <ol>
 <li>**通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。</li>
 <li>使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">vertx</span><span class="o">.</span><span class="na">executeBlocking</span><span class="o">(</span><span class="n">future</span> <span class="o">-&gt;</span> <span class="o">{</span>
-  <span class="c1">// 调用一些需要耗费显著执行时间返回结果的阻塞式API
-</span><span class="c1"></span>  <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">someAPI</span><span class="o">.</span><span class="na">blockingMethod</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">);</span>
-  <span class="n">future</span><span class="o">.</span><span class="na">complete</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-<span class="o">},</span> <span class="n">res</span> <span class="o">-&gt;</span> <span class="o">{</span>
-  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;The result is: &#34;</span> <span class="o">+</span> <span class="n">res</span><span class="o">.</span><span class="na">result</span><span class="o">());</span>
-<span class="o">});</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>可以为不同的用途创建不同的池:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">WorkerExecutor</span> <span class="n">executor</span> <span class="o">=</span> <span class="n">vertx</span><span class="o">.</span><span class="na">createSharedWorkerExecutor</span><span class="o">(</span><span class="s">&#34;my-worker-pool&#34;</span><span class="o">);</span>
-<span class="n">executor</span><span class="o">.</span><span class="na">executeBlocking</span><span class="o">(</span><span class="n">future</span> <span class="o">-&gt;</span> <span class="o">{</span>
-  <span class="c1">// 调用一些需要耗费显著执行时间返回结果的阻塞式API
-</span><span class="c1"></span>  <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">someAPI</span><span class="o">.</span><span class="na">blockingMethod</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">);</span>
-  <span class="n">future</span><span class="o">.</span><span class="na">complete</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-<span class="o">},</span> <span class="n">res</span> <span class="o">-&gt;</span> <span class="o">{</span>
-  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;The result is: &#34;</span> <span class="o">+</span> <span class="n">res</span><span class="o">.</span><span class="na">result</span><span class="o">());</span>
-<span class="o">});</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>Worker Executor在不需要的时候必须被关闭。当使用同一个名字创建了许多worker时，它们将共享同一个pool。当所有的worker executor调用了close方法被关闭过后，对应的worker pool会被销毁。如果Worker Executor在Verticle中创建，那么Verticle实例销毁的同时Vert.x将会自动关闭这个Worker Executor。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">vertx.executeBlocking(future -&gt; {
+  <span style="font-style:italic">// 调用一些需要耗费显著执行时间返回结果的阻塞式API
+</span><span style="font-style:italic"></span>  String result = someAPI.blockingMethod(<span style="font-style:italic">&#34;hello&#34;</span>);
+  future.complete(result);
+}, res -&gt; {
+  System.out.println(<span style="font-style:italic">&#34;The result is: &#34;</span> + res.result());
+});
+</code></pre></div><p>可以为不同的用途创建不同的池:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">WorkerExecutor executor = vertx.createSharedWorkerExecutor(<span style="font-style:italic">&#34;my-worker-pool&#34;</span>);
+executor.executeBlocking(future -&gt; {
+  <span style="font-style:italic">// 调用一些需要耗费显著执行时间返回结果的阻塞式API
+</span><span style="font-style:italic"></span>  String result = someAPI.blockingMethod(<span style="font-style:italic">&#34;hello&#34;</span>);
+  future.complete(result);
+}, res -&gt; {
+  System.out.println(<span style="font-style:italic">&#34;The result is: &#34;</span> + res.result());
+});
+</code></pre></div><p>Worker Executor在不需要的时候必须被关闭。当使用同一个名字创建了许多worker时，它们将共享同一个pool。当所有的worker executor调用了close方法被关闭过后，对应的worker pool会被销毁。如果Worker Executor在Verticle中创建，那么Verticle实例销毁的同时Vert.x将会自动关闭这个Worker Executor。</p>
 <p>Worker Executor可以在创建的时候配置：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">WorkerExecutor</span> <span class="n">executor</span> <span class="o">=</span> <span class="n">vertx</span><span class="o">.</span><span class="na">createSharedWorkerExecutor</span><span class="o">(</span><span class="s">&#34;my-worker-pool&#34;</span><span class="o">,</span> <span class="n">poolSize</span><span class="o">,</span> <span class="n">maxExecuteTime</span><span class="o">);</span> <span class="c1">//maxExecuteTime单位为毫秒
-</span></code></pre></td></tr></table>
-</div>
-</div><h1 id="future">Future</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">WorkerExecutor executor = vertx.createSharedWorkerExecutor(<span style="font-style:italic">&#34;my-worker-pool&#34;</span>, poolSize, maxExecuteTime); <span style="font-style:italic">//maxExecuteTime单位为毫秒
+</span></code></pre></div><h1 id="future">Future</h1>
 <p>Vert.x中的Future可以用来协调多个异步操作的结果。它支持并发组合（并行执行多个异步调用）和顺序组合（依次执行异步调用）。Future接管目标异步处理函数的<code>handle</code>事件，触发自身的<code>complete</code>或<code>fail</code>事件，最后再触发Future注册的Handler的<code>handle</code>事件。</p>
 <p>也可以把Future看作一个事件对象，通过<code>setHandler</code>方法注册Handler监听对象，用来监听Future事件；异步调用函数通过Future的<code>completer</code>方法在函数完成时触发Future事件。</p>
 <ul>
@@ -216,53 +161,25 @@
 <p><strong>completer</strong>：返回包含handle接口实现的Handler。FutureImpl中的实现是返回对象自己。异步函数注册handler时可以注册该方法的返回值。FutureImpl中handle处理过程是：如果结果成功完成，则调用complete方法；否则调用failed方法。即：异步处理函数注册该方法的返回值作为Handler，该Handler在异步处理函数完成，completer的返回值Handler 发生 handle 事件后，向Future 发送<code>complete</code>事件。</p>
 </li>
 </ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Future</span><span class="o">&lt;</span><span class="n">HttpServer</span><span class="o">&gt;</span> <span class="n">httpServerFuture</span> <span class="o">=</span> <span class="n">Future</span><span class="o">.</span><span class="na">future</span><span class="o">();</span>
-<span class="n">httpServerFuture</span><span class="o">.</span><span class="na">setHandler</span><span class="o">(...);</span>
-<span class="n">httpServer</span><span class="o">.</span><span class="na">listen</span><span class="o">(</span><span class="n">httpServerFuture</span><span class="o">.</span><span class="na">completer</span><span class="o">());</span>
-</code></pre></td></tr></table>
-</div>
-</div><h1 id="并发合并">并发合并</h1>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Future&lt;HttpServer&gt; httpServerFuture = Future.future();
+httpServerFuture.setHandler(...);
+httpServer.listen(httpServerFuture.completer());
+</code></pre></div><h1 id="并发合并">并发合并</h1>
 <p>CompositeFuture.all方法接受多个Future对象作为参数（最多6个，或者传入List）。当所有的Future都成功完成，该方法将返回一个成功的Future；当任一个Future执行失败，则返回一个失败的Future：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Future</span><span class="o">&lt;</span><span class="n">HttpServer</span><span class="o">&gt;</span> <span class="n">httpServerFuture</span> <span class="o">=</span> <span class="n">Future</span><span class="o">.</span><span class="na">future</span><span class="o">();</span>
-<span class="n">httpServer</span><span class="o">.</span><span class="na">listen</span><span class="o">(</span><span class="n">httpServerFuture</span><span class="o">.</span><span class="na">completer</span><span class="o">());</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Future&lt;HttpServer&gt; httpServerFuture = Future.future();
+httpServer.listen(httpServerFuture.completer());
 
-<span class="n">Future</span><span class="o">&lt;</span><span class="n">NetServer</span><span class="o">&gt;</span> <span class="n">netServerFuture</span> <span class="o">=</span> <span class="n">Future</span><span class="o">.</span><span class="na">future</span><span class="o">();</span>
-<span class="n">netServer</span><span class="o">.</span><span class="na">listen</span><span class="o">(</span><span class="n">netServerFuture</span><span class="o">.</span><span class="na">completer</span><span class="o">());</span>
+Future&lt;NetServer&gt; netServerFuture = Future.future();
+netServer.listen(netServerFuture.completer());
 
-<span class="n">CompositeFuture</span><span class="o">.</span><span class="na">all</span><span class="o">(</span><span class="n">httpServerFuture</span><span class="o">,</span> <span class="n">netServerFuture</span><span class="o">).</span><span class="na">setHandler</span><span class="o">(</span><span class="n">ar</span> <span class="o">-&gt;</span> <span class="o">{</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">ar</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
-    <span class="c1">// 所有服务器启动完成
-</span><span class="c1"></span>  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-    <span class="c1">// 有一个服务器启动失败
-</span><span class="c1"></span>  <span class="o">}</span>
-<span class="o">});</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>CompositeFuture.all 方法注册了自己的Handler，并重新设置了所有Future对象的Handler。</p>
+CompositeFuture.all(httpServerFuture, netServerFuture).setHandler(ar -&gt; {
+  <span style="font-weight:bold">if</span> (ar.succeeded()) {
+    <span style="font-style:italic">// 所有服务器启动完成
+</span><span style="font-style:italic"></span>  } <span style="font-weight:bold">else</span> {
+    <span style="font-style:italic">// 有一个服务器启动失败
+</span><span style="font-style:italic"></span>  }
+});
+</code></pre></div><p>CompositeFuture.all 方法注册了自己的Handler，并重新设置了所有Future对象的Handler。</p>
 
         </div>
 
@@ -283,21 +200,6 @@
             
           </div>
         </div>
-        
-          <div class="row">
-            <div class="col-xs-12">
-              
-            </div>
-          </div>
-
-          
-
-
-
-          
-          
-          <div style="height: 50px;"></div>
-          
         
 
         <div class="site-footer">
