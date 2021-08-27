@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vert.x on sh1yu - better code, better life.</title>
+    <title>Vert.x on psycode - better code, better life.</title>
     <link>https://sh1yu.github.io/tags/vert.x/</link>
-    <description>Recent content in Vert.x on sh1yu - better code, better life.</description>
+    <description>Recent content in Vert.x on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Wed, 13 Feb 2019 11:29:12 +0000</lastBuildDate><atom:link href="https://sh1yu.github.io/tags/vert.x/index.xml" rel="self" type="application/rss+xml" />

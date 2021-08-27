@@ -6,9 +6,9 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="sh1yu" />
+  <meta name="author" content="psycode" />
   <meta property="og:url" content="https://sh1yu.github.io/post/run-gogs-with-docker/" />
-  <link rel="canonical" href="https://sh1yu.github.io/post/run-gogs-with-docker/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="sh1yu - better code, better life.">
+  <link rel="canonical" href="https://sh1yu.github.io/post/run-gogs-with-docker/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="psycode - better code, better life.">
 
   <script type="application/ld+json">
   {
@@ -23,11 +23,11 @@
       "headline" : "使用docker运行gogs服务",
       "description" : "学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。\n 目标   使用 docker 和 docker-compose 运行并管理 gogs 服务\n  使用 caddy 为 gogs 搭建反向代理\n  简单配置 caddy 与 gogs 容器的 docker 网络\n  工具与组件  docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令 gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx  创建caddy配置 创建caddy文件夹，并在文件夹下创建文件Caddyfile\nlocalhost { proxy \/ gogs:3000 { header_upstream Host {host} header_upstream X-Real-IP {remote} header_upstream X-Forwarded-For {remote} header_upstream X-Forwarded-Proto {scheme} } log \/var\/log\/caddy.",
       "inLanguage" : "en-US",
-      "author" : "sh1yu",
-      "creator" : "sh1yu",
-      "publisher": "sh1yu",
-      "accountablePerson" : "sh1yu",
-      "copyrightHolder" : "sh1yu",
+      "author" : "psycode",
+      "creator" : "psycode",
+      "publisher": "psycode",
+      "accountablePerson" : "psycode",
+      "copyrightHolder" : "psycode",
       "copyrightYear" : "2019",
       "datePublished": "2019-02-13 11:22:54 \u002b0800 CST",
       "dateModified" : "2019-02-13 11:22:54 \u002b0800 CST",
@@ -62,7 +62,7 @@ localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Re
   
 
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
-    title="sh1yu - better code, better life.">
+    title="psycode - better code, better life.">
   
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
@@ -83,7 +83,7 @@ localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Re
 <header>
   <div class="header-title">
     <a href="/"
-      >sypeng</a
+      >psycode</a
     >
   </div>
   <div class="header-subtitle"></div>
@@ -115,7 +115,7 @@ localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Re
             <div class="col-xs-6">
               
               <div class="post-author">
-                <a target="_blank" href="https://sh1yu.github.io">@sh1yu</a>
+                <a target="_blank" href="https://sh1yu.github.io">@psycode</a>
               </div>
               
             </div>
@@ -280,7 +280,7 @@ docker-compose up -d
         
           <div class="row">
             <div class="col-xs-12">
-              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>Sh1yu's Blog</a></p>
+              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>psycode's Blog</a></p>
             </div>
           </div>
 

@@ -6,9 +6,9 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="sh1yu" />
+  <meta name="author" content="psycode" />
   <meta property="og:url" content="https://sh1yu.github.io/post/kubernetes-statefulset/" />
-  <link rel="canonical" href="https://sh1yu.github.io/post/kubernetes-statefulset/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="sh1yu - better code, better life.">
+  <link rel="canonical" href="https://sh1yu.github.io/post/kubernetes-statefulset/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="psycode - better code, better life.">
 
   <script type="application/ld+json">
   {
@@ -23,11 +23,11 @@
       "headline" : "kubernetes之StatefulSet",
       "description" : "概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而StatefulSet是什么？顾名思义，有状态的集合，管理所有有状态的服务，比如MySQL、MongoDB集群等。\nStatefulSet本质上是Deployment的一种变体，在v1.9版本中已成为GA版本，它为了解决有状态服务的问题，它所管理的Pod拥有固定的Pod名称，启停顺序，在StatefulSet中，Pod名字称为网络标识(hostname)，还必须要用到共享存储。\n在Deployment中，与之对应的服务是service，而在StatefulSet中与之对应的headless service，headless service，即无头服务，与service的区别就是它没有Cluster IP，解析它的名称时将返回该Headless Service对应的全部Pod的Endpoint列表。\n除此之外，StatefulSet在Headless Service的基础上又为StatefulSet控制的每个Pod副本创建了一个DNS域名，这个域名的格式为：\n$(podname).(headless server name) FQDN： $(podname).(headless server name).namespace.svc.cluster.local StatefulSet示例 接下来看一些示例，演示下上面所说的特性，以加深理解。\napiVersion: v1 kind: Service metadata: name: nginx labels: app: nginx spec: ports: - port: 80 name: web clusterIP: None selector: app: nginx --- apiVersion: apps\/v1 kind: StatefulSet metadata: name: web spec: selector: matchLabels: app: nginx # has to match .spec.template.metadata.labels serviceName: \u0026#34;nginx\u0026#34; #声明它属于哪个Headless Service. replicas: 3 # by default is 1 template: metadata: labels: app: nginx # has to match .",
       "inLanguage" : "en-US",
-      "author" : "sh1yu",
-      "creator" : "sh1yu",
-      "publisher": "sh1yu",
-      "accountablePerson" : "sh1yu",
-      "copyrightHolder" : "sh1yu",
+      "author" : "psycode",
+      "creator" : "psycode",
+      "publisher": "psycode",
+      "accountablePerson" : "psycode",
+      "copyrightHolder" : "psycode",
       "copyrightYear" : "2020",
       "datePublished": "2020-08-22 12:47:25 \u002b0800 CST",
       "dateModified" : "2020-08-22 12:47:25 \u002b0800 CST",
@@ -62,7 +62,7 @@ apiVersion: v1 kind: Service metadata: name: nginx labels: app: nginx spec: port
   
 
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
-    title="sh1yu - better code, better life.">
+    title="psycode - better code, better life.">
   
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
@@ -83,7 +83,7 @@ apiVersion: v1 kind: Service metadata: name: nginx labels: app: nginx spec: port
 <header>
   <div class="header-title">
     <a href="/"
-      >sypeng</a
+      >psycode</a
     >
   </div>
   <div class="header-subtitle"></div>
@@ -115,7 +115,7 @@ apiVersion: v1 kind: Service metadata: name: nginx labels: app: nginx spec: port
             <div class="col-xs-6">
               
               <div class="post-author">
-                <a target="_blank" href="https://sh1yu.github.io">@sh1yu</a>
+                <a target="_blank" href="https://sh1yu.github.io">@psycode</a>
               </div>
               
             </div>
@@ -322,7 +322,7 @@ www-web-2         Bound     pvc-43a97acf-828e-11e8-8815-000c29774d39   2G       
         
           <div class="row">
             <div class="col-xs-12">
-              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>Sh1yu's Blog</a></p>
+              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>psycode's Blog</a></p>
             </div>
           </div>
 

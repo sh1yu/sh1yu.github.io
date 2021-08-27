@@ -6,9 +6,9 @@
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="sh1yu" />
+  <meta name="author" content="psycode" />
   <meta property="og:url" content="https://sh1yu.github.io/post/archlinux-operation/" />
-  <link rel="canonical" href="https://sh1yu.github.io/post/archlinux-operation/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="sh1yu - better code, better life.">
+  <link rel="canonical" href="https://sh1yu.github.io/post/archlinux-operation/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="psycode - better code, better life.">
 
   <script type="application/ld+json">
   {
@@ -23,11 +23,11 @@
       "headline" : "archlinux使用操作拾遗",
       "description" : "这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。\narchlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。\n检测网卡的PCI-ID\nlspci -vnn | grep 14e4: 获取驱动\n   驱动 描述     brcmsmac\/brcmfmac 开源内核驱动   b43 逆向工程内核驱动   broadcom-wl 专有的 Broadcom STA 驱动    b43\/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。\nlsmod |grep b43 发现b43驱动已经安装\nsystemctl status NetworkManager 发现NetworkManager已经安装（pacman安装包为networkmanager）\nnmcli dev 发现无线网尚未连接。使用如下命令成功连接wifi：\nnmcli dev wifi connect \u0026lt;SSID\u0026gt; password \u0026lt;password\u0026gt; archlinux 软件全部升级签名问题 使用sudo pacman -Syu遇到了 invalid or corrupted package ... unknown trust的问题，应该是签名验证不通过，使用如下方法解决了：\nsudo pacman-key --init sudo vim \/etc\/pacman.",
       "inLanguage" : "en-US",
-      "author" : "sh1yu",
-      "creator" : "sh1yu",
-      "publisher": "sh1yu",
-      "accountablePerson" : "sh1yu",
-      "copyrightHolder" : "sh1yu",
+      "author" : "psycode",
+      "creator" : "psycode",
+      "publisher": "psycode",
+      "accountablePerson" : "psycode",
+      "copyrightHolder" : "psycode",
       "copyrightYear" : "2019",
       "datePublished": "2019-02-13 11:22:54 \u002b0800 CST",
       "dateModified" : "2019-02-13 11:22:54 \u002b0800 CST",
@@ -70,7 +70,7 @@ sudo pacman-key --init sudo vim /etc/pacman." />
   
 
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
-    title="sh1yu - better code, better life.">
+    title="psycode - better code, better life.">
   
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
@@ -91,7 +91,7 @@ sudo pacman-key --init sudo vim /etc/pacman." />
 <header>
   <div class="header-title">
     <a href="/"
-      >sypeng</a
+      >psycode</a
     >
   </div>
   <div class="header-subtitle"></div>
@@ -123,7 +123,7 @@ sudo pacman-key --init sudo vim /etc/pacman." />
             <div class="col-xs-6">
               
               <div class="post-author">
-                <a target="_blank" href="https://sh1yu.github.io">@sh1yu</a>
+                <a target="_blank" href="https://sh1yu.github.io">@psycode</a>
               </div>
               
             </div>
@@ -221,7 +221,7 @@ flush <span style="font-weight:bold">privileges</span>;
         
           <div class="row">
             <div class="col-xs-12">
-              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>Sh1yu's Blog</a></p>
+              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>psycode's Blog</a></p>
             </div>
           </div>
 
