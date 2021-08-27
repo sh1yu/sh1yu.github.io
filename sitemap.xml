@@ -1,214 +1,101 @@
-<?xml-stylesheet type="text/xsl" href="https://shiyupeng2021.github.io/sitemap.xsl"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://shiyupeng2021.github.io/categories/</loc>
+    <loc>https://sh1yu.github.io/post/</loc>
+    <lastmod>2021-04-05T00:11:49+08:00</lastmod>
+  </url><url>
+    <loc>https://sh1yu.github.io/</loc>
+    <lastmod>2021-04-05T00:11:49+08:00</lastmod>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/</loc>
+    <lastmod>2021-04-05T00:11:49+08:00</lastmod>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</loc>
+    <lastmod>2021-02-06T12:33:49+08:00</lastmod>
+  </url><url>
+    <loc>https://sh1yu.github.io/categories/</loc>
     <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/categories/cloud-native/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/categories/cloud-native/</loc>
     <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/k8s/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/k8s/</loc>
     <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/mysql/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/mysql/</loc>
     <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/</loc>
     <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/install-mysql-in-k8s/</loc>
     <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/</loc>
-    <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</loc>
-    <lastmod>2021-01-23T00:13:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/categories/personal-development/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/categories/personal-development/</loc>
     <lastmod>2020-08-22T12:54:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/sign/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/sign/</loc>
     <lastmod>2020-08-22T12:54:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/sign-model/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/sign-model/</loc>
     <lastmod>2020-08-22T12:54:56+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/ability/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/ability/</loc>
     <lastmod>2020-08-22T12:53:00+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/knowledge/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/knowledge/</loc>
     <lastmod>2020-08-22T12:53:00+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/knowledge-to-ability/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/knowledge-to-ability/</loc>
     <lastmod>2020-08-22T12:53:00+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/iceberg/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/iceberg/</loc>
     <lastmod>2020-08-22T12:50:32+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/iceberg-model/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/iceberg-model/</loc>
     <lastmod>2020-08-22T12:50:32+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/kubernetes-statefulset/</loc>
     <lastmod>2020-08-22T12:47:25+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/java/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/java/</loc>
     <lastmod>2019-02-13T11:29:12+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/categories/language/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/categories/language/</loc>
     <lastmod>2019-02-13T11:29:12+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/vert.x/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/vert.x/</loc>
     <lastmod>2019-02-13T11:29:12+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/vert.x-and-future/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/vert.x-and-future/</loc>
     <lastmod>2019-02-13T11:29:12+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/archlinux/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/archlinux/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/archlinux-operation/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/archlinux-operation/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/caddy/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/caddy/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/categories/devops/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/categories/devops/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/docker/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/docker/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/go/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/go/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/gogs/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/gogs/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/tags/linux/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/tags/linux/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://shiyupeng2021.github.io/post/run-gogs-with-docker/</loc>
+  </url><url>
+    <loc>https://sh1yu.github.io/post/run-gogs-with-docker/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
-  
 </urlset>

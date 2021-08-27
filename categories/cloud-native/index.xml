@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>cloud-native on shiyupeng2021 - code life.</title>
-    <link>https://shiyupeng2021.github.io/categories/cloud-native/</link>
-    <description>Recent content in cloud-native on shiyupeng2021 - code life.</description>
+    <title>cloud-native on psycode - better code, better life.</title>
+    <link>https://sh1yu.github.io/categories/cloud-native/</link>
+    <description>Recent content in cloud-native on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 23 Jan 2021 00:13:56 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/categories/cloud-native/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 23 Jan 2021 00:13:56 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/categories/cloud-native/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>在k8s集群中部署mysql</title>
-      <link>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</link>
+      <link>https://sh1yu.github.io/post/install-mysql-in-k8s/</link>
       <pubDate>Sat, 23 Jan 2021 00:13:56 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</guid>
-      <description>本篇文章参考了官方kubenetes部署mysql的过程，对如何在k8s环境下安装mysql进行了实践。 首先快速安装一个只有master节点</description>
+      <guid>https://sh1yu.github.io/post/install-mysql-in-k8s/</guid>
+      <description>本篇文章参考了官方kubenetes部署mysql的过程，对如何在k8s环境下安装mysql进行了实践。 首先快速安装一个只有master节点的mysql实例，先有个直观印象。 使用如下yaml:
+apiVersion: v1 kind: ConfigMap metadata: name: mysql namespace: mysql labels: app: mysql data: master.cnf: |[mysqld] log-bin --- apiVersion: v1 kind: Service metadata: name: mysql namespace: mysql labels: app: mysql spec: ports: - name: mysql port: 3306 clusterIP: None selector: app: mysql --- apiVersion: apps/v1 kind: StatefulSet metadata: name: mysql namespace: mysql spec: selector: matchLabels: app: mysql serviceName: mysql replicas: 1 template: metadata: labels: app: mysql spec: initContainers: - name: init-mysql image: mysql:5.</description>
     </item>
     
     <item>
       <title>kubernetes之StatefulSet</title>
-      <link>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</link>
+      <link>https://sh1yu.github.io/post/kubernetes-statefulset/</link>
       <pubDate>Sat, 22 Aug 2020 12:47:25 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</guid>
-      <description>概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef</description>
+      <guid>https://sh1yu.github.io/post/kubernetes-statefulset/</guid>
+      <description>概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而StatefulSet是什么？顾名思义，有状态的集合，管理所有有状态的服务，比如MySQL、MongoDB集群等。
+StatefulSet本质上是Deployment的一种变体，在v1.9版本中已成为GA版本，它为了解决有状态服务的问题，它所管理的Pod拥有固定的Pod名称，启停顺序，在StatefulSet中，Pod名字称为网络标识(hostname)，还必须要用到共享存储。
+在Deployment中，与之对应的服务是service，而在StatefulSet中与之对应的headless service，headless service，即无头服务，与service的区别就是它没有Cluster IP，解析它的名称时将返回该Headless Service对应的全部Pod的Endpoint列表。
+除此之外，StatefulSet在Headless Service的基础上又为StatefulSet控制的每个Pod副本创建了一个DNS域名，这个域名的格式为：
+$(podname).(headless server name) FQDN： $(podname).(headless server name).namespace.svc.cluster.local StatefulSet示例 接下来看一些示例，演示下上面所说的特性，以加深理解。
+apiVersion: v1 kind: Service metadata: name: nginx labels: app: nginx spec: ports: - port: 80 name: web clusterIP: None selector: app: nginx --- apiVersion: apps/v1 kind: StatefulSet metadata: name: web spec: selector: matchLabels: app: nginx # has to match .spec.template.metadata.labels serviceName: &amp;#34;nginx&amp;#34; #声明它属于哪个Headless Service. replicas: 3 # by default is 1 template: metadata: labels: app: nginx # has to match .</description>
     </item>
     
   </channel>

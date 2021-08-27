@@ -7,8 +7,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="psycode" />
-  <meta property="og:url" content="https://sh1yu.github.io/post/vert.x-and-future/" />
-  <link rel="canonical" href="https://sh1yu.github.io/post/vert.x-and-future/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="psycode - better code, better life.">
+  <meta property="og:url" content="https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/" />
+  <link rel="canonical" href="https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="psycode - better code, better life.">
 
   <script type="application/ld+json">
   {
@@ -19,41 +19,41 @@
            "@id": "https:\/\/sh1yu.github.io"
       },
       "articleSection" : "post",
-      "name" : "Vert.x线程与Future",
-      "headline" : "Vert.x线程与Future",
-      "description" : "Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。\n Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个Vertx实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：\nVertx vertx = Vertx.vertx(new VertxOptions().setEventLoopPoolSize(5)); 这种模式称为Multi-Reactor模式（多反应器模式）。但是需要注意的是，即使一个Vertx实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了Worker Verticle以外）它们总是在同一个Event Loop 线程中被调用。\nHandler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。\nWorker线程池 不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。Vert.x的Worker Pool数量默认为20，可以通过如下方式设置：\nVertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(5)); 有两种方式可以使代码使用woker线程执行：\n **通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。 使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。  vertx.executeBlocking(future -\u0026gt; { \/\/ 调用一些需要耗费显著执行时间返回结果的阻塞式API  String result = someAPI.blockingMethod(\u0026#34;hello\u0026#34;); future.complete(result); }, res -\u0026gt; { System.out.println(\u0026#34;The result is: \u0026#34; \u002b res.result()); }); 可以为不同的用途创建不同的池:\nWorkerExecutor executor = vertx.",
+      "name" : "Vscode配置cpp外部头文件依赖",
+      "headline" : "Vscode配置cpp外部头文件依赖",
+      "description" : "最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：\nvscode的settings.json中可以通过配置项C_Cpp.default.includePath配置默认的头文件路径，配置如下:\n{ \u0026#34;files.associations\u0026#34;: { \u0026#34;iostream\u0026#34;: \u0026#34;cpp\u0026#34; }, \u0026#34;C_Cpp.default.includePath\u0026#34;: [\u0026#34;\/home\/psy\u0026#34;] } 在配置文件c_cpp_properties.json配置文件中可以指定includePath，示例如下：\n{ \u0026#34;configurations\u0026#34;: [ { \u0026#34;name\u0026#34;: \u0026#34;Linux\u0026#34;, \u0026#34;includePath\u0026#34;: [ \u0026#34;${default}\u0026#34; ], \u0026#34;defines\u0026#34;: [], \u0026#34;compilerPath\u0026#34;: \u0026#34;\/usr\/bin\/clang\u002b\u002b\u0026#34;, \u0026#34;cStandard\u0026#34;: \u0026#34;c11\u0026#34;, \u0026#34;cppStandard\u0026#34;: \u0026#34;c\u002b\u002b14\u0026#34;, \u0026#34;intelliSenseMode\u0026#34;: \u0026#34;linux-clang-x64\u0026#34; } ], \u0026#34;version\u0026#34;: 4 } 其中includePath配置的为${default}，表示加载前面settings.json中的C_Cpp.default.includePath配置。也可以直接在此配置其他路径。 经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在\/home\/psy下存在a.hpp：\n#include \u0026lt;iostream\u0026gt;void printHello() { std::cout \u0026lt;\u0026lt; \u0026#34;Hello cpp!\u0026#34; \u0026lt;\u0026lt; std::endl; } 在项目中的hello.cpp:\n#include \u0026lt;iostream\u0026gt;#include \u0026lt;a.hpp\u0026gt; int main() { std::cout \u0026lt;\u0026lt; \u0026#34;Hello C\u002b\u002b!\u0026#34; \u0026lt;\u0026lt; std::endl; printHello(); return 0; } 这个\u0026lt;a.hpp\u0026gt;和printHello就能被vscode正常找到和跳转。\n但是如果此时直接F5运行，依旧会出现找不到a.hpp的情况出现。因为运行时执行的是launch.json配置：\n{ \/\/ Use IntelliSense to learn about possible attributes.",
       "inLanguage" : "en-US",
       "author" : "psycode",
       "creator" : "psycode",
       "publisher": "psycode",
       "accountablePerson" : "psycode",
       "copyrightHolder" : "psycode",
-      "copyrightYear" : "2019",
-      "datePublished": "2019-02-13 11:29:12 \u002b0000 UTC",
-      "dateModified" : "2019-02-13 11:29:12 \u002b0000 UTC",
-      "url" : "https:\/\/sh1yu.github.io\/post\/vert.x-and-future\/",
-      "keywords" : [ "java","Vert.x", ]
+      "copyrightYear" : "2021",
+      "datePublished": "2021-02-06 12:33:49 \u002b0800 CST",
+      "dateModified" : "2021-02-06 12:33:49 \u002b0800 CST",
+      "url" : "https:\/\/sh1yu.github.io\/post\/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96\/",
+      "keywords" : [  ]
   }
 </script>
-<title>Vert.x线程与Future</title>
-  <meta property="og:title" content="Vert.x线程与Future" />
+<title>Vscode配置cpp外部头文件依赖</title>
+  <meta property="og:title" content="Vscode配置cpp外部头文件依赖" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。
- Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个Vertx实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：
-Vertx vertx = Vertx.vertx(new VertxOptions().setEventLoopPoolSize(5)); 这种模式称为Multi-Reactor模式（多反应器模式）。但是需要注意的是，即使一个Vertx实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了Worker Verticle以外）它们总是在同一个Event Loop 线程中被调用。
-Handler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。
-Worker线程池 不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。Vert.x的Worker Pool数量默认为20，可以通过如下方式设置：
-Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(5)); 有两种方式可以使代码使用woker线程执行：
- **通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。 使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。  vertx.executeBlocking(future -&amp;gt; { // 调用一些需要耗费显著执行时间返回结果的阻塞式API  String result = someAPI.blockingMethod(&amp;#34;hello&amp;#34;); future.complete(result); }, res -&amp;gt; { System.out.println(&amp;#34;The result is: &amp;#34; &#43; res.result()); }); 可以为不同的用途创建不同的池:
-WorkerExecutor executor = vertx." />
-  <meta name="description" content="Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。
- Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个Vertx实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：
-Vertx vertx = Vertx.vertx(new VertxOptions().setEventLoopPoolSize(5)); 这种模式称为Multi-Reactor模式（多反应器模式）。但是需要注意的是，即使一个Vertx实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了Worker Verticle以外）它们总是在同一个Event Loop 线程中被调用。
-Handler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。
-Worker线程池 不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。Vert.x的Worker Pool数量默认为20，可以通过如下方式设置：
-Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(5)); 有两种方式可以使代码使用woker线程执行：
- **通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。 使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。  vertx.executeBlocking(future -&amp;gt; { // 调用一些需要耗费显著执行时间返回结果的阻塞式API  String result = someAPI.blockingMethod(&amp;#34;hello&amp;#34;); future.complete(result); }, res -&amp;gt; { System.out.println(&amp;#34;The result is: &amp;#34; &#43; res.result()); }); 可以为不同的用途创建不同的池:
-WorkerExecutor executor = vertx." />
+  <meta property="og:description" content="最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：
+vscode的settings.json中可以通过配置项C_Cpp.default.includePath配置默认的头文件路径，配置如下:
+{ &amp;#34;files.associations&amp;#34;: { &amp;#34;iostream&amp;#34;: &amp;#34;cpp&amp;#34; }, &amp;#34;C_Cpp.default.includePath&amp;#34;: [&amp;#34;/home/psy&amp;#34;] } 在配置文件c_cpp_properties.json配置文件中可以指定includePath，示例如下：
+{ &amp;#34;configurations&amp;#34;: [ { &amp;#34;name&amp;#34;: &amp;#34;Linux&amp;#34;, &amp;#34;includePath&amp;#34;: [ &amp;#34;${default}&amp;#34; ], &amp;#34;defines&amp;#34;: [], &amp;#34;compilerPath&amp;#34;: &amp;#34;/usr/bin/clang&#43;&#43;&amp;#34;, &amp;#34;cStandard&amp;#34;: &amp;#34;c11&amp;#34;, &amp;#34;cppStandard&amp;#34;: &amp;#34;c&#43;&#43;14&amp;#34;, &amp;#34;intelliSenseMode&amp;#34;: &amp;#34;linux-clang-x64&amp;#34; } ], &amp;#34;version&amp;#34;: 4 } 其中includePath配置的为${default}，表示加载前面settings.json中的C_Cpp.default.includePath配置。也可以直接在此配置其他路径。 经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在/home/psy下存在a.hpp：
+#include &amp;lt;iostream&amp;gt;void printHello() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello cpp!&amp;#34; &amp;lt;&amp;lt; std::endl; } 在项目中的hello.cpp:
+#include &amp;lt;iostream&amp;gt;#include &amp;lt;a.hpp&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello C&#43;&#43;!&amp;#34; &amp;lt;&amp;lt; std::endl; printHello(); return 0; } 这个&amp;lt;a.hpp&amp;gt;和printHello就能被vscode正常找到和跳转。
+但是如果此时直接F5运行，依旧会出现找不到a.hpp的情况出现。因为运行时执行的是launch.json配置：
+{ // Use IntelliSense to learn about possible attributes." />
+  <meta name="description" content="最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：
+vscode的settings.json中可以通过配置项C_Cpp.default.includePath配置默认的头文件路径，配置如下:
+{ &amp;#34;files.associations&amp;#34;: { &amp;#34;iostream&amp;#34;: &amp;#34;cpp&amp;#34; }, &amp;#34;C_Cpp.default.includePath&amp;#34;: [&amp;#34;/home/psy&amp;#34;] } 在配置文件c_cpp_properties.json配置文件中可以指定includePath，示例如下：
+{ &amp;#34;configurations&amp;#34;: [ { &amp;#34;name&amp;#34;: &amp;#34;Linux&amp;#34;, &amp;#34;includePath&amp;#34;: [ &amp;#34;${default}&amp;#34; ], &amp;#34;defines&amp;#34;: [], &amp;#34;compilerPath&amp;#34;: &amp;#34;/usr/bin/clang&#43;&#43;&amp;#34;, &amp;#34;cStandard&amp;#34;: &amp;#34;c11&amp;#34;, &amp;#34;cppStandard&amp;#34;: &amp;#34;c&#43;&#43;14&amp;#34;, &amp;#34;intelliSenseMode&amp;#34;: &amp;#34;linux-clang-x64&amp;#34; } ], &amp;#34;version&amp;#34;: 4 } 其中includePath配置的为${default}，表示加载前面settings.json中的C_Cpp.default.includePath配置。也可以直接在此配置其他路径。 经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在/home/psy下存在a.hpp：
+#include &amp;lt;iostream&amp;gt;void printHello() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello cpp!&amp;#34; &amp;lt;&amp;lt; std::endl; } 在项目中的hello.cpp:
+#include &amp;lt;iostream&amp;gt;#include &amp;lt;a.hpp&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello C&#43;&#43;!&amp;#34; &amp;lt;&amp;lt; std::endl; printHello(); return 0; } 这个&amp;lt;a.hpp&amp;gt;和printHello就能被vscode正常找到和跳转。
+但是如果此时直接F5运行，依旧会出现找不到a.hpp的情况出现。因为运行时执行的是launch.json配置：
+{ // Use IntelliSense to learn about possible attributes." />
   <meta property="og:locale" content="zh-cn" />
 
   
@@ -106,13 +106,13 @@ WorkerExecutor executor = vertx." />
 
         </div>
         <header class="post-header">
-          <h1 class="post-title">Vert.x线程与Future</h1>
+          <h1 class="post-title">Vscode配置cpp外部头文件依赖</h1>
           
           <div class="row post-desc">
             <div class="col-xs-6">
               
-              <time class="post-date" datetime="2019-02-13 11:29:12 UTC">
-                13 Feb 2019
+              <time class="post-date" datetime="2021-02-06 12:33:49 CST">
+                06 Feb 2021
               </time>
               
             </div>
@@ -129,91 +129,115 @@ WorkerExecutor executor = vertx." />
 
         <div class="post-content markdown-body">
           
-          <blockquote>
-<p>Vert.x有两个重要的线程池: <strong>Event loop线程池</strong>和<strong>Worker线程池</strong>。</p>
-</blockquote>
-<h1 id="event-loop线程池">Event loop线程池</h1>
-<p>在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个<code>Vertx</code>实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Vertx vertx = Vertx.vertx(<span style="font-weight:bold">new</span> VertxOptions().setEventLoopPoolSize(5));
-</code></pre></div><p>这种模式称为<strong>Multi-Reactor</strong>模式（多反应器模式）。但是需要注意的是，即使一个<code>Vertx</code>实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了<code>Worker Verticle</code>以外）它们总是在同一个Event Loop 线程中被调用。</p>
-<p>Handler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。</p>
-<h1 id="worker线程池">Worker线程池</h1>
-<p>不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。<code>Vert.x</code>的Worker Pool数量默认为20，可以通过如下方式设置：</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Vertx vertx = Vertx.vertx(<span style="font-weight:bold">new</span> VertxOptions().setWorkerPoolSize(5));
-</code></pre></div><p>有两种方式可以使代码使用woker线程执行：</p>
-<ol>
-<li>**通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。</li>
-<li>使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。</li>
-</ol>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">vertx.executeBlocking(future -&gt; {
-  <span style="font-style:italic">// 调用一些需要耗费显著执行时间返回结果的阻塞式API
-</span><span style="font-style:italic"></span>  String result = someAPI.blockingMethod(<span style="font-style:italic">&#34;hello&#34;</span>);
-  future.complete(result);
-}, res -&gt; {
-  System.out.println(<span style="font-style:italic">&#34;The result is: &#34;</span> + res.result());
-});
-</code></pre></div><p>可以为不同的用途创建不同的池:</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">WorkerExecutor executor = vertx.createSharedWorkerExecutor(<span style="font-style:italic">&#34;my-worker-pool&#34;</span>);
-executor.executeBlocking(future -&gt; {
-  <span style="font-style:italic">// 调用一些需要耗费显著执行时间返回结果的阻塞式API
-</span><span style="font-style:italic"></span>  String result = someAPI.blockingMethod(<span style="font-style:italic">&#34;hello&#34;</span>);
-  future.complete(result);
-}, res -&gt; {
-  System.out.println(<span style="font-style:italic">&#34;The result is: &#34;</span> + res.result());
-});
-</code></pre></div><p>Worker Executor在不需要的时候必须被关闭。当使用同一个名字创建了许多worker时，它们将共享同一个pool。当所有的worker executor调用了close方法被关闭过后，对应的worker pool会被销毁。如果Worker Executor在Verticle中创建，那么Verticle实例销毁的同时Vert.x将会自动关闭这个Worker Executor。</p>
-<p>Worker Executor可以在创建的时候配置：</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">WorkerExecutor executor = vertx.createSharedWorkerExecutor(<span style="font-style:italic">&#34;my-worker-pool&#34;</span>, poolSize, maxExecuteTime); <span style="font-style:italic">//maxExecuteTime单位为毫秒
-</span></code></pre></div><h1 id="future">Future</h1>
-<p>Vert.x中的Future可以用来协调多个异步操作的结果。它支持并发组合（并行执行多个异步调用）和顺序组合（依次执行异步调用）。Future接管目标异步处理函数的<code>handle</code>事件，触发自身的<code>complete</code>或<code>fail</code>事件，最后再触发Future注册的Handler的<code>handle</code>事件。</p>
-<p>也可以把Future看作一个事件对象，通过<code>setHandler</code>方法注册Handler监听对象，用来监听Future事件；异步调用函数通过Future的<code>completer</code>方法在函数完成时触发Future事件。</p>
-<ul>
-<li>
-<p><strong>setHandler</strong>: 设置事件处理Handler。<code>complete</code>方法中会回调Future注册的Handler的<code>handle</code>方法。即：Future发生<code>complete</code>事件后，向Future注册的Handler传递<code>handle</code>事件。</p>
-</li>
-<li>
-<p><strong>complete</strong>: Future的<code>complete</code>方法一般由异步处理函数注册的Handler调用，表示请求已结束。即：complete方法表示Future的<code>complete</code>事件。</p>
-</li>
-<li>
-<p><strong>completer</strong>：返回包含handle接口实现的Handler。FutureImpl中的实现是返回对象自己。异步函数注册handler时可以注册该方法的返回值。FutureImpl中handle处理过程是：如果结果成功完成，则调用complete方法；否则调用failed方法。即：异步处理函数注册该方法的返回值作为Handler，该Handler在异步处理函数完成，completer的返回值Handler 发生 handle 事件后，向Future 发送<code>complete</code>事件。</p>
-</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Future&lt;HttpServer&gt; httpServerFuture = Future.future();
-httpServerFuture.setHandler(...);
-httpServer.listen(httpServerFuture.completer());
-</code></pre></div><h1 id="并发合并">并发合并</h1>
-<p>CompositeFuture.all方法接受多个Future对象作为参数（最多6个，或者传入List）。当所有的Future都成功完成，该方法将返回一个成功的Future；当任一个Future执行失败，则返回一个失败的Future：</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">Future&lt;HttpServer&gt; httpServerFuture = Future.future();
-httpServer.listen(httpServerFuture.completer());
-
-Future&lt;NetServer&gt; netServerFuture = Future.future();
-netServer.listen(netServerFuture.completer());
-
-CompositeFuture.all(httpServerFuture, netServerFuture).setHandler(ar -&gt; {
-  <span style="font-weight:bold">if</span> (ar.succeeded()) {
-    <span style="font-style:italic">// 所有服务器启动完成
-</span><span style="font-style:italic"></span>  } <span style="font-weight:bold">else</span> {
-    <span style="font-style:italic">// 有一个服务器启动失败
-</span><span style="font-style:italic"></span>  }
-});
-</code></pre></div><p>CompositeFuture.all 方法注册了自己的Handler，并重新设置了所有Future对象的Handler。</p>
+          <p>最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：</p>
+<p>vscode的<code>settings.json</code>中可以通过配置项<code>C_Cpp.default.includePath</code>配置默认的头文件路径，配置如下:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{
+    <span style="font-weight:bold">&#34;files.associations&#34;</span>: {
+        <span style="font-weight:bold">&#34;iostream&#34;</span>: <span style="font-style:italic">&#34;cpp&#34;</span>
+    },
+    <span style="font-weight:bold">&#34;C_Cpp.default.includePath&#34;</span>: [<span style="font-style:italic">&#34;/home/psy&#34;</span>]
+}
+</code></pre></div><p>在配置文件<code>c_cpp_properties.json</code>配置文件中可以指定<code>includePath</code>，示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{
+    <span style="font-weight:bold">&#34;configurations&#34;</span>: [
+        {
+            <span style="font-weight:bold">&#34;name&#34;</span>: <span style="font-style:italic">&#34;Linux&#34;</span>,
+            <span style="font-weight:bold">&#34;includePath&#34;</span>: [
+                <span style="font-style:italic">&#34;${default}&#34;</span>
+            ],
+            <span style="font-weight:bold">&#34;defines&#34;</span>: [],
+            <span style="font-weight:bold">&#34;compilerPath&#34;</span>: <span style="font-style:italic">&#34;/usr/bin/clang++&#34;</span>,
+            <span style="font-weight:bold">&#34;cStandard&#34;</span>: <span style="font-style:italic">&#34;c11&#34;</span>,
+            <span style="font-weight:bold">&#34;cppStandard&#34;</span>: <span style="font-style:italic">&#34;c++14&#34;</span>,
+            <span style="font-weight:bold">&#34;intelliSenseMode&#34;</span>: <span style="font-style:italic">&#34;linux-clang-x64&#34;</span>
+        }
+    ],
+    <span style="font-weight:bold">&#34;version&#34;</span>: 4
+}
+</code></pre></div><p>其中<code>includePath</code>配置的为<code>${default}</code>，表示加载前面<code>settings.json</code>中的<code>C_Cpp.default.includePath</code>配置。也可以直接在此配置其他路径。
+经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在<code>/home/psy</code>下存在<code>a.hpp</code>：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-cpp" data-lang="cpp"><span style="">#include</span> <span style="">&lt;iostream&gt;</span><span style="">
+</span><span style=""></span><span style="">void</span> printHello() {
+    std::cout &lt;&lt; <span style="font-style:italic">&#34;Hello cpp!&#34;</span> &lt;&lt; std::endl;
+}
+</code></pre></div><p>在项目中的<code>hello.cpp</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-cpp" data-lang="cpp"><span style="">#include</span> <span style="">&lt;iostream&gt;</span><span style="">
+</span><span style="">#include</span> <span style="">&lt;a.hpp&gt;</span><span style="">
+</span><span style=""></span>
+<span style="">int</span> main()
+{
+    std::cout &lt;&lt; <span style="font-style:italic">&#34;Hello C++!&#34;</span> &lt;&lt; std::endl;
+    printHello();
+    <span style="font-weight:bold">return</span> 0;
+}
+</code></pre></div><p>这个<code>&lt;a.hpp&gt;</code>和<code>printHello</code>就能被vscode正常找到和跳转。</p>
+<p>但是如果此时直接F5运行，依旧会出现找不到<code>a.hpp</code>的情况出现。因为运行时执行的是<code>launch.json</code>配置：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{
+    <span style="">//</span> <span style="">Use</span> <span style="">IntelliSense</span> <span style="">to</span> <span style="">learn</span> <span style="">about</span> <span style="">possible</span> <span style="">attributes.</span>
+    <span style="">//</span> <span style="">Hover</span> <span style="">to</span> <span style="">view</span> <span style="">descriptions</span> <span style="">of</span> <span style="">existing</span> <span style="">attributes.</span>
+    <span style="">//</span> <span style="">For</span> <span style="">more</span> <span style="">information,</span> <span style="">visit:</span> <span style="">https://go.microsoft.com/fwlink/?linkid=830387</span>
+    <span style="font-weight:bold">&#34;version&#34;</span>: <span style="font-style:italic">&#34;0.2.0&#34;</span>,
+    <span style="font-weight:bold">&#34;configurations&#34;</span>: [
+        {
+            <span style="font-weight:bold">&#34;name&#34;</span>: <span style="font-style:italic">&#34;clang++ - Build and debug active file&#34;</span>,
+            <span style="font-weight:bold">&#34;type&#34;</span>: <span style="font-style:italic">&#34;cppdbg&#34;</span>,
+            <span style="font-weight:bold">&#34;request&#34;</span>: <span style="font-style:italic">&#34;launch&#34;</span>,
+            <span style="font-weight:bold">&#34;program&#34;</span>: <span style="font-style:italic">&#34;${fileDirname}/${fileBasenameNoExtension}&#34;</span>,
+            <span style="font-weight:bold">&#34;args&#34;</span>: [],
+            <span style="font-weight:bold">&#34;stopAtEntry&#34;</span>: <span style="font-weight:bold">false</span>,
+            <span style="font-weight:bold">&#34;cwd&#34;</span>: <span style="font-style:italic">&#34;${workspaceFolder}&#34;</span>,
+            <span style="font-weight:bold">&#34;environment&#34;</span>: [],
+            <span style="font-weight:bold">&#34;console&#34;</span>: <span style="font-style:italic">&#34;externalTerminal&#34;</span>,
+            <span style="font-weight:bold">&#34;MIMode&#34;</span>: <span style="font-style:italic">&#34;lldb&#34;</span>,
+            <span style="font-weight:bold">&#34;setupCommands&#34;</span>: [
+                {
+                    <span style="font-weight:bold">&#34;description&#34;</span>: <span style="font-style:italic">&#34;Enable pretty-printing for gdb&#34;</span>,
+                    <span style="font-weight:bold">&#34;text&#34;</span>: <span style="font-style:italic">&#34;-enable-pretty-printing&#34;</span>,
+                    <span style="font-weight:bold">&#34;ignoreFailures&#34;</span>: <span style="font-weight:bold">true</span>
+                }
+            ],
+            <span style="font-weight:bold">&#34;preLaunchTask&#34;</span>: <span style="font-style:italic">&#34;C/C++: clang++ build active file&#34;</span>,
+            <span style="font-weight:bold">&#34;miDebuggerPath&#34;</span>: <span style="font-style:italic">&#34;/usr/bin/lldb-mi&#34;</span>
+        }
+    ]
+}
+</code></pre></div><p>其中<code>preLaunchTask</code>指定了需要先运行的task，这个在<code>tasks.json</code>中配置:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{
+    <span style="font-weight:bold">&#34;tasks&#34;</span>: [
+        {
+            <span style="font-weight:bold">&#34;type&#34;</span>: <span style="font-style:italic">&#34;cppbuild&#34;</span>,
+            <span style="font-weight:bold">&#34;label&#34;</span>: <span style="font-style:italic">&#34;C/C++: clang++ build active file&#34;</span>,
+            <span style="font-weight:bold">&#34;command&#34;</span>: <span style="font-style:italic">&#34;/usr/bin/clang++&#34;</span>,
+            <span style="font-weight:bold">&#34;args&#34;</span>: [
+                <span style="font-style:italic">&#34;-g&#34;</span>,
+                <span style="font-style:italic">&#34;${file}&#34;</span>,
+                <span style="font-style:italic">&#34;-I&#34;</span>,
+                <span style="font-style:italic">&#34;/home/sypeng&#34;</span>,
+                <span style="font-style:italic">&#34;-o&#34;</span>,
+                <span style="font-style:italic">&#34;${fileDirname}/${fileBasenameNoExtension}&#34;</span>
+            ],
+            <span style="font-weight:bold">&#34;options&#34;</span>: {
+                <span style="font-weight:bold">&#34;cwd&#34;</span>: <span style="font-style:italic">&#34;${workspaceFolder}&#34;</span>
+            },
+            <span style="font-weight:bold">&#34;problemMatcher&#34;</span>: [
+                <span style="font-style:italic">&#34;$gcc&#34;</span>
+            ],
+            <span style="font-weight:bold">&#34;group&#34;</span>: {
+                <span style="font-weight:bold">&#34;kind&#34;</span>: <span style="font-style:italic">&#34;build&#34;</span>,
+                <span style="font-weight:bold">&#34;isDefault&#34;</span>: <span style="font-weight:bold">true</span>
+            },
+            <span style="font-weight:bold">&#34;detail&#34;</span>: <span style="font-style:italic">&#34;Task generated by Debugger.&#34;</span>
+        }
+    ],
+    <span style="font-weight:bold">&#34;version&#34;</span>: <span style="font-style:italic">&#34;2.0.0&#34;</span>
+}
+</code></pre></div><p>需要在其中<code>args</code>中添加头文件的路径依赖(使用<code>-I</code>参数，如果是添加库路径依赖需要使用<code>-L</code>参数)，这样<code>F5</code>运行时就能正常执行了。
+需要注意的是，<code>F5</code>执行的是当前鼠标选中的文件，需要选中cpp文件（比如<code>hello.cpp</code>），然后<code>F5</code>执行。</p>
 
         </div>
 
         <div class="row middle-xs">
           <div class="col-xs-12">
-            
-            <div class="post-tags">
-              <a href="/tags/java/">
-                java
-              </a>
-            </div>
-            
-            <div class="post-tags">
-              <a href="/tags/vert.x/">
-                Vert.x
-              </a>
-            </div>
             
           </div>
         </div>

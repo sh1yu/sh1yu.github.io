@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>mysql on shiyupeng2021 - code life.</title>
-    <link>https://shiyupeng2021.github.io/tags/mysql/</link>
-    <description>Recent content in mysql on shiyupeng2021 - code life.</description>
+    <title>mysql on psycode - better code, better life.</title>
+    <link>https://sh1yu.github.io/tags/mysql/</link>
+    <description>Recent content in mysql on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 23 Jan 2021 00:13:56 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 23 Jan 2021 00:13:56 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>在k8s集群中部署mysql</title>
-      <link>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</link>
+      <link>https://sh1yu.github.io/post/install-mysql-in-k8s/</link>
       <pubDate>Sat, 23 Jan 2021 00:13:56 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</guid>
-      <description>本篇文章参考了官方kubenetes部署mysql的过程，对如何在k8s环境下安装mysql进行了实践。 首先快速安装一个只有master节点</description>
+      <guid>https://sh1yu.github.io/post/install-mysql-in-k8s/</guid>
+      <description>本篇文章参考了官方kubenetes部署mysql的过程，对如何在k8s环境下安装mysql进行了实践。 首先快速安装一个只有master节点的mysql实例，先有个直观印象。 使用如下yaml:
+apiVersion: v1 kind: ConfigMap metadata: name: mysql namespace: mysql labels: app: mysql data: master.cnf: |[mysqld] log-bin --- apiVersion: v1 kind: Service metadata: name: mysql namespace: mysql labels: app: mysql spec: ports: - name: mysql port: 3306 clusterIP: None selector: app: mysql --- apiVersion: apps/v1 kind: StatefulSet metadata: name: mysql namespace: mysql spec: selector: matchLabels: app: mysql serviceName: mysql replicas: 1 template: metadata: labels: app: mysql spec: initContainers: - name: init-mysql image: mysql:5.</description>
     </item>
     
   </channel>

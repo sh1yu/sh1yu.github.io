@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>caddy on shiyupeng2021 - code life.</title>
-    <link>https://shiyupeng2021.github.io/tags/caddy/</link>
-    <description>Recent content in caddy on shiyupeng2021 - code life.</description>
+    <title>caddy on psycode - better code, better life.</title>
+    <link>https://sh1yu.github.io/tags/caddy/</link>
+    <description>Recent content in caddy on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 13 Feb 2019 11:22:54 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/tags/caddy/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 13 Feb 2019 11:22:54 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/tags/caddy/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用docker运行gogs服务</title>
-      <link>https://shiyupeng2021.github.io/post/run-gogs-with-docker/</link>
+      <link>https://sh1yu.github.io/post/run-gogs-with-docker/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/run-gogs-with-docker/</guid>
-      <description>学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。 目标 使用</description>
+      <guid>https://sh1yu.github.io/post/run-gogs-with-docker/</guid>
+      <description>学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。
+ 目标   使用 docker 和 docker-compose 运行并管理 gogs 服务
+  使用 caddy 为 gogs 搭建反向代理
+  简单配置 caddy 与 gogs 容器的 docker 网络
+  工具与组件  docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令 gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx  创建caddy配置 创建caddy文件夹，并在文件夹下创建文件Caddyfile
+localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Real-IP {remote} header_upstream X-Forwarded-For {remote} header_upstream X-Forwarded-Proto {scheme} } log /var/log/caddy.</description>
     </item>
     
   </channel>

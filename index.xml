@@ -1,82 +1,203 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>shiyupeng2021 - code life.</title>
-    <link>https://shiyupeng2021.github.io/</link>
-    <description>Recent content on shiyupeng2021 - code life.</description>
+    <title>psycode - better code, better life.</title>
+    <link>https://sh1yu.github.io/</link>
+    <description>Recent content on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 23 Jan 2021 00:13:56 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 05 Apr 2021 00:11:49 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一次springboot&#43;dubbo的项目实战</title>
+      <link>https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Mon, 05 Apr 2021 00:11:49 +0800</pubDate>
+      
+      <guid>https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/</guid>
+      <description>最近在从零开始实现一个服务端在线接口项目，项目选型为springboot + dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。
+1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：
+@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。
+配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。
+关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
+String loadingValue = &amp;#34;some string loaded from properties with spring boot&amp;#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：
+@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用@ConfigurationProperties注解将配置属性绑定到bean上：</description>
+    </item>
+    
+    <item>
+      <title>Vscode配置cpp外部头文件依赖</title>
+      <link>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</link>
+      <pubDate>Sat, 06 Feb 2021 12:33:49 +0800</pubDate>
+      
+      <guid>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</guid>
+      <description>最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：
+vscode的settings.json中可以通过配置项C_Cpp.default.includePath配置默认的头文件路径，配置如下:
+{ &amp;#34;files.associations&amp;#34;: { &amp;#34;iostream&amp;#34;: &amp;#34;cpp&amp;#34; }, &amp;#34;C_Cpp.default.includePath&amp;#34;: [&amp;#34;/home/psy&amp;#34;] } 在配置文件c_cpp_properties.json配置文件中可以指定includePath，示例如下：
+{ &amp;#34;configurations&amp;#34;: [ { &amp;#34;name&amp;#34;: &amp;#34;Linux&amp;#34;, &amp;#34;includePath&amp;#34;: [ &amp;#34;${default}&amp;#34; ], &amp;#34;defines&amp;#34;: [], &amp;#34;compilerPath&amp;#34;: &amp;#34;/usr/bin/clang++&amp;#34;, &amp;#34;cStandard&amp;#34;: &amp;#34;c11&amp;#34;, &amp;#34;cppStandard&amp;#34;: &amp;#34;c++14&amp;#34;, &amp;#34;intelliSenseMode&amp;#34;: &amp;#34;linux-clang-x64&amp;#34; } ], &amp;#34;version&amp;#34;: 4 } 其中includePath配置的为${default}，表示加载前面settings.json中的C_Cpp.default.includePath配置。也可以直接在此配置其他路径。 经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在/home/psy下存在a.hpp：
+#include &amp;lt;iostream&amp;gt;void printHello() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello cpp!&amp;#34; &amp;lt;&amp;lt; std::endl; } 在项目中的hello.cpp:
+#include &amp;lt;iostream&amp;gt;#include &amp;lt;a.hpp&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello C++!&amp;#34; &amp;lt;&amp;lt; std::endl; printHello(); return 0; } 这个&amp;lt;a.hpp&amp;gt;和printHello就能被vscode正常找到和跳转。
+但是如果此时直接F5运行，依旧会出现找不到a.hpp的情况出现。因为运行时执行的是launch.json配置：
+{ // Use IntelliSense to learn about possible attributes.</description>
+    </item>
+    
     <item>
       <title>在k8s集群中部署mysql</title>
-      <link>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</link>
+      <link>https://sh1yu.github.io/post/install-mysql-in-k8s/</link>
       <pubDate>Sat, 23 Jan 2021 00:13:56 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/install-mysql-in-k8s/</guid>
-      <description>本篇文章参考了官方kubenetes部署mysql的过程，对如何在k8s环境下安装mysql进行了实践。 首先快速安装一个只有master节点</description>
+      <guid>https://sh1yu.github.io/post/install-mysql-in-k8s/</guid>
+      <description>本篇文章参考了官方kubenetes部署mysql的过程，对如何在k8s环境下安装mysql进行了实践。 首先快速安装一个只有master节点的mysql实例，先有个直观印象。 使用如下yaml:
+apiVersion: v1 kind: ConfigMap metadata: name: mysql namespace: mysql labels: app: mysql data: master.cnf: |[mysqld] log-bin --- apiVersion: v1 kind: Service metadata: name: mysql namespace: mysql labels: app: mysql spec: ports: - name: mysql port: 3306 clusterIP: None selector: app: mysql --- apiVersion: apps/v1 kind: StatefulSet metadata: name: mysql namespace: mysql spec: selector: matchLabels: app: mysql serviceName: mysql replicas: 1 template: metadata: labels: app: mysql spec: initContainers: - name: init-mysql image: mysql:5.</description>
     </item>
     
     <item>
       <title>SIGN模型找到天赋</title>
-      <link>https://shiyupeng2021.github.io/post/sign-model/</link>
+      <link>https://sh1yu.github.io/post/sign-model/</link>
       <pubDate>Sat, 22 Aug 2020 12:54:56 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/sign-model/</guid>
-      <description>虽然成功的道路有千万条，但成功人士基本上都遵循了一个原则，就是将自身天赋发挥到了极致。 天赋不是少数人的专属，每个人都有自己的天赋。 天赋是一种</description>
+      <guid>https://sh1yu.github.io/post/sign-model/</guid>
+      <description> 虽然成功的道路有千万条，但成功人士基本上都遵循了一个原则，就是将自身天赋发挥到了极致。
+天赋不是少数人的专属，每个人都有自己的天赋。
+ 天赋是一种隐藏的能力，让一个人可以在同样起点的情况下，更加快速地成长。
+天赋是一种隐藏能力，是否能够转化为显性的能力，是需要后天刻意练习的。
+天赋有四个表现，简称SIGN。
+自我效能（Self-efficacy） 对于某些任务，你的信心很强，觉得自己肯定能做好。
+当你对某类事非常有信息，觉得自己可以做成功，这就是天赋的其中一个表现。
+本能（Instinct） 当你还没有开始做这件事的时候，你就迫不及待地想要尝试了。
+那些让你迫不及待、跃跃欲试的事情，可能意味着你天赋的所在。
+成长（Growth） 如果在某个领域，你一接触就明显比别人进步得要快一些，这也是天赋给你的一个信号。
+满足（Needs） 做完这件事之后，就算感到疲劳和困倦，你依然会有满足感。
+如何发现天赋 问自己 你认为，自己能够教别人什么？或者别人常常向你请教什么？
+你跟他人聊天的时候，倾向聊什么？以及，聊什么话题你会更有自信？
+你在做什么事情的时候，不会感到焦虑和担心？
+你在做什么事情的时候，很少拖延？
+长时间休假后，你最想念工作的哪个方面、哪个内容？
+你宁愿放弃休息时间也要做的事情是什么？
+有什么事情让你沉迷其中忘记吃饭/睡觉？
+你在做什么事情的时候会暂时忘记刷社交网络？
+你在做什么事情的时候不容易感到疲倦和厌烦？
+过去的工作和生活中，有什么让你获得巨大的成就感和满足感？
+问他人 你觉得，我身上有什么不同于别人的特质？
+你最欣赏或者佩服我的方面是什么？
+在你看来，我做什么事情的时候，看起来最兴奋？
+你曾经看到我做过哪些事情，让你印象深刻？
+在一下这些方面，你觉得我哪些更加擅长？
+思维方式：调理清晰、逻辑严密、脑洞很大、专注专业；
+沟通协调：化解冲突、争取资源、知人善任；
+计划执行：执行力强，追求完美、目标导向。
+ 努力固然重要，但么有方法的、无效的努力反而会让你丧失信心，是有害的。
+ </description>
     </item>
     
     <item>
       <title>将知识内化成能力</title>
-      <link>https://shiyupeng2021.github.io/post/knowledge-to-ability/</link>
+      <link>https://sh1yu.github.io/post/knowledge-to-ability/</link>
       <pubDate>Sat, 22 Aug 2020 12:53:00 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/knowledge-to-ability/</guid>
-      <description>惰性知识 只待在脑海里，在一些明明可以发挥作用的场合，却不能及时被调取出来，白白占用了大脑内存。 掌握20%的核心 一个领域20%的核心内容，能够</description>
+      <guid>https://sh1yu.github.io/post/knowledge-to-ability/</guid>
+      <description>惰性知识 只待在脑海里，在一些明明可以发挥作用的场合，却不能及时被调取出来，白白占用了大脑内存。
+掌握20%的核心 一个领域20%的核心内容，能够解决这个领域80%的问题。
+大部分人的思维混乱，都是因为缺乏结构化思维。结构化思维只需要掌握三个特征：
+主题鲜明、归类分组、逻辑递进。
+每个领域哪些是20%的核心，其实是需要这个领域的专家来指点的。大多数的成功人士，都很擅长找“师傅”。
+知识和问题相互相靠 知识向问题靠，问题向知识靠。
+知识向问题靠，就是说，每看到一个知识的时候，就去思考这个知识可以用来解决什么问题。
+问题向知识靠，当你遇到问题的时候，抛弃第一反应，不要先按照自己的思维定式去解决，而是要去想有什么方法论模型可以用。
+系统化训练 一方面，不同的能力并不是相互割裂的，他们之间是有关联的。
+另一方面，能力需要刻意练习，而刻意练习需要时间。
+很多时候我们的习惯是高估几天的变化，而低估几个月的变化，所以很难坚持系统化训练。</description>
     </item>
     
     <item>
       <title>冰山模型</title>
-      <link>https://shiyupeng2021.github.io/post/iceberg-model/</link>
+      <link>https://sh1yu.github.io/post/iceberg-model/</link>
       <pubDate>Sat, 22 Aug 2020 12:50:32 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/iceberg-model/</guid>
-      <description>冰山模型定义 如何选择匹配度高的岗位，衡量自己的市场价值。 冰山模型由美国著名心理学家麦克利兰提出，全面描述了一个人的个体素质要素。也就是评判跟</description>
+      <guid>https://sh1yu.github.io/post/iceberg-model/</guid>
+      <description>冰山模型定义  如何选择匹配度高的岗位，衡量自己的市场价值。
+ 冰山模型由美国著名心理学家麦克利兰提出，全面描述了一个人的个体素质要素。也就是评判跟一个岗位是不是匹配、匹配程度如何、市场薪资值多少，都可以用这个模型解释。
+一、知识和技能 一个人的知识和技能是可以后天习得的，也是非常显性，容易看出来的。
+如果你的工作中由很多陌生的内容，觉得每天都信息量很大来不及接收，感觉到慌乱和焦虑，很可能是知识技能跟岗位不匹配。这不是什么大问题，知识和技能比较容易补齐，多学习多实践，一段时间后就能提升。
+二、能力 冰山模型中间的要素是能力，或者叫通用能力，比如学习和思考能力，人际交往能力等。
+相对知识和技能来说，能力高低不是一眼就能看出来的。
+知识和技能属于特定领域，而能力则更多是通用领域的。如果能力不匹配，工作效率、沟通效率较低，面对复杂的问题无从下手，缺乏成就感，力不从心。
+三、价值观、性格、动机 价值观、性格特质、动机这些要素再成年之后很难被改变。
+价值观是判断事物的标准。如果再工作中经常陷入矛盾和纠结，对所做的事情很难发自内心地认同，很可能就是价值观上的不匹配。
+性格特质是个人的行为偏好。如果在工作中发现，自己好像工作量没有很大，但却觉得心累，很有可能是性格不匹配。
+动机的分类方法有很多，最常见的是麦克利兰的理论，分为成就动机、权力动机和亲和动机。成就动机的人，喜欢挑战；权力动机的人，希望影响他人；而亲和动机的人，希望维持更好的团队关系。如果感觉自己没有动力，做事提不起劲来，那很可能就是现在的工作跟你的动机不匹配。
+匹配比优秀更重要。根据冰山模型，如果感觉一份工作不喜欢，有可能是缺乏知识技能导致的慌乱和焦虑、缺乏能力导致的挫败和低效、价值观不匹配导致的矛盾和纠结、动机不匹配导致的没热情，或者性格特质不匹配导致的心累。
+四、如何选择岗位  确定要分析的岗位； 搜索岗位招聘要求； 根据冰山模型综合分析要求，与自己进行对比。   查理芒格在《穷查理宝典》里面提到，掌握一定数量的思维模型，能解决世上90%的问题。
+ 五、决定市场价值的四大要素 薪资，也就是市场价值，无非和内部和外部两类因素有关。外部就是机遇、运气、选择等等；内部其实就是冰山模型的要素上的表现，知识技能越多、能力越强、价值观/性格特质/动机跟所作的事情越匹配，市场价值越高。
+整个冰山模型越往下的要素，越难培养，越难发现，相对也越能成为竞争优势。另外，冰山下面的要素会影响到上面的要素。
+投入知识 单纯知识很难赚钱：可替代性高，知识和识别的差异性。思维是一种能力，用知识解释以及解决问题的能力。
+单纯的知识储备，如果不能结合思维能力去解决一些具体问题，是很难提升市场价值的。
+投入技能 技能门槛高，不代表天花板也高。技能的定价和天花板取决于该技能的稀缺性。
+投入能力 能力提升是可以跨行业跨职业的，一旦积累到一定高度，哪怕行业不行，换个地方一样可以值钱。
+投入自我发现 性格特质、动机、价值观这些要素虽然难以改变和发现，但是如果能对自己有一个清晰的认识，然后找到跟这些要素相匹配的工作，其实也能大大提升我们的市场价值。
+ 想要提升自己的市场价值，把大多数时间花在提升能力和认识自己冰山底层要素上面，是最好的选择。
+ 大多数人的选择 大多数人每天打开各种学习产品、不断学很多碎片化知识，练习一些并不稀缺的技能、考各种几个月就能拿下来的证。为什么大多数人会做出这种选择呢？
+ 知识和技能的学习最容易。人们总是倾向于做容易的事情，而不是正确的事情。 受限于目前岗位的定位。选的不是一份工作，而是一个天花板。 没有看清楚工作的本质。任何工作都是在解决问题。   能力的提升效果依赖于天赋。
+ </description>
     </item>
     
     <item>
       <title>kubernetes之StatefulSet</title>
-      <link>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</link>
+      <link>https://sh1yu.github.io/post/kubernetes-statefulset/</link>
       <pubDate>Sat, 22 Aug 2020 12:47:25 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</guid>
-      <description>概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef</description>
+      <guid>https://sh1yu.github.io/post/kubernetes-statefulset/</guid>
+      <description>概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而StatefulSet是什么？顾名思义，有状态的集合，管理所有有状态的服务，比如MySQL、MongoDB集群等。
+StatefulSet本质上是Deployment的一种变体，在v1.9版本中已成为GA版本，它为了解决有状态服务的问题，它所管理的Pod拥有固定的Pod名称，启停顺序，在StatefulSet中，Pod名字称为网络标识(hostname)，还必须要用到共享存储。
+在Deployment中，与之对应的服务是service，而在StatefulSet中与之对应的headless service，headless service，即无头服务，与service的区别就是它没有Cluster IP，解析它的名称时将返回该Headless Service对应的全部Pod的Endpoint列表。
+除此之外，StatefulSet在Headless Service的基础上又为StatefulSet控制的每个Pod副本创建了一个DNS域名，这个域名的格式为：
+$(podname).(headless server name) FQDN： $(podname).(headless server name).namespace.svc.cluster.local StatefulSet示例 接下来看一些示例，演示下上面所说的特性，以加深理解。
+apiVersion: v1 kind: Service metadata: name: nginx labels: app: nginx spec: ports: - port: 80 name: web clusterIP: None selector: app: nginx --- apiVersion: apps/v1 kind: StatefulSet metadata: name: web spec: selector: matchLabels: app: nginx # has to match .spec.template.metadata.labels serviceName: &amp;#34;nginx&amp;#34; #声明它属于哪个Headless Service. replicas: 3 # by default is 1 template: metadata: labels: app: nginx # has to match .</description>
     </item>
     
     <item>
       <title>Vert.x线程与Future</title>
-      <link>https://shiyupeng2021.github.io/post/vert.x-and-future/</link>
+      <link>https://sh1yu.github.io/post/vert.x-and-future/</link>
       <pubDate>Wed, 13 Feb 2019 11:29:12 +0000</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/vert.x-and-future/</guid>
-      <description>Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。 Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环</description>
+      <guid>https://sh1yu.github.io/post/vert.x-and-future/</guid>
+      <description>Vert.x有两个重要的线程池: Event loop线程池和Worker线程池。
+ Event loop线程池 在一个标准的反应器实现中，有一个独立的 Event Loop会循环执行，处理所有到达的事件并传递给处理器处理。Vert.x的工作方式有所不同，每个Vertx实例维护多个Event Loop 线程。Event Loop数量默认为核数的2倍，也可以通过如下方式进行设置：
+Vertx vertx = Vertx.vertx(new VertxOptions().setEventLoopPoolSize(5)); 这种模式称为Multi-Reactor模式（多反应器模式）。但是需要注意的是，即使一个Vertx实例维护了多个Event Loop，任何一个特定的处理器永远不会被并发执行。大部分情况下（除了Worker Verticle以外）它们总是在同一个Event Loop 线程中被调用。
+Handler是依次分发给每一个Event Loop的，且特定的Handler永远不会被并发执行。如果某一个Handler耗时过多，则Handler所在的Event Loop线程会被该Handler所拖慢。
+Worker线程池 不要在处理器中阻塞Event loop线程。如果需要执行阻塞代码，需要在worker线程池中之行。Vert.x的Worker Pool数量默认为20，可以通过如下方式设置：
+Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(5)); 有两种方式可以使代码使用woker线程执行：
+ **通过调用executeBlocking方法来指定阻塞式代码的执行以及阻塞式代码执行后处理结果的异步回调。**默认情况下，如果executeBlocking在同一个上下文环境中（如：同一个Verticle实例）被调用了多次，那么这些不同的executeBlocking代码块会顺序执行（一个接一个）。若不需要关心您调用executeBlocking的顺序，可以将ordered参数的值设为false。这样任何executeBlocking都会在Worker Pool中并行执行。 使用Worker Verticle，一个Worker Verticle始终会使用Worker Pool中的某个线程来执行。  vertx.executeBlocking(future -&amp;gt; { // 调用一些需要耗费显著执行时间返回结果的阻塞式API  String result = someAPI.blockingMethod(&amp;#34;hello&amp;#34;); future.complete(result); }, res -&amp;gt; { System.out.println(&amp;#34;The result is: &amp;#34; + res.result()); }); 可以为不同的用途创建不同的池:
+WorkerExecutor executor = vertx.</description>
     </item>
     
     <item>
       <title>archlinux使用操作拾遗</title>
-      <link>https://shiyupeng2021.github.io/post/archlinux-operation/</link>
+      <link>https://sh1yu.github.io/post/archlinux-operation/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/archlinux-operation/</guid>
-      <description>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc</description>
+      <guid>https://sh1yu.github.io/post/archlinux-operation/</guid>
+      <description>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。
+archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。
+检测网卡的PCI-ID
+lspci -vnn | grep 14e4: 获取驱动
+   驱动 描述     brcmsmac/brcmfmac 开源内核驱动   b43 逆向工程内核驱动   broadcom-wl 专有的 Broadcom STA 驱动    b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。
+lsmod |grep b43 发现b43驱动已经安装
+systemctl status NetworkManager 发现NetworkManager已经安装（pacman安装包为networkmanager）
+nmcli dev 发现无线网尚未连接。使用如下命令成功连接wifi：
+nmcli dev wifi connect &amp;lt;SSID&amp;gt; password &amp;lt;password&amp;gt; archlinux 软件全部升级签名问题 使用sudo pacman -Syu遇到了 invalid or corrupted package ... unknown trust的问题，应该是签名验证不通过，使用如下方法解决了：
+sudo pacman-key --init sudo vim /etc/pacman.</description>
     </item>
     
     <item>
       <title>使用docker运行gogs服务</title>
-      <link>https://shiyupeng2021.github.io/post/run-gogs-with-docker/</link>
+      <link>https://sh1yu.github.io/post/run-gogs-with-docker/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/run-gogs-with-docker/</guid>
-      <description>学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。 目标 使用</description>
+      <guid>https://sh1yu.github.io/post/run-gogs-with-docker/</guid>
+      <description>学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。
+ 目标   使用 docker 和 docker-compose 运行并管理 gogs 服务
+  使用 caddy 为 gogs 搭建反向代理
+  简单配置 caddy 与 gogs 容器的 docker 网络
+  工具与组件  docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令 gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx  创建caddy配置 创建caddy文件夹，并在文件夹下创建文件Caddyfile
+localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Real-IP {remote} header_upstream X-Forwarded-For {remote} header_upstream X-Forwarded-Proto {scheme} } log /var/log/caddy.</description>
     </item>
     
   </channel>
