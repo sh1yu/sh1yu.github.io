@@ -1,126 +1,126 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on shiyupeng2021 - code life.</title>
-    <link>https://shiyupeng2021.github.io/tags/</link>
-    <description>Recent content in Tags on shiyupeng2021 - code life.</description>
+    <title>Tags on sh1yu - better code, better life.</title>
+    <link>https://sh1yu.github.io/tags/</link>
+    <description>Recent content in Tags on sh1yu - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 22 Aug 2020 12:54:56 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 22 Aug 2020 12:54:56 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>SIGN</title>
-      <link>https://shiyupeng2021.github.io/tags/sign/</link>
+      <link>https://sh1yu.github.io/tags/sign/</link>
       <pubDate>Sat, 22 Aug 2020 12:54:56 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/sign/</guid>
+      <guid>https://sh1yu.github.io/tags/sign/</guid>
       <description></description>
     </item>
     
     <item>
       <title>ability</title>
-      <link>https://shiyupeng2021.github.io/tags/ability/</link>
+      <link>https://sh1yu.github.io/tags/ability/</link>
       <pubDate>Sat, 22 Aug 2020 12:53:00 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/ability/</guid>
+      <guid>https://sh1yu.github.io/tags/ability/</guid>
       <description></description>
     </item>
     
     <item>
       <title>knowledge</title>
-      <link>https://shiyupeng2021.github.io/tags/knowledge/</link>
+      <link>https://sh1yu.github.io/tags/knowledge/</link>
       <pubDate>Sat, 22 Aug 2020 12:53:00 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/knowledge/</guid>
+      <guid>https://sh1yu.github.io/tags/knowledge/</guid>
       <description></description>
     </item>
     
     <item>
       <title>iceberg</title>
-      <link>https://shiyupeng2021.github.io/tags/iceberg/</link>
+      <link>https://sh1yu.github.io/tags/iceberg/</link>
       <pubDate>Sat, 22 Aug 2020 12:50:32 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/iceberg/</guid>
+      <guid>https://sh1yu.github.io/tags/iceberg/</guid>
       <description></description>
     </item>
     
     <item>
       <title>kubernetes</title>
-      <link>https://shiyupeng2021.github.io/tags/kubernetes/</link>
+      <link>https://sh1yu.github.io/tags/kubernetes/</link>
       <pubDate>Sat, 22 Aug 2020 12:47:25 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/kubernetes/</guid>
+      <guid>https://sh1yu.github.io/tags/kubernetes/</guid>
       <description></description>
     </item>
     
     <item>
       <title>java</title>
-      <link>https://shiyupeng2021.github.io/tags/java/</link>
+      <link>https://sh1yu.github.io/tags/java/</link>
       <pubDate>Wed, 13 Feb 2019 11:29:12 +0000</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/java/</guid>
+      <guid>https://sh1yu.github.io/tags/java/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Vert.x</title>
-      <link>https://shiyupeng2021.github.io/tags/vert.x/</link>
+      <link>https://sh1yu.github.io/tags/vert.x/</link>
       <pubDate>Wed, 13 Feb 2019 11:29:12 +0000</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/vert.x/</guid>
+      <guid>https://sh1yu.github.io/tags/vert.x/</guid>
       <description></description>
     </item>
     
     <item>
       <title>archlinux</title>
-      <link>https://shiyupeng2021.github.io/tags/archlinux/</link>
+      <link>https://sh1yu.github.io/tags/archlinux/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/archlinux/</guid>
+      <guid>https://sh1yu.github.io/tags/archlinux/</guid>
       <description></description>
     </item>
     
     <item>
       <title>caddy</title>
-      <link>https://shiyupeng2021.github.io/tags/caddy/</link>
+      <link>https://sh1yu.github.io/tags/caddy/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/caddy/</guid>
+      <guid>https://sh1yu.github.io/tags/caddy/</guid>
       <description></description>
     </item>
     
     <item>
       <title>docker</title>
-      <link>https://shiyupeng2021.github.io/tags/docker/</link>
+      <link>https://sh1yu.github.io/tags/docker/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/docker/</guid>
+      <guid>https://sh1yu.github.io/tags/docker/</guid>
       <description></description>
     </item>
     
     <item>
       <title>go</title>
-      <link>https://shiyupeng2021.github.io/tags/go/</link>
+      <link>https://sh1yu.github.io/tags/go/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/go/</guid>
+      <guid>https://sh1yu.github.io/tags/go/</guid>
       <description></description>
     </item>
     
     <item>
       <title>gogs</title>
-      <link>https://shiyupeng2021.github.io/tags/gogs/</link>
+      <link>https://sh1yu.github.io/tags/gogs/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/gogs/</guid>
+      <guid>https://sh1yu.github.io/tags/gogs/</guid>
       <description></description>
     </item>
     
     <item>
       <title>linux</title>
-      <link>https://shiyupeng2021.github.io/tags/linux/</link>
+      <link>https://sh1yu.github.io/tags/linux/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/tags/linux/</guid>
+      <guid>https://sh1yu.github.io/tags/linux/</guid>
       <description></description>
     </item>
     

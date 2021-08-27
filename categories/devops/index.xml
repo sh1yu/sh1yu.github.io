@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>devops on shiyupeng2021 - code life.</title>
-    <link>https://shiyupeng2021.github.io/categories/devops/</link>
-    <description>Recent content in devops on shiyupeng2021 - code life.</description>
+    <title>devops on sh1yu - better code, better life.</title>
+    <link>https://sh1yu.github.io/categories/devops/</link>
+    <description>Recent content in devops on sh1yu - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 22 Aug 2020 12:47:25 +0800</lastBuildDate><atom:link href="https://shiyupeng2021.github.io/categories/devops/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 22 Aug 2020 12:47:25 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/categories/devops/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>kubernetes之StatefulSet</title>
-      <link>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</link>
+      <link>https://sh1yu.github.io/post/kubernetes-statefulset/</link>
       <pubDate>Sat, 22 Aug 2020 12:47:25 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/kubernetes-statefulset/</guid>
+      <guid>https://sh1yu.github.io/post/kubernetes-statefulset/</guid>
       <description>概述 RC、Deployment、DaemonSet都是面向无状态的服务，它们所管理的Pod的IP、名字，启停顺序等都是随机的，而Statef</description>
     </item>
     
     <item>
       <title>archlinux使用操作拾遗</title>
-      <link>https://shiyupeng2021.github.io/post/archlinux-operation/</link>
+      <link>https://sh1yu.github.io/post/archlinux-operation/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/archlinux-operation/</guid>
+      <guid>https://sh1yu.github.io/post/archlinux-operation/</guid>
       <description>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的arc</description>
     </item>
     
     <item>
       <title>使用docker运行gogs服务</title>
-      <link>https://shiyupeng2021.github.io/post/run-gogs-with-docker/</link>
+      <link>https://sh1yu.github.io/post/run-gogs-with-docker/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
       
-      <guid>https://shiyupeng2021.github.io/post/run-gogs-with-docker/</guid>
+      <guid>https://sh1yu.github.io/post/run-gogs-with-docker/</guid>
       <description>学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。 目标 使用</description>
     </item>
     
