@@ -21,7 +21,7 @@
       "articleSection" : "post",
       "name" : "一次springboot\u002bdubbo的项目实战",
       "headline" : "一次springboot\u002bdubbo的项目实战",
-      "description" : "最近在从零开始实现一个服务端在线接口项目，项目选型为springboot \u002b dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。\n1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：\n@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -\u0026gt; log.info(\u0026#34;==============================================\u0026#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。 配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。 关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：\nString loadingValue = \u0026#34;some string loaded from properties with spring boot\u0026#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：\n@Service public class ServiceImpl implements IService { @Value(\u0026#34;${user.extra.config:default_val}\u0026#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用 @ConfigurationProperties注解将配置属性绑定到bean上：",
+      "description" : "最近在从零开始实现一个服务端在线接口项目，项目选型为springboot \u002b dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。\n1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：\n@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -\u0026gt; log.info(\u0026#34;==============================================\u0026#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。\n配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。\n关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：\nString loadingValue = \u0026#34;some string loaded from properties with spring boot\u0026#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：\n@Service public class ServiceImpl implements IService { @Value(\u0026#34;${user.extra.config:default_val}\u0026#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用@ConfigurationProperties注解将配置属性绑定到bean上：",
       "inLanguage" : "en-US",
       "author" : "psycode",
       "creator" : "psycode",
@@ -40,14 +40,18 @@
   <meta property="og:type" content="article" />
   <meta property="og:description" content="最近在从零开始实现一个服务端在线接口项目，项目选型为springboot &#43; dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。
 1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：
-@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。 配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。 关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
+@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。
+配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。
+关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
 String loadingValue = &amp;#34;some string loaded from properties with spring boot&amp;#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：
-@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用 @ConfigurationProperties注解将配置属性绑定到bean上：" />
+@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用@ConfigurationProperties注解将配置属性绑定到bean上：" />
   <meta name="description" content="最近在从零开始实现一个服务端在线接口项目，项目选型为springboot &#43; dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。
 1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：
-@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。 配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。 关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
+@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。
+配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。
+关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
 String loadingValue = &amp;#34;some string loaded from properties with spring boot&amp;#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：
-@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用 @ConfigurationProperties注解将配置属性绑定到bean上：" />
+@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用@ConfigurationProperties注解将配置属性绑定到bean上：" />
   <meta property="og:locale" content="zh-cn" />
 
   
@@ -142,9 +146,9 @@ String loadingValue = &amp;#34;some string loaded from properties with spring bo
     }
 }
 </code></pre></div><h2 id="11-配置文件加载">1.1 配置文件加载</h2>
-<p>spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。
-配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。
-关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：</p>
+<p>spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。</p>
+<p>配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。</p>
+<p>关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">String loadingValue = <span style="font-style:italic">&#34;some string loaded from properties with spring boot&#34;</span>;
 String correctValue = <span style="font-weight:bold">new</span> String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 </code></pre></div><p>如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：</p>
@@ -154,8 +158,7 @@ String correctValue = <span style="font-weight:bold">new</span> String(loadingVa
     @Value(<span style="font-style:italic">&#34;${user.extra.config:default_val}&#34;</span>)
     <span style="font-weight:bold">private</span> String exteaConfig;
 }
-</code></pre></div><p>如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用
-@ConfigurationProperties注解将配置属性绑定到bean上：</p>
+</code></pre></div><p>如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用@ConfigurationProperties注解将配置属性绑定到bean上：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Data
 @Component
 @ConfigurationProperties(prefix = <span style="font-style:italic">&#34;user.extra&#34;</span>)
@@ -165,7 +168,7 @@ String correctValue = <span style="font-weight:bold">new</span> String(loadingVa
     <span style="font-weight:bold">private</span> String extraValue;
 }
 </code></pre></div><p>关于@Value和@ConfigurationProperties区别，网上有人做了测试和总结如下：</p>
-<p><img src="/psy-hugo-blog/pic/%E4%B8%80%E6%AC%A1springboot+dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/1.jpg" alt=""></p>
+<p><img src="/pic/%E4%B8%80%E6%AC%A1springboot+dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/1.jpg" alt=""></p>
 <p>如果是自己加载配置文件，可以使用springboot自带的ResourceUtils工具，支持从classpath下读取配置文件：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">File file = ResourceUtils.getFile(filepath);
 String configuration = <span style="font-weight:bold">new</span> String(FileCopyUtils.copyToByteArray(keyFile));
@@ -195,9 +198,9 @@ String configuration = FileCopyUtils.copyToString(<span style="font-weight:bold"
     }
 }
 </code></pre></div><ul>
-<li>aspectJ切面拦截。这种方式可以指定对某些方法（比如Controller方法）进行拦截。
-本项目中采用aspectJ进行统一的hmac-auth鉴权逻辑的开发。使用aspectJ的一大问题在于无法获取到原始请求的header等信息，而这些信息鉴权中是必须的。好在可以通过spring web提供的RequestContextHolder来解决这个问题。RequestContextHolder本质上是 一个ThreadLocal对象，它存储了此次处理的原始请求request和session信息：</li>
+<li>aspectJ切面拦截。这种方式可以指定对某些方法（比如Controller方法）进行拦截。</li>
 </ul>
+<p>本项目中采用aspectJ进行统一的hmac-auth鉴权逻辑的开发。使用aspectJ的一大问题在于无法获取到原始请求的header等信息，而这些信息鉴权中是必须的。好在可以通过spring web提供的RequestContextHolder来解决这个问题。RequestContextHolder本质上是 一个ThreadLocal对象，它存储了此次处理的原始请求request和session信息：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Aspect
 @Component
 @Slf4j
@@ -231,8 +234,8 @@ String configuration = FileCopyUtils.copyToString(<span style="font-weight:bold"
 </code></pre></div><h2 id="13-第三方调用">1.3 第三方调用</h2>
 <p>对于dubbo service来说，通过网络调用第三方的接口（比如统一账号系统）再正常不过。项目中在调用第三方系统时在中间加了一层接口，调用层和实现层通过接口分割开。这样一来，满足了依赖倒置原则，添加不同的第三方系统实现就很方便了。当然，更多的策略比如说第三方系统调用负载均衡、降级熔断等都可以在这一层实现。目前项目没有这些需求，暂时只是做了一层接口隔离。</p>
 <h2 id="14-测试">1.4 测试</h2>
-<p>此前一直还在纠结”测试“这个方面到底算是功能还是非功能。最后我认为还是作为功能的一部分比较好。虽然测试代码不直接运行于生产环境中，但是它对于生产环境的代码的质量影响还是非常重要的，写测试也应该作为正常编码工作的一部分重要内容，不容忽视。
-项目中我采用了spring-boot-test + Mockito的测试工具。Mockito对于bean的mock功能支持的也比较好：</p>
+<p>此前一直还在纠结”测试“这个方面到底算是功能还是非功能。最后我认为还是作为功能的一部分比较好。虽然测试代码不直接运行于生产环境中，但是它对于生产环境的代码的质量影响还是非常重要的，写测试也应该作为正常编码工作的一部分重要内容，不容忽视。</p>
+<p>项目中我采用了spring-boot-test + Mockito的测试工具。Mockito对于bean的mock功能支持的也比较好：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@SpringBootTest
 <span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">SignatureServiceTest</span> {
 
@@ -262,8 +265,8 @@ String configuration = FileCopyUtils.copyToString(<span style="font-weight:bold"
         Assertions.assertFalse(r3.isPass());
     }
 }
-</code></pre></div><p>在测试代码中，使用反射方式调用那些私有的方法；使用@MockBean注解处理那些需要mock的bean；另外可以使用Answers.RETURNS_DEEP_STUBS来处理那些需要mock链式调用的情形。 
-由于是dubbo项目，在运行测试的过程中很尴尬的一点是启动spring环境时dubbo也随之启动了，哪怕真正的调用并没有去调用dubbo服务。没有找到相关关闭dubbo服务提供者和消费者的方法，只能在测试环境中禁止使用远程的配置中心和禁止远程调用。需要在test下的resources目录下的application.properties中进行如下配置：</p>
+</code></pre></div><p>在测试代码中，使用反射方式调用那些私有的方法；使用@MockBean注解处理那些需要mock的bean；另外可以使用Answers.RETURNS_DEEP_STUBS来处理那些需要mock链式调用的情形。</p>
+<p>由于是dubbo项目，在运行测试的过程中很尴尬的一点是启动spring环境时dubbo也随之启动了，哪怕真正的调用并没有去调用dubbo服务。没有找到相关关闭dubbo服务提供者和消费者的方法，只能在测试环境中禁止使用远程的配置中心和禁止远程调用。需要在test下的resources目录下的application.properties中进行如下配置：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">dubbo.protocol.name=dubbo
 dubbo.protocol.port=12345
 dubbo.registry.address=N/A
@@ -480,8 +483,8 @@ dubbo.consumer.scope=local
 
     <span style="font-weight:bold">return</span> result;
 }
-</code></pre></div><p>其中getLocalAddress0会调用findNetworkInterface找到”合适的“网卡，然后遍历、验证其中可用的ip地址并返回。 findNetworkInterface先查找用户是否通过环境变量配置了想要使用的网卡，如果没有配置则验证返回第一个”可达“网卡。
-在dubbo服务中的日志拦截类似，不同的是我这边在实现过程中将其放到了common项目中，该项目被所有provider引用。这样我就无法针对某个特殊包特殊类特殊方法进行拦截了，只能提供相关注解，由provider在需要记录日志的方法上使用注解进行注明：</p>
+</code></pre></div><p>其中getLocalAddress0会调用findNetworkInterface找到”合适的“网卡，然后遍历、验证其中可用的ip地址并返回。 findNetworkInterface先查找用户是否通过环境变量配置了想要使用的网卡，如果没有配置则验证返回第一个”可达“网卡。</p>
+<p>在dubbo服务中的日志拦截类似，不同的是我这边在实现过程中将其放到了common项目中，该项目被所有provider引用。这样我就无法针对某个特殊包特殊类特殊方法进行拦截了，只能提供相关注解，由provider在需要记录日志的方法上使用注解进行注明：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 <span style="font-weight:bold">public</span> @interface Log {
@@ -514,9 +517,9 @@ dubbo.consumer.scope=local
 <ul>
 <li>一是手动在所有provider项目中配置@ComponentScan(&ldquo;org.xxx.aspect&rdquo;)，这样需要手动写路径，没有采用；</li>
 <li>二是在common项目中额外提供EnableLog注解，所有provider项目启动类上配置@EnableLog，项目中采用该方法；</li>
-<li>三是写自己的starter，这个稍微有些复杂没有采用。
-写EnableLog的方式如下：</li>
+<li>三是写自己的starter，这个稍微有些复杂没有采用。</li>
 </ul>
+<p>写EnableLog的方式如下：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Import(LogConfig.class)
@@ -527,8 +530,8 @@ dubbo.consumer.scope=local
 @Component
 <span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">LogConfig</span> {
 }
-</code></pre></div><p>这样就将@ComponentScan(&ldquo;org.xxx.aspect&rdquo;)这样的注解写到了common内部，封装性较好。 
-关于日志的打印位置也值得注意。一开始我将日志配置放到application.properties中：</p>
+</code></pre></div><p>这样就将@ComponentScan(&ldquo;org.xxx.aspect&rdquo;)这样的注解写到了common内部，封装性较好。</p>
+<p>关于日志的打印位置也值得注意。一开始我将日志配置放到application.properties中：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">logging.level.root=warn
 logging.level.org.xxx.controller=debug
 logging.level.org.xxx.aspect=info
@@ -562,12 +565,12 @@ logging.pattern.console=...
 <span style="font-weight:bold">&lt;/configuration&gt;</span> 
 </code></pre></div><p>这样就将日志文件打印到了file.xxx.log中，而常规日志还是打印到控制台中。</p>
 <h2 id="23-调用链">2.3 调用链</h2>
-<p>由于一次请求会跨越多个微服务，所以有必要通过某种手段将所有调用串联起来。traceid是一个比较好的日志串联方案。对于网关来说，由于是服务入口，可以自己生成，但是dubbo服务则需要由调用者传递给提供者。我研究了一下skywalking的做法，它是对dubbo的MonitorFilter进行了拦截，将其作为入口将traceid以及其他信息附属在调用上进行传递。项目中没有采用skywalking因为其开销还是太大了，官方也建议开启采样，而业务日志最好是不采样比较好，所以我的实现还是自定义filter只传递traceid信息，做一次轻量的拦截。
-在common模块中的resources下创建文件夹META-INF.dubbo，在此文件夹下创建文件org.apache.dubbo.rpc.Filter，并写入如下内容：</p>
+<p>由于一次请求会跨越多个微服务，所以有必要通过某种手段将所有调用串联起来。traceid是一个比较好的日志串联方案。对于网关来说，由于是服务入口，可以自己生成，但是dubbo服务则需要由调用者传递给提供者。我研究了一下skywalking的做法，它是对dubbo的MonitorFilter进行了拦截，将其作为入口将traceid以及其他信息附属在调用上进行传递。项目中没有采用skywalking因为其开销还是太大了，官方也建议开启采样，而业务日志最好是不采样比较好，所以我的实现还是自定义filter只传递traceid信息，做一次轻量的拦截。</p>
+<p>在common模块中的resources下创建文件夹META-INF.dubbo，在此文件夹下创建文件org.apache.dubbo.rpc.Filter，并写入如下内容：</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">logConsumer=org.xxx.dubbo.filter.ConsumerFilter
 logProvider=org.xxx.dubbo.filter.ProviderFilter 
-</code></pre></div><p>该文件会在dubbo启动时自动扫描到，并加载其中的filter使之生效。
-接下来实现这两个filter:</p>
+</code></pre></div><p>该文件会在dubbo启动时自动扫描到，并加载其中的filter使之生效。</p>
+<p>接下来实现这两个filter:</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Activate(group = CommonConstants.CONSUMER)
 <span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">ConsumerFilter</span> <span style="font-weight:bold">implements</span> Filter {
     @Override
