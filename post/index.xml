@@ -6,7 +6,20 @@
     <description>Recent content in Posts on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 06 Feb 2021 12:33:49 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 05 Apr 2021 00:11:49 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一次springboot&#43;dubbo的项目实战</title>
+      <link>https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Mon, 05 Apr 2021 00:11:49 +0800</pubDate>
+      
+      <guid>https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/</guid>
+      <description>最近在从零开始实现一个服务端在线接口项目，项目选型为springboot + dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。
+1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：
+@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。 配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。 关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
+String loadingValue = &amp;#34;some string loaded from properties with spring boot&amp;#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：
+@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用 @ConfigurationProperties注解将配置属性绑定到bean上：</description>
+    </item>
+    
     <item>
       <title>Vscode配置cpp外部头文件依赖</title>
       <link>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</link>

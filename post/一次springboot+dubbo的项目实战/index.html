@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.87.0" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="psycode" />
+  <meta property="og:url" content="https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" />
+  <link rel="canonical" href="https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="psycode - better code, better life.">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/sh1yu.github.io"
+      },
+      "articleSection" : "post",
+      "name" : "一次springboot\u002bdubbo的项目实战",
+      "headline" : "一次springboot\u002bdubbo的项目实战",
+      "description" : "最近在从零开始实现一个服务端在线接口项目，项目选型为springboot \u002b dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。\n1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：\n@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -\u0026gt; log.info(\u0026#34;==============================================\u0026#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。 配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。 关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：\nString loadingValue = \u0026#34;some string loaded from properties with spring boot\u0026#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：\n@Service public class ServiceImpl implements IService { @Value(\u0026#34;${user.extra.config:default_val}\u0026#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用 @ConfigurationProperties注解将配置属性绑定到bean上：",
+      "inLanguage" : "en-US",
+      "author" : "psycode",
+      "creator" : "psycode",
+      "publisher": "psycode",
+      "accountablePerson" : "psycode",
+      "copyrightHolder" : "psycode",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-04-05 00:11:49 \u002b0800 CST",
+      "dateModified" : "2021-04-05 00:11:49 \u002b0800 CST",
+      "url" : "https:\/\/sh1yu.github.io\/post\/%E4%B8%80%E6%AC%A1springboot\u002bdubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>一次springboot&#43;dubbo的项目实战</title>
+  <meta property="og:title" content="一次springboot&#43;dubbo的项目实战" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="最近在从零开始实现一个服务端在线接口项目，项目选型为springboot &#43; dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。
+1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：
+@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。 配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。 关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
+String loadingValue = &amp;#34;some string loaded from properties with spring boot&amp;#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：
+@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用 @ConfigurationProperties注解将配置属性绑定到bean上：" />
+  <meta name="description" content="最近在从零开始实现一个服务端在线接口项目，项目选型为springboot &#43; dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。
+1. 功能实现 项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。 通用的启动程序：
+@SpringBootApplication @EnableAspectJAutoProxy @EnableDubbo @Slf4j public class MainApplication { public static void main(String[] args) { SpringApplication.run(MainApplication.class, args); } @Bean public CommandLineRunner commandLineRunner(ApplicationContext ctx) { return (args) -&amp;gt; log.info(&amp;#34;==============================================&amp;#34;); } } 1.1 配置文件加载 spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。 配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。 关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：
+String loadingValue = &amp;#34;some string loaded from properties with spring boot&amp;#34;; String correctValue = new String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); 如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：
+@Service public class ServiceImpl implements IService { @Value(&amp;#34;${user.extra.config:default_val}&amp;#34;) private String exteaConfig; } 如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用 @ConfigurationProperties注解将配置属性绑定到bean上：" />
+  <meta property="og:locale" content="zh-cn" />
+
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;background-color:inherit;border:0}.Chinese .markdown-body{line-height:200%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.8;text-justify:ideographic;margin-bottom:1em}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{text-align:center}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="psycode - better code, better life.">
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
+  
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
+</head>
+
+
+<body>
+  <article class="post " id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="header-title">
+    <a href="/"
+      >psycode</a
+    >
+  </div>
+  <div class="header-subtitle"></div>
+</header>
+<div class="row end-md center-xs header-items">
+  
+  <div class="header-item">
+    <a href="https://github.com/sh1yu" target="_blank">Github</a>
+  </div>
+  
+</div>
+<div class="row end-xs">
+   
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">一次springboot&#43;dubbo的项目实战</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2021-04-05 00:11:49 CST">
+                05 Apr 2021
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://sh1yu.github.io">@psycode</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>最近在从零开始实现一个服务端在线接口项目，项目选型为springboot + dubbo。由于是新项目，没有历史包袱，所以给了自己一次从头开始按照想法进行最优编码实践的机会。</p>
+<h1 id="1-功能实现">1. 功能实现</h1>
+<p>项目使用springboot-web暴露网关接口，内部通过dubbo调用服务，比如用户服务。主要组件基本包括两块：gateway和service-provider。其中gateway对外暴露web端口，对内为dubbo的consumer。
+通用的启动程序：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@SpringBootApplication
+@EnableAspectJAutoProxy
+@EnableDubbo
+@Slf4j
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">MainApplication</span> {
+    <span style="font-weight:bold">public</span> <span style="font-weight:bold">static</span> <span style="">void</span> main(String[] args) {
+        SpringApplication.run(MainApplication.class, args);
+    }
+
+    @Bean
+    <span style="font-weight:bold">public</span> CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+        <span style="font-weight:bold">return</span> (args) -&gt; log.info(<span style="font-style:italic">&#34;==============================================&#34;</span>);
+    }
+}
+</code></pre></div><h2 id="11-配置文件加载">1.1 配置文件加载</h2>
+<p>spring boot对配置有着相当完善的支持。除了默认使用的spring.application.name、server.port等配置以及dubbo附加支持的dubbo.protocol.name、dubbo.registry.address等配置外，还可以直接添加自己的配置并在项目中直接使用。
+配置可以直接写在默认配置文件application.properties或者application.yaml中，也可以写入自己的properties配置文件中然后通过spring加载解析，或者干脆放到一个文件目录中由自己加载。
+关于application.properties和application.yaml需要注意的一个区别是，在spring boot 中application.properties是以iso8859-1编码读取的，application.yaml是以utf-8编码读取的。这意味着如果application.properties中存在中文配置的话，一定要记得编码转换：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">String loadingValue = <span style="font-style:italic">&#34;some string loaded from properties with spring boot&#34;</span>;
+String correctValue = <span style="font-weight:bold">new</span> String(loadingValue.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+</code></pre></div><p>如果是直接写入application.properties的自定义配置，可以直接使用@Value注解在代码中进行使用：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Service
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">ServiceImpl</span> <span style="font-weight:bold">implements</span> IService {
+
+    @Value(<span style="font-style:italic">&#34;${user.extra.config:default_val}&#34;</span>)
+    <span style="font-weight:bold">private</span> String exteaConfig;
+}
+</code></pre></div><p>如果是使用了新的配置文件，则需要使用@PropertySource注解指定该配置文件。另外，我们也可以直接使用
+@ConfigurationProperties注解将配置属性绑定到bean上：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Data
+@Component
+@ConfigurationProperties(prefix = <span style="font-style:italic">&#34;user.extra&#34;</span>)
+@PropertySource(<span style="font-style:italic">&#34;classpath:config/extra.properties&#34;</span>)
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">UserExtraConfiguration</span> {
+
+    <span style="font-weight:bold">private</span> String extraValue;
+}
+</code></pre></div><p>关于@Value和@ConfigurationProperties区别，网上有人做了测试和总结如下：</p>
+<p><img src="/psy-hugo-blog/pic/%E4%B8%80%E6%AC%A1springboot+dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/1.jpg" alt=""></p>
+<p>如果是自己加载配置文件，可以使用springboot自带的ResourceUtils工具，支持从classpath下读取配置文件：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">File file = ResourceUtils.getFile(filepath);
+String configuration = <span style="font-weight:bold">new</span> String(FileCopyUtils.copyToByteArray(keyFile));
+</code></pre></div><p>需要注意的是，如果filepath是以classpath:开头，这时使用File的方式是读取不到打包在jar包中的资源文件的，需要以Stream的方式读取：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">URL url = ResourceUtils.getURL(filepath);
+String configuration = FileCopyUtils.copyToString(<span style="font-weight:bold">new</span> InputStreamReader(url.openStream())); 
+</code></pre></div><h2 id="12-鉴权">1.2 鉴权</h2>
+<p>业务的每个接口都需要做鉴权逻辑。项目中通用的鉴权逻辑是hmac-auth。由于鉴权逻辑通用，考虑利用切面或者拦截器的方式统一处理。具体实现方式大概有如下几种：</p>
+<ul>
+<li>java servlet中的filter。spring boot web底层也是基于servlet技术，所以这个拦截比较底层，而且直接拦截的是原始的HttpServletRequest和HttpServletResponse对象。</li>
+<li>spring mvc中的Interceptor。和filter类似，也能基于原始请求对象进行处理和拦截。</li>
+<li>@RestControllerAdvice。这个是spring提供的用于全局拦截@RequestMapping的注解。主要提供了@ExceptionHandler、@InitBinder、@ModelAttribute三个处理入口。本项目中使用此种方式对全局的异常进行了统一处理和拦截，后面如果有非预期的错误出现，直接抛出相关异常即可：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Slf4j
+@RestControllerAdvice(basePackages = {<span style="font-style:italic">&#34;org.xxx...&#34;</span>})
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">GlobalExceptionHandler</span> {
+
+    @ExceptionHandler(value = UnAuthorizedException.class)
+    <span style="font-weight:bold">public</span> BizResponse unAuthorizedExceptionHandle(UnAuthorizedException e) {
+        <span style="font-weight:bold">return</span> <span style="font-weight:bold">new</span> BizResponse(RetCode.AUTHFAILEDERR);
+    }
+ 
+    @ExceptionHandler(value = Exception.class)
+    <span style="font-weight:bold">public</span> BizResponse exceptionHandle(Exception e) {
+        log.error(<span style="font-style:italic">&#34;unknown error&#34;</span>, e);
+        <span style="font-weight:bold">return</span> <span style="font-weight:bold">new</span> BizResponse(RetCode.UNKNOWNERR);
+    }
+}
+</code></pre></div><ul>
+<li>aspectJ切面拦截。这种方式可以指定对某些方法（比如Controller方法）进行拦截。
+本项目中采用aspectJ进行统一的hmac-auth鉴权逻辑的开发。使用aspectJ的一大问题在于无法获取到原始请求的header等信息，而这些信息鉴权中是必须的。好在可以通过spring web提供的RequestContextHolder来解决这个问题。RequestContextHolder本质上是 一个ThreadLocal对象，它存储了此次处理的原始请求request和session信息：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Aspect
+@Component
+@Slf4j
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">AuthAspect</span> {
+
+    @Pointcut(value = <span style="font-style:italic">&#34;execution(* org.controller..*(..))&#34;</span>)
+    <span style="font-weight:bold">private</span> <span style="">void</span> pointcut() {
+    }
+
+    @Before(value = <span style="font-style:italic">&#34;pointcut()&#34;</span>)
+    <span style="font-weight:bold">public</span> <span style="">void</span> doBefore() {
+
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        <span style="font-weight:bold">if</span> (attributes == <span style="font-weight:bold">null</span>) {
+            <span style="font-weight:bold">throw</span> <span style="font-weight:bold">new</span> UnAuthException();
+        }
+        ContentCachingRequestWrapper request = (ContentCachingRequestWrapper) attributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+        <span style="font-style:italic">//do session check...
+</span><span style="font-style:italic"></span>        signature.check(request);
+    }
+}
+</code></pre></div><p>其中，request是ContentCachingRequestWrapper类型，该类型提供了一种能够反复读取body内容的方法。原始的request是HttpServletRequest类型，该类型body只能读取一次，满足不了鉴权需要读取一次以及业务处理需要读取一次的需求。因此需要依赖于filter对原始请求做一次拦截转换：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Component
+@Slf4j
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">RequestFilter</span> <span style="font-weight:bold">extends</span> OncePerRequestFilter <span style="font-weight:bold">implements</span> Filter {
+    @Override
+    <span style="font-weight:bold">protected</span> <span style="">void</span> doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) <span style="font-weight:bold">throws</span> ServletException, IOException {
+        filterChain.doFilter(<span style="font-weight:bold">new</span> ContentCachingRequestWrapper(request), response);
+    }
+}
+</code></pre></div><h2 id="13-第三方调用">1.3 第三方调用</h2>
+<p>对于dubbo service来说，通过网络调用第三方的接口（比如统一账号系统）再正常不过。项目中在调用第三方系统时在中间加了一层接口，调用层和实现层通过接口分割开。这样一来，满足了依赖倒置原则，添加不同的第三方系统实现就很方便了。当然，更多的策略比如说第三方系统调用负载均衡、降级熔断等都可以在这一层实现。目前项目没有这些需求，暂时只是做了一层接口隔离。</p>
+<h2 id="14-测试">1.4 测试</h2>
+<p>此前一直还在纠结”测试“这个方面到底算是功能还是非功能。最后我认为还是作为功能的一部分比较好。虽然测试代码不直接运行于生产环境中，但是它对于生产环境的代码的质量影响还是非常重要的，写测试也应该作为正常编码工作的一部分重要内容，不容忽视。
+项目中我采用了spring-boot-test + Mockito的测试工具。Mockito对于bean的mock功能支持的也比较好：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@SpringBootTest
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">SignatureServiceTest</span> {
+
+    @Resource
+    <span style="font-weight:bold">private</span> Signature signature;
+
+    @MockBean(answer = Answers.RETURNS_DEEP_STUBS)
+    <span style="font-weight:bold">private</span> RedisTemplate redisTemplate;    
+
+    @Test
+    <span style="font-weight:bold">public</span> <span style="">void</span> testCheck1() <span style="font-weight:bold">throws</span> NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Mockito.when(stringRedisTemplate.opsForValue()
+                       .setIfAbsent(Mockito.anyString(), Mockito.anyString(), Mockito.any(Duration.class)))
+                .thenReturn(<span style="font-weight:bold">null</span>).thenReturn(<span style="font-weight:bold">true</span>).thenReturn(<span style="font-weight:bold">false</span>);
+
+        Method m = signature.getClass().getDeclaredMethod(<span style="font-style:italic">&#34;check&#34;</span>, String.class);
+        m.setAccessible(<span style="font-weight:bold">true</span>);
+        Result r1 = (Result) m.invoke(signature, <span style="font-style:italic">&#34;1&#34;</span>);
+        Result r2 = (Result) m.invoke(signature, <span style="font-style:italic">&#34;1&#34;</span>);
+        Result r3 = (Result) m.invoke(signature, <span style="font-style:italic">&#34;1&#34;</span>);
+
+        Mockito.verify(redisTemplate.opsForValue(), Mockito.times(3))
+               .setIfAbsent(Mockito.anyString(), Mockito.anyString(), Mockito.any(Duration.class));
+        Assertions.assertTrue(r1.isPass());
+        Assertions.assertTrue(r2.isPass());
+        Assertions.assertFalse(r3.isPass());
+    }
+}
+</code></pre></div><p>在测试代码中，使用反射方式调用那些私有的方法；使用@MockBean注解处理那些需要mock的bean；另外可以使用Answers.RETURNS_DEEP_STUBS来处理那些需要mock链式调用的情形。 
+由于是dubbo项目，在运行测试的过程中很尴尬的一点是启动spring环境时dubbo也随之启动了，哪怕真正的调用并没有去调用dubbo服务。没有找到相关关闭dubbo服务提供者和消费者的方法，只能在测试环境中禁止使用远程的配置中心和禁止远程调用。需要在test下的resources目录下的application.properties中进行如下配置：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">dubbo.protocol.name=dubbo
+dubbo.protocol.port=12345
+dubbo.registry.address=N/A
+dubbo.consumer.scope=local
+</code></pre></div><h1 id="2-非功能需求">2. 非功能需求</h1>
+<h2 id="21-文档">2.1 文档</h2>
+<p>对于一个接口项目来说，将文档和代码一起发布无疑是最好的选择。这样就不用担心文档过时缺失等问题了，也不用花很大力气去维护文档。项目中引入了<code>swagger2</code>来达到这个目的：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Configuration
+@EnableSwagger2
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">Swagger2Config</span> {
+    @Bean
+    <span style="font-weight:bold">public</span> Docket createRestApi() {
+        <span style="font-weight:bold">return</span> <span style="font-weight:bold">new</span> Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage(<span style="font-style:italic">&#34;org.xxx.controller&#34;</span>))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    <span style="font-style:italic">// API的详细信息
+</span><span style="font-style:italic"></span>    <span style="font-weight:bold">private</span> ApiInfo apiInfo() {
+        <span style="font-weight:bold">return</span> <span style="font-weight:bold">new</span> ApiInfoBuilder()
+                .title(<span style="font-style:italic">&#34;my_title&#34;</span>) <span style="font-style:italic">//标题
+</span><span style="font-style:italic"></span>                .description(<span style="font-style:italic">&#34;interface api docs&#34;</span>) <span style="font-style:italic">//描述
+</span><span style="font-style:italic"></span>                .contact(<span style="font-weight:bold">new</span> Contact(<span style="font-style:italic">&#34;codeme&#34;</span>, <span style="font-style:italic">&#34;&#34;</span>, <span style="font-style:italic">&#34;&#34;</span>))
+                .version(<span style="font-style:italic">&#34;v1&#34;</span>) <span style="font-style:italic">//版本号
+</span><span style="font-style:italic"></span>                .build();
+    }
+}
+</code></pre></div><p>配置好如上bean后，直接在Controller接口层配置注解即可：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@RestController
+@Slf4j
+@Api(tags = <span style="font-style:italic">&#34;测试接口&#34;</span>, value = <span style="font-style:italic">&#34;test&#34;</span>)
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">TestController</span> {
+    @ApiOperation(value = <span style="font-style:italic">&#34;Hello&#34;</span>, notes = <span style="font-style:italic">&#34;test hello API&#34;</span>)
+    @PostMapping(value = <span style="font-style:italic">&#34;/v1/hello&#34;</span>)
+    <span style="font-weight:bold">public</span> GWResponse&lt;?&gt; hello(
+            @ApiParam(value = <span style="font-style:italic">&#34;请求包&#34;</span>, required = <span style="font-weight:bold">true</span>)
+            @RequestBody BizRequest bizRequest) {
+            ...
+    }
+}
+</code></pre></div><h2 id="22-日志">2.2 日志</h2>
+<p>如何记录日志我觉得是对于在线接口来说是非常重要的事，它是事后线上问题排查、数据统计等最为重要的途径。本项目使用slf4j的MDC进行统一的日志拦截和打印：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Component
+@Slf4j
+@Aspect
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">LogAspect</span> {
+    @Pointcut(value = <span style="font-style:italic">&#34;execution(* org.xxx.controller..*(..))&#34;</span>)
+    <span style="font-weight:bold">private</span> <span style="">void</span> pointcut() {
+    }
+
+    @Before(value = <span style="font-style:italic">&#34;pointcut()&#34;</span>)
+    <span style="font-weight:bold">public</span> <span style="">void</span> doBefore() {
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        ContentCachingRequestWrapper request = (ContentCachingRequestWrapper) attributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+        MDC.put(Constants.TraceID,  genUUID());
+        MDC.put(Constants.RemoteIP, stripRemoteIP(request));
+        MDC.put(Constants.LocalIP, NetUtils.getLocalHost());
+        MDC.put(Constants.ReqPkg, <span style="font-weight:bold">new</span> String(request.getContentAsByteArray()));
+        MDC.put(Constants.Ctm, logFormat.format(<span style="font-weight:bold">new</span> Date()));
+    }
+
+    @AfterReturning(pointcut = <span style="font-style:italic">&#34;pointcut()&#34;</span>, returning = <span style="font-style:italic">&#34;response&#34;</span>)
+    @SneakyThrows
+    <span style="font-weight:bold">public</span> <span style="">void</span> doAfterReturning(BizResponse&lt;?&gt; response) {
+        Date ctm = format.parse(MDC.get(Constants.Ctm));
+        Date etm = <span style="font-weight:bold">new</span> Date();
+        <span style="">long</span> utm = etm.getTime() - ctm.getTime();
+        MDC.put(Constants.Etm, format.format(etm));
+        MDC.put(Constants.Utm, String.valueOf(utm));
+        MDC.put(Constants.ResPkg, objectMapper.writeValueAsString(response));
+        log.info(objectMapper.writeValueAsString(MDC.getCopyOfContextMap()));
+        MDC.clear();
+    }
+
+
+    @AfterThrowing(pointcut = <span style="font-style:italic">&#34;pointcut()&#34;</span>, throwing = <span style="font-style:italic">&#34;throwable&#34;</span>)
+    @SneakyThrows
+    <span style="font-weight:bold">public</span> <span style="">void</span> doAfterThrowing(Throwable throwable) {
+        Date ctm = format.parse(MDC.get(Constants.Ctm));
+        Date etm = <span style="font-weight:bold">new</span> Date();
+        <span style="">long</span> utm = etm.getTime() - ctm.getTime();
+        MDC.put(Constants.Etm, format.format(etm));
+        MDC.put(Constants.Utm, String.valueOf(utm));
+        MDC.put(Constants.Exception, throwable.toString());
+        log.error(objectMapper.writeValueAsString(MDC.getCopyOfContextMap()));
+        MDC.clear();
+    }
+}
+</code></pre></div><p>其中，关于远程ip的获取是stripRemoteIP函数，该函数尽可能获取真实的远程IP：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java"><span style="font-weight:bold">private</span> String stripRemoteIP(ContentCachingRequestWrapper request) {
+    <span style="font-weight:bold">try</span> {
+        String forward = request.getHeader(<span style="font-style:italic">&#34;X-Forwarded-For&#34;</span>);
+        <span style="font-weight:bold">if</span> (StringUtils.isNotBlank(forward) &amp;&amp; !<span style="font-style:italic">&#34;unknown&#34;</span>.equalsIgnoreCase(forward)) {
+            String[] ips = forward.split(<span style="font-style:italic">&#34;,&#34;</span>);
+            <span style="font-weight:bold">for</span> (String ip : ips) {
+                <span style="font-weight:bold">if</span> (StringUtils.isNotBlank(ip)) {
+                    <span style="font-weight:bold">return</span> ip;
+                }
+            }
+        }
+        String realIP = request.getHeader(<span style="font-style:italic">&#34;X-Real-IP&#34;</span>);
+        <span style="font-weight:bold">if</span> (StringUtils.isNotBlank(realIP) &amp;&amp; !<span style="font-style:italic">&#34;unknown&#34;</span>.equalsIgnoreCase(realIP)) {
+            <span style="font-weight:bold">return</span> realIP;
+        }
+        <span style="font-weight:bold">return</span> request.getRemoteAddr();
+    } <span style="font-weight:bold">catch</span> (Exception e) {
+        <span style="font-weight:bold">return</span> <span style="font-weight:bold">null</span>;
+    }
+}
+</code></pre></div><p>关于获取本地IP的函数，直接使用的是dubbo提供的NetUtils工具类，核心代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java"><span style="font-weight:bold">public</span> <span style="font-weight:bold">static</span> String getLocalHost() {
+    <span style="font-weight:bold">if</span> (HOST_ADDRESS != <span style="font-weight:bold">null</span>) {
+        <span style="font-weight:bold">return</span> HOST_ADDRESS;
+    }
+
+    InetAddress address = getLocalAddress();
+    <span style="font-weight:bold">if</span> (address != <span style="font-weight:bold">null</span>) {
+        <span style="font-weight:bold">return</span> HOST_ADDRESS = address.getHostAddress();
+    }
+    <span style="font-weight:bold">return</span> LOCALHOST_VALUE;
+} 
+
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">static</span> InetAddress getLocalAddress() {
+    <span style="font-weight:bold">if</span> (LOCAL_ADDRESS != <span style="font-weight:bold">null</span>) {
+        <span style="font-weight:bold">return</span> LOCAL_ADDRESS;
+    }
+    InetAddress localAddress = getLocalAddress0();
+    LOCAL_ADDRESS = localAddress;
+    <span style="font-weight:bold">return</span> localAddress;
+}
+
+<span style="font-weight:bold">private</span> <span style="font-weight:bold">static</span> InetAddress getLocalAddress0() {
+    InetAddress localAddress = <span style="font-weight:bold">null</span>;
+
+    <span style="font-style:italic">// @since 2.7.6, choose the {@link NetworkInterface} first
+</span><span style="font-style:italic"></span>    <span style="font-weight:bold">try</span> {
+        NetworkInterface networkInterface = findNetworkInterface();
+        Enumeration&lt;InetAddress&gt; addresses = networkInterface.getInetAddresses();
+        <span style="font-weight:bold">while</span> (addresses.hasMoreElements()) {
+            Optional&lt;InetAddress&gt; addressOp = toValidAddress(addresses.nextElement());
+            <span style="font-weight:bold">if</span> (addressOp.isPresent()) {
+                <span style="font-weight:bold">try</span> {
+                    <span style="font-weight:bold">if</span> (addressOp.get().isReachable(100)) {
+                        <span style="font-weight:bold">return</span> addressOp.get();
+                    }
+                } <span style="font-weight:bold">catch</span> (IOException e) {
+                    <span style="font-style:italic">// ignore
+</span><span style="font-style:italic"></span>                }
+            }
+        }
+    } <span style="font-weight:bold">catch</span> (Throwable e) {
+        logger.warn(e);
+    }
+
+    <span style="font-weight:bold">try</span> {
+        localAddress = InetAddress.getLocalHost();
+        Optional&lt;InetAddress&gt; addressOp = toValidAddress(localAddress);
+        <span style="font-weight:bold">if</span> (addressOp.isPresent()) {
+            <span style="font-weight:bold">return</span> addressOp.get();
+        }
+    } <span style="font-weight:bold">catch</span> (Throwable e) {
+        logger.warn(e);
+    }
+
+
+    <span style="font-weight:bold">return</span> localAddress;
+}
+
+
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">static</span> NetworkInterface findNetworkInterface() {
+
+    List&lt;NetworkInterface&gt; validNetworkInterfaces = emptyList();
+    <span style="font-weight:bold">try</span> {
+        validNetworkInterfaces = getValidNetworkInterfaces();
+    } <span style="font-weight:bold">catch</span> (Throwable e) {
+        logger.warn(e);
+    }
+
+    NetworkInterface result = <span style="font-weight:bold">null</span>;
+
+    <span style="font-style:italic">// Try to find the preferred one
+</span><span style="font-style:italic"></span>    <span style="font-weight:bold">for</span> (NetworkInterface networkInterface : validNetworkInterfaces) {
+        <span style="font-weight:bold">if</span> (isPreferredNetworkInterface(networkInterface)) {
+            result = networkInterface;
+            <span style="font-weight:bold">break</span>;
+        }
+    }
+
+    <span style="font-weight:bold">if</span> (result == <span style="font-weight:bold">null</span>) { <span style="font-style:italic">// If not found, try to get the first one
+</span><span style="font-style:italic"></span>        <span style="font-weight:bold">for</span> (NetworkInterface networkInterface : validNetworkInterfaces) {
+            Enumeration&lt;InetAddress&gt; addresses = networkInterface.getInetAddresses();
+            <span style="font-weight:bold">while</span> (addresses.hasMoreElements()) {
+                Optional&lt;InetAddress&gt; addressOp = toValidAddress(addresses.nextElement());
+                <span style="font-weight:bold">if</span> (addressOp.isPresent()) {
+                    <span style="font-weight:bold">try</span> {
+                        <span style="font-weight:bold">if</span> (addressOp.get().isReachable(100)) {
+                            result = networkInterface;
+                            <span style="font-weight:bold">break</span>;
+                        }
+                    } <span style="font-weight:bold">catch</span> (IOException e) {
+                        <span style="font-style:italic">// ignore
+</span><span style="font-style:italic"></span>                    }
+                }
+            }
+        }
+    }
+
+    <span style="font-weight:bold">if</span> (result == <span style="font-weight:bold">null</span>) {
+        result = first(validNetworkInterfaces);
+    }
+
+    <span style="font-weight:bold">return</span> result;
+}
+</code></pre></div><p>其中getLocalAddress0会调用findNetworkInterface找到”合适的“网卡，然后遍历、验证其中可用的ip地址并返回。 findNetworkInterface先查找用户是否通过环境变量配置了想要使用的网卡，如果没有配置则验证返回第一个”可达“网卡。
+在dubbo服务中的日志拦截类似，不同的是我这边在实现过程中将其放到了common项目中，该项目被所有provider引用。这样我就无法针对某个特殊包特殊类特殊方法进行拦截了，只能提供相关注解，由provider在需要记录日志的方法上使用注解进行注明：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+<span style="font-weight:bold">public</span> @interface Log {
+}
+
+@Component
+@Slf4j
+@Aspect
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">LogAspect</span> {
+    @Pointcut(value = <span style="font-style:italic">&#34;@annotation(org.xxx.aspect.Log)&#34;</span>)
+    <span style="font-weight:bold">private</span> <span style="">void</span> pointcut() {
+    }
+
+    @Before(value = <span style="font-style:italic">&#34;pointcut()&#34;</span>)
+    <span style="font-weight:bold">public</span> <span style="">void</span> doBefore(JoinPoint joinPoint) {
+        ...
+    }
+
+    @AfterReturning(pointcut = <span style="font-style:italic">&#34;pointcut()&#34;</span>)
+    <span style="font-weight:bold">public</span> <span style="">void</span> doAfterReturning() {
+        ....
+    }
+
+    @AfterThrowing(pointcut = <span style="font-style:italic">&#34;pointcut()&#34;</span>, throwing = <span style="font-style:italic">&#34;throwable&#34;</span>)
+    <span style="font-weight:bold">public</span> <span style="">void</span> doAfterThrowing(Throwable throwable) {
+        ...
+    }
+}
+</code></pre></div><p>另外，provider引用库时不会自动扫描其中的aspect路径，导致无法自动拦截打印日志。解决的方案有三种：</p>
+<ul>
+<li>一是手动在所有provider项目中配置@ComponentScan(&ldquo;org.xxx.aspect&rdquo;)，这样需要手动写路径，没有采用；</li>
+<li>二是在common项目中额外提供EnableLog注解，所有provider项目启动类上配置@EnableLog，项目中采用该方法；</li>
+<li>三是写自己的starter，这个稍微有些复杂没有采用。
+写EnableLog的方式如下：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Import(LogConfig.class)
+<span style="font-weight:bold">public</span> @interface EnableLog {
+} 
+
+@ComponentScan(<span style="font-style:italic">&#34;org.xxx.aspect&#34;</span>)
+@Component
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">LogConfig</span> {
+}
+</code></pre></div><p>这样就将@ComponentScan(&ldquo;org.xxx.aspect&rdquo;)这样的注解写到了common内部，封装性较好。 
+关于日志的打印位置也值得注意。一开始我将日志配置放到application.properties中：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">logging.level.root=warn
+logging.level.org.xxx.controller=debug
+logging.level.org.xxx.aspect=info
+logging.pattern.console=...
+</code></pre></div><p>这样虽然可以不同的包分不同级别打印，但是无法分开打印到不同文件中。最后还是通过写logback-spring.xml解决这个问题：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-xml" data-lang="xml"><span style="">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34; ?&gt;</span>
+<span style="font-weight:bold">&lt;configuration&gt;</span>
+    <span style="font-weight:bold">&lt;appender</span> name=<span style="font-style:italic">&#34;CONSOLE&#34;</span> class=<span style="font-style:italic">&#34;ch.qos.logback.core.ConsoleAppender&#34;</span><span style="font-weight:bold">&gt;</span>
+        <span style="font-weight:bold">&lt;encoder&gt;</span>
+            <span style="font-weight:bold">&lt;pattern&gt;</span>%d{yyyy-MM-dd HH:mm:ss.SSS}%-5level [%thread] [%logger{20}] - %msg%n<span style="font-weight:bold">&lt;/pattern&gt;</span>
+        <span style="font-weight:bold">&lt;/encoder&gt;</span>
+    <span style="font-weight:bold">&lt;/appender&gt;</span>
+    <span style="font-weight:bold">&lt;appender</span> name=<span style="font-style:italic">&#34;FILE&#34;</span> class=<span style="font-style:italic">&#34;ch.qos.logback.core.rolling.RollingFileAppender&#34;</span><span style="font-weight:bold">&gt;</span>
+        <span style="font-weight:bold">&lt;rollingPolicy</span> class=<span style="font-style:italic">&#34;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&#34;</span><span style="font-weight:bold">&gt;</span>
+            <span style="font-weight:bold">&lt;fileNamePattern&gt;</span>file.%d{yyyy-MM-dd}.log<span style="font-weight:bold">&lt;/fileNamePattern&gt;</span>
+            <span style="font-weight:bold">&lt;maxHistory&gt;</span>2<span style="font-weight:bold">&lt;/maxHistory&gt;</span>
+        <span style="font-weight:bold">&lt;/rollingPolicy&gt;</span>
+        <span style="font-weight:bold">&lt;encoder&gt;</span>
+            <span style="font-weight:bold">&lt;pattern&gt;</span>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] - %msg%n<span style="font-weight:bold">&lt;/pattern&gt;</span>
+        <span style="font-weight:bold">&lt;/encoder&gt;</span>
+    <span style="font-weight:bold">&lt;/appender&gt;</span>
+    <span style="font-weight:bold">&lt;root</span> level=<span style="font-style:italic">&#34;WARN&#34;</span><span style="font-weight:bold">&gt;</span>
+        <span style="font-weight:bold">&lt;appender-ref</span> ref=<span style="font-style:italic">&#34;CONSOLE&#34;</span><span style="font-weight:bold">/&gt;</span>
+    <span style="font-weight:bold">&lt;/root&gt;</span>
+    <span style="font-weight:bold">&lt;logger</span> name=<span style="font-style:italic">&#34;org.xxx.controller&#34;</span> additivity=<span style="font-style:italic">&#34;false&#34;</span> level=<span style="font-style:italic">&#34;INFO&#34;</span><span style="font-weight:bold">&gt;</span>
+        <span style="font-weight:bold">&lt;appender-ref</span> ref=<span style="font-style:italic">&#34;CONSOLE&#34;</span><span style="font-weight:bold">/&gt;</span>
+    <span style="font-weight:bold">&lt;/logger&gt;</span>
+    <span style="font-weight:bold">&lt;logger</span> name=<span style="font-style:italic">&#34;org.xxx.aspect&#34;</span> additivity=<span style="font-style:italic">&#34;false&#34;</span> level=<span style="font-style:italic">&#34;INFO&#34;</span><span style="font-weight:bold">&gt;</span>
+        <span style="font-weight:bold">&lt;appender-ref</span> ref=<span style="font-style:italic">&#34;FILE&#34;</span><span style="font-weight:bold">/&gt;</span>
+    <span style="font-weight:bold">&lt;/logger&gt;</span>
+<span style="font-weight:bold">&lt;/configuration&gt;</span> 
+</code></pre></div><p>这样就将日志文件打印到了file.xxx.log中，而常规日志还是打印到控制台中。</p>
+<h2 id="23-调用链">2.3 调用链</h2>
+<p>由于一次请求会跨越多个微服务，所以有必要通过某种手段将所有调用串联起来。traceid是一个比较好的日志串联方案。对于网关来说，由于是服务入口，可以自己生成，但是dubbo服务则需要由调用者传递给提供者。我研究了一下skywalking的做法，它是对dubbo的MonitorFilter进行了拦截，将其作为入口将traceid以及其他信息附属在调用上进行传递。项目中没有采用skywalking因为其开销还是太大了，官方也建议开启采样，而业务日志最好是不采样比较好，所以我的实现还是自定义filter只传递traceid信息，做一次轻量的拦截。
+在common模块中的resources下创建文件夹META-INF.dubbo，在此文件夹下创建文件org.apache.dubbo.rpc.Filter，并写入如下内容：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">logConsumer=org.xxx.dubbo.filter.ConsumerFilter
+logProvider=org.xxx.dubbo.filter.ProviderFilter 
+</code></pre></div><p>该文件会在dubbo启动时自动扫描到，并加载其中的filter使之生效。
+接下来实现这两个filter:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-java" data-lang="java">@Activate(group = CommonConstants.CONSUMER)
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">ConsumerFilter</span> <span style="font-weight:bold">implements</span> Filter {
+    @Override
+    <span style="font-weight:bold">public</span> Result invoke(Invoker&lt;?&gt; invoker, Invocation invocation) <span style="font-weight:bold">throws</span> RpcException {
+        RpcContext.getContext().setAttachment(Constants.TraceID, MDC.get(Constants.TraceID));
+        <span style="font-weight:bold">return</span> invoker.invoke(invocation);
+    }
+}
+
+@Activate(group = CommonConstants.PROVIDER)
+<span style="font-weight:bold">public</span> <span style="font-weight:bold">class</span> <span style="font-weight:bold">ProviderFilter</span> <span style="font-weight:bold">implements</span> Filter {
+    @Override
+    <span style="font-weight:bold">public</span> Result invoke(Invoker&lt;?&gt; invoker, Invocation invocation) <span style="font-weight:bold">throws</span> RpcException {
+        String traceID = RpcContext.getContext().getAttachment(Constants.TraceID);
+        MDC.put(Constants.TraceID, traceID);
+        <span style="font-weight:bold">return</span> invoker.invoke(invocation);
+    }
+}
+</code></pre></div><h2 id="24-监控">2.4 监控</h2>
+<p>为了更好地对项目进行监控，项目后续会接入actuator暴露指标并由prometheus进行抓取监控。抓取的指标除了常规的进程、内存、cpu等信息外，还应该包括调用量、响应耗时、错误率等黄金指标。当前项目还未集成actuator ，暂不多数，后续有机会再补上。</p>
+<h1 id="3-总结">3. 总结</h1>
+<p>经过以上的项目配置，我觉得一个基本可用的项目框架才算是搭建完成了。当然还应该有其他应当考虑的内容，比如自动化集成和功能回归测试，后续是否还有其他未考虑到的点，还需要看自己进一步的实践了。</p>
+
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        
+          <div class="row">
+            <div class="col-xs-12">
+              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>psycode's Blog</a></p>
+            </div>
+          </div>
+
+          
+
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+        
+
+        <div class="site-footer">
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  
+
+<script>
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>
