@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IDE on psycode - better code, better life.</title>
+    <link>https://sh1yu.github.io/categories/ide/</link>
+    <description>Recent content in IDE on psycode - better code, better life.</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 06 Feb 2021 12:33:49 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/categories/ide/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Vscode配置cpp外部头文件依赖</title>
+      <link>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</link>
+      <pubDate>Sat, 06 Feb 2021 12:33:49 +0800</pubDate>
+      
+      <guid>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</guid>
+      <description>最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：
+vscode的settings.json中可以通过配置项C_Cpp.default.includePath配置默认的头文件路径，配置如下:
+{ &amp;#34;files.associations&amp;#34;: { &amp;#34;iostream&amp;#34;: &amp;#34;cpp&amp;#34; }, &amp;#34;C_Cpp.default.includePath&amp;#34;: [&amp;#34;/home/psy&amp;#34;] } 在配置文件c_cpp_properties.json配置文件中可以指定includePath，示例如下：
+{ &amp;#34;configurations&amp;#34;: [ { &amp;#34;name&amp;#34;: &amp;#34;Linux&amp;#34;, &amp;#34;includePath&amp;#34;: [ &amp;#34;${default}&amp;#34; ], &amp;#34;defines&amp;#34;: [], &amp;#34;compilerPath&amp;#34;: &amp;#34;/usr/bin/clang++&amp;#34;, &amp;#34;cStandard&amp;#34;: &amp;#34;c11&amp;#34;, &amp;#34;cppStandard&amp;#34;: &amp;#34;c++14&amp;#34;, &amp;#34;intelliSenseMode&amp;#34;: &amp;#34;linux-clang-x64&amp;#34; } ], &amp;#34;version&amp;#34;: 4 } 其中includePath配置的为${default}，表示加载前面settings.json中的C_Cpp.default.includePath配置。也可以直接在此配置其他路径。 经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在/home/psy下存在a.hpp：
+#include &amp;lt;iostream&amp;gt;void printHello() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello cpp!&amp;#34; &amp;lt;&amp;lt; std::endl; } 在项目中的hello.cpp:
+#include &amp;lt;iostream&amp;gt;#include &amp;lt;a.hpp&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello C++!&amp;#34; &amp;lt;&amp;lt; std::endl; printHello(); return 0; } 这个&amp;lt;a.hpp&amp;gt;和printHello就能被vscode正常找到和跳转。
+但是如果此时直接F5运行，依旧会出现找不到a.hpp的情况出现。因为运行时执行的是launch.json配置：
+{ // Use IntelliSense to learn about possible attributes.</description>
+    </item>
+    
+  </channel>
+</rss>
