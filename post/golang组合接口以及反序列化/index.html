@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.87.0" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="psycode" />
+  <meta property="og:url" content="https://sh1yu.github.io/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" />
+  <link rel="canonical" href="https://sh1yu.github.io/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" /><link rel="alternate" type="application/atom+xml" href="https://sh1yu.github.ioindex.xml" title="psycode - better code, better life.">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/sh1yu.github.io"
+      },
+      "articleSection" : "post",
+      "name" : "golang组合、接口以及反序列化",
+      "headline" : "golang组合、接口以及反序列化",
+      "description" : "现在，我想用Go实现一个Event类，有如下的要求：\n 有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so easy，直接开搞！ 但是真正实现时，才发现没有想象中的那么简单\u0026hellip;\n1. 结构体实现 首先我们使用go来实现结构体Event，然后利用组合的方式实现两个Event:\ntype Event struct { EventType string `json:\u0026#34;event_type\u0026#34;` } type ClickEvent struct { Event `json:\u0026#34;,inline\u0026#34;` OnPosX int64 `json:\u0026#34;on_pos_x\u0026#34;` OnPosY int64 `json:\u0026#34;on_pos_y\u0026#34;` } type DragEvent struct { Event `json:\u0026#34;,inline\u0026#34;` OnPosX int64 `json:\u0026#34;on_pos_x\u0026#34;` OnPosY int64 `json:\u0026#34;on_pos_y\u0026#34;` ToPosX int64 `json:\u0026#34;to_pos_x\u0026#34;` ToPosY int64 `json:\u0026#34;to_pos_y\u0026#34;` } 很简单，没有问题。\n2. 序列化与反序列化 让我们尝试将其序列化到json，以便持久化存储：\nfunc main() { event1 := ClickEvent{ Event: Event{EventType: \u0026#34;click\u0026#34;}, OnPosX: 0, OnPosY: 0, } b1, _ := json.",
+      "inLanguage" : "en-US",
+      "author" : "psycode",
+      "creator" : "psycode",
+      "publisher": "psycode",
+      "accountablePerson" : "psycode",
+      "copyrightHolder" : "psycode",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-09-04 19:35:00 \u002b0800 CST",
+      "dateModified" : "2021-09-04 19:35:00 \u002b0800 CST",
+      "url" : "https:\/\/sh1yu.github.io\/post\/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96\/",
+      "keywords" : [ "go", ]
+  }
+</script>
+<title>golang组合、接口以及反序列化</title>
+  <meta property="og:title" content="golang组合、接口以及反序列化" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="现在，我想用Go实现一个Event类，有如下的要求：
+ 有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so easy，直接开搞！ 但是真正实现时，才发现没有想象中的那么简单&amp;hellip;
+1. 结构体实现 首先我们使用go来实现结构体Event，然后利用组合的方式实现两个Event:
+type Event struct { EventType string `json:&amp;#34;event_type&amp;#34;` } type ClickEvent struct { Event `json:&amp;#34;,inline&amp;#34;` OnPosX int64 `json:&amp;#34;on_pos_x&amp;#34;` OnPosY int64 `json:&amp;#34;on_pos_y&amp;#34;` } type DragEvent struct { Event `json:&amp;#34;,inline&amp;#34;` OnPosX int64 `json:&amp;#34;on_pos_x&amp;#34;` OnPosY int64 `json:&amp;#34;on_pos_y&amp;#34;` ToPosX int64 `json:&amp;#34;to_pos_x&amp;#34;` ToPosY int64 `json:&amp;#34;to_pos_y&amp;#34;` } 很简单，没有问题。
+2. 序列化与反序列化 让我们尝试将其序列化到json，以便持久化存储：
+func main() { event1 := ClickEvent{ Event: Event{EventType: &amp;#34;click&amp;#34;}, OnPosX: 0, OnPosY: 0, } b1, _ := json." />
+  <meta name="description" content="现在，我想用Go实现一个Event类，有如下的要求：
+ 有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so easy，直接开搞！ 但是真正实现时，才发现没有想象中的那么简单&amp;hellip;
+1. 结构体实现 首先我们使用go来实现结构体Event，然后利用组合的方式实现两个Event:
+type Event struct { EventType string `json:&amp;#34;event_type&amp;#34;` } type ClickEvent struct { Event `json:&amp;#34;,inline&amp;#34;` OnPosX int64 `json:&amp;#34;on_pos_x&amp;#34;` OnPosY int64 `json:&amp;#34;on_pos_y&amp;#34;` } type DragEvent struct { Event `json:&amp;#34;,inline&amp;#34;` OnPosX int64 `json:&amp;#34;on_pos_x&amp;#34;` OnPosY int64 `json:&amp;#34;on_pos_y&amp;#34;` ToPosX int64 `json:&amp;#34;to_pos_x&amp;#34;` ToPosY int64 `json:&amp;#34;to_pos_y&amp;#34;` } 很简单，没有问题。
+2. 序列化与反序列化 让我们尝试将其序列化到json，以便持久化存储：
+func main() { event1 := ClickEvent{ Event: Event{EventType: &amp;#34;click&amp;#34;}, OnPosX: 0, OnPosY: 0, } b1, _ := json." />
+  <meta property="og:locale" content="zh-cn" />
+
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;background-color:inherit;border:0}.Chinese .markdown-body{line-height:200%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.8;text-justify:ideographic;margin-bottom:1em}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{text-align:center}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="psycode - better code, better life.">
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
+  
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-xxx"></script>
+</head>
+
+
+<body>
+  <article class="post " id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="header-title">
+    <a href="/"
+      >psycode</a
+    >
+  </div>
+  <div class="header-subtitle"></div>
+</header>
+<div class="row end-md center-xs header-items">
+  
+  <div class="header-item">
+    <a href="https://github.com/sh1yu" target="_blank">Github</a>
+  </div>
+  
+</div>
+<div class="row end-xs">
+   
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">golang组合、接口以及反序列化</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2021-09-04 19:35:00 CST">
+                04 Sep 2021
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://sh1yu.github.io">@psycode</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>现在，我想用Go实现一个<code>Event</code>类，有如下的要求：</p>
+<ol>
+<li>有多种Event类型，不同的Event类型拥有不同的参数；</li>
+<li>这些Event会被持久化到存储中，在需要时反序列化回来；</li>
+<li>每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。</li>
+</ol>
+<p>ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so easy，直接开搞！
+但是真正实现时，才发现没有想象中的那么简单&hellip;</p>
+<h2 id="1-结构体实现">1. 结构体实现</h2>
+<p>首先我们使用go来实现结构体<code>Event</code>，然后利用<strong>组合</strong>的方式实现两个<code>Event</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">type</span> Event <span style="font-weight:bold">struct</span> {
+	EventType <span style="">string</span> <span style="font-style:italic">`json:&#34;event_type&#34;`</span>
+}
+
+<span style="font-weight:bold">type</span> ClickEvent <span style="font-weight:bold">struct</span> {
+	Event <span style="font-style:italic">`json:&#34;,inline&#34;`</span>
+	OnPosX <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_x&#34;`</span>
+	OnPosY <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_y&#34;`</span>
+}
+
+<span style="font-weight:bold">type</span> DragEvent <span style="font-weight:bold">struct</span> {
+	Event <span style="font-style:italic">`json:&#34;,inline&#34;`</span>
+	OnPosX <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_x&#34;`</span>
+	OnPosY <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_y&#34;`</span>
+	ToPosX <span style="">int64</span> <span style="font-style:italic">`json:&#34;to_pos_x&#34;`</span>
+	ToPosY <span style="">int64</span> <span style="font-style:italic">`json:&#34;to_pos_y&#34;`</span>
+}
+</code></pre></div><p>很简单，没有问题。</p>
+<h2 id="2-序列化与反序列化">2. 序列化与反序列化</h2>
+<p>让我们尝试将其序列化到json，以便持久化存储：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">func</span> main() {
+	event1 := ClickEvent{
+		Event:  Event{EventType: <span style="font-style:italic">&#34;click&#34;</span>},
+		OnPosX: 0,
+		OnPosY: 0,
+	}
+	b1, _ := json.Marshal(&amp;event1)
+
+	event2 := DragEvent{
+		Event:  Event{EventType: <span style="font-style:italic">&#34;drag&#34;</span>},
+		OnPosX: 1,
+		OnPosY: 2,
+		ToPosX: 3,
+		ToPosY: 4,
+	}
+	b2, _ := json.Marshal(&amp;event2)
+
+	fmt.Println(string(b1))
+	fmt.Println(string(b2))
+}
+</code></pre></div><p>看上去也不难。对每个具体的Event直接json反序列化即可。以上程序会输出如下的序列化之后的字符串：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-json" data-lang="json">{<span style="font-weight:bold">&#34;event_type&#34;</span>:<span style="font-style:italic">&#34;click&#34;</span>,<span style="font-weight:bold">&#34;on_pos_x&#34;</span>:0,<span style="font-weight:bold">&#34;on_pos_y&#34;</span>:0}
+{<span style="font-weight:bold">&#34;event_type&#34;</span>:<span style="font-style:italic">&#34;drag&#34;</span>,<span style="font-weight:bold">&#34;on_pos_x&#34;</span>:1,<span style="font-weight:bold">&#34;on_pos_y&#34;</span>:2,<span style="font-weight:bold">&#34;to_pos_x&#34;</span>:3,<span style="font-weight:bold">&#34;to_pos_y&#34;</span>:4}
+</code></pre></div><p>那如果反序列化呢？</p>
+<p>为了使程序更加通用，我们假设并不清楚读取得到的json究竟是哪一种事件类型。一般会有一个函数能反序列化所有的事件类型，根据其中的<code>EventType</code>类型不同反序列化成不同的事件类型的实例。</p>
+<p>让我们先试试直接反序列化成组合的根结构体会怎么样？</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">func</span> main() {
+	jsonStr := <span style="font-style:italic">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	event, err := unmarshalEvent(jsonStr)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+	fmt.Printf(<span style="font-style:italic">&#34;%+v\n&#34;</span>, event)
+
+	fmt.Println(event.(*ClickEvent).OnPosX) <span style="font-style:italic">//备注2
+</span><span style="font-style:italic"></span>}
+
+<span style="font-weight:bold">func</span> unmarshalEvent(jStr <span style="">string</span>) (*Event, <span style="">error</span>) {
+	<span style="font-weight:bold">var</span> tmpEvent Event <span style="font-style:italic">// //备注1
+</span><span style="font-style:italic"></span>	err := json.Unmarshal([]byte(jStr), &amp;tmpEvent)
+	<span style="font-weight:bold">return</span> &amp;tmpEvent, err
+}
+</code></pre></div><p>在<em>备注2</em>的位置我们遇到了麻烦。这里json从类型上看是<code>ClickEvent</code>类型，但是使用组合结构体<code>Event</code>进行反序列化之后并没有得到想要的类型。该<code>Event</code>无法强制转换为<code>ClickEvent</code>类型，就算<code>ClickEvent</code>中组合了<code>Event</code>也不行。我们需要另想办法。</p>
+<p>需要注意的是，以上程序报的错误是</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">invalid type assertion: tmpEvent.(*ClickEvent) (non-interface type Event on left)
+</code></pre></div><p>这里似乎说的是<em>备注1</em>的位置没有使用<code>interface{}</code>导致的该问题。但是就算改成了<code>var tmpEvent interface{}</code>, 也依旧会报错，变成如下错误：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">panic: interface conversion: interface {} is map[string]interface {}, not *main.ClickEvent
+</code></pre></div><p>也就是说json直接被反序列化成了<code>map[string]interface {}</code>，似乎更糟了。</p>
+<p>这里有一种解决方案，就是在<code>unmarshalEvent</code>函数中先反序列化为<code>Event</code>，然后再根据其类型反序列化为其他类型。代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">func</span> main() {
+	jsonStr := <span style="font-style:italic">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	event, err := unmarshalEvent(jsonStr)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+	
+	fmt.Println(reflect.TypeOf(event)) <span style="font-style:italic">//备注2
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">switch</span> event.(<span style="font-weight:bold">type</span>) { <span style="font-style:italic">//备注3
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">case</span> *ClickEvent:
+		fmt.Println(event.(*ClickEvent).OnPosX)
+	<span style="font-weight:bold">case</span> *DragEvent:
+		fmt.Println(event.(*DragEvent).ToPosX)
+	<span style="font-weight:bold">default</span>:
+		<span style="font-style:italic">// todo more judge
+</span><span style="font-style:italic"></span>	}
+}
+
+<span style="font-weight:bold">func</span> unmarshalEvent(jStr <span style="">string</span>) (<span style="font-weight:bold">interface</span>{}, <span style="">error</span>) {
+	<span style="font-weight:bold">var</span> tmpEvent Event
+	<span style="font-weight:bold">if</span> err := json.Unmarshal([]byte(jStr), &amp;tmpEvent); err != <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>, err
+	}
+
+	<span style="font-weight:bold">switch</span> tmpEvent.EventType { <span style="font-style:italic">// 备注1
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">case</span> <span style="font-style:italic">&#34;click&#34;</span>:
+		<span style="font-weight:bold">var</span> clickEvent ClickEvent
+		err := json.Unmarshal([]byte(jStr), &amp;clickEvent)
+		<span style="font-weight:bold">return</span> &amp;clickEvent, err
+	<span style="font-weight:bold">case</span> <span style="font-style:italic">&#34;drag&#34;</span>:
+		<span style="font-weight:bold">var</span> dragEvent DragEvent
+		err := json.Unmarshal([]byte(jStr), &amp;dragEvent)
+		<span style="font-weight:bold">return</span> &amp;dragEvent, err
+	<span style="font-weight:bold">default</span>:
+		<span style="font-style:italic">//todo another type
+</span><span style="font-style:italic"></span>	}
+
+	<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>, errors.New(<span style="font-style:italic">&#34;invalid type:&#34;</span> + tmpEvent.EventType)
+}
+</code></pre></div><p>代码可以正常运行，我们成功地识别出了json中的<code>Event</code>类型，并将其反序列化成了想要的具体类型。
+由<em>备注2</em>的输出可以看到，我们得到的类型的确是<code>*ClickEvent</code>，而不是<code>*Event</code>。</p>
+<p>这里有两个问题：</p>
+<ol>
+<li>我们需要再反序列化时枚举所有可能的<code>Event</code>类型。也就是说每当我需要新增一个<code>Event</code>类型，都需要修改<em>备注1</em>的代码，不符合开闭原则；</li>
+<li>由于go无法在组合结构体之间相互赋值，<code>unmarshalEvent</code>的返回类型是一个<code>interface{}</code>，这样就无可避免地需要在<em>备注3</em>处进行类型判断和类型强转，导致代码冗长。</li>
+</ol>
+<p>第一个问题我们暂时先放一放；对于第二个问题，我们能否使用接口来解决？</p>
+<h2 id="3-使用接口实现扩展">3. 使用接口实现扩展</h2>
+<p>我们修改一下第1节的结构体定义，改成使用接口而非组合的方式进行<code>Event</code>的扩展：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">type</span> Event <span style="font-weight:bold">interface</span> {
+	GetEventType() <span style="">string</span>
+	Process()
+}
+
+<span style="font-weight:bold">type</span> ClickEvent <span style="font-weight:bold">struct</span> {
+	OnPosX <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_x&#34;`</span>
+	OnPosY <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_y&#34;`</span>
+}
+
+<span style="font-weight:bold">func</span> (e *ClickEvent) GetEventType() <span style="">string</span> {
+	<span style="font-weight:bold">return</span> <span style="font-style:italic">&#34;click&#34;</span>
+}
+
+<span style="font-weight:bold">func</span> (e *ClickEvent) Process() {
+	fmt.Println(<span style="font-style:italic">&#34;process ClickEvent with on pos: &#34;</span>, e.OnPosX, <span style="font-style:italic">&#34;, &#34;</span>, e.OnPosY)
+}
+
+<span style="font-weight:bold">func</span> (e *ClickEvent) MarshalJSON() ([]<span style="">byte</span>, <span style="">error</span>) {
+	<span style="font-weight:bold">type</span> copyType ClickEvent
+	<span style="font-weight:bold">return</span> json.Marshal(<span style="font-weight:bold">struct</span> {
+		copyType
+		EventType <span style="">string</span> <span style="font-style:italic">`json:&#34;event_type&#34;`</span>
+	}{
+		copyType:  copyType(*e),
+		EventType: <span style="font-style:italic">&#34;click&#34;</span>,
+	})
+}
+
+<span style="font-weight:bold">type</span> DragEvent <span style="font-weight:bold">struct</span> {
+	OnPosX <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_x&#34;`</span>
+	OnPosY <span style="">int64</span> <span style="font-style:italic">`json:&#34;on_pos_y&#34;`</span>
+	ToPosX <span style="">int64</span> <span style="font-style:italic">`json:&#34;to_pos_x&#34;`</span>
+	ToPosY <span style="">int64</span> <span style="font-style:italic">`json:&#34;to_pos_y&#34;`</span>
+}
+
+<span style="font-weight:bold">func</span> (e *DragEvent) GetEventType() <span style="">string</span> {
+	<span style="font-weight:bold">return</span> <span style="font-style:italic">&#34;drag&#34;</span>
+}
+
+<span style="font-weight:bold">func</span> (e *DragEvent) Process() {
+	fmt.Println(<span style="font-style:italic">&#34;process DragEvent with to pos: &#34;</span>, e.ToPosX, <span style="font-style:italic">&#34;, &#34;</span>, e.ToPosY)
+}
+
+<span style="font-weight:bold">func</span> (e *DragEvent) MarshalJSON() ([]<span style="">byte</span>, <span style="">error</span>) {
+	<span style="font-weight:bold">type</span> copyType DragEvent
+	<span style="font-weight:bold">return</span> json.Marshal(<span style="font-weight:bold">struct</span> {
+		copyType
+		EventType <span style="">string</span> <span style="font-style:italic">`json:&#34;event_type&#34;`</span>
+	}{
+		copyType:  copyType(*e),
+		EventType: <span style="font-style:italic">&#34;drag&#34;</span>,
+	})
+}
+</code></pre></div><p>在这里，<code>Event</code>变成了一个接口而非结构体，除了提供<code>GetEventType</code>方法之外，也定义了必须实现的<code>Process</code>方法。注意其中为了保证序列化结果中包含<code>event_type</code>，这里重新定义了<code>ClickEvent</code>和<code>DragEvent</code>的<code>MarshalJSON</code>方法。</p>
+<p>使用接口的方式实现的各个事件定义的序列化的使用方式和之前没有什么不同，这里直接看反序列化:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go">
+<span style="font-weight:bold">func</span> main() {
+	jsonStr := <span style="font-style:italic">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	event, err := unmarshalEvent(jsonStr)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+
+	fmt.Println(reflect.TypeOf(event)) 
+	<span style="font-weight:bold">switch</span> event.GetEventType() { <span style="font-style:italic">//备注3
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">case</span> <span style="font-style:italic">&#34;click&#34;</span>:
+		fmt.Println(event.(*ClickEvent).OnPosX)
+	<span style="font-weight:bold">case</span> <span style="font-style:italic">&#34;drag&#34;</span>:
+		fmt.Println(event.(*DragEvent).ToPosX)
+	<span style="font-weight:bold">default</span>:
+		<span style="font-style:italic">// todo more judge
+</span><span style="font-style:italic"></span>	}
+
+    event.Process() <span style="font-style:italic">//备注4
+</span><span style="font-style:italic"></span>}
+
+<span style="font-weight:bold">func</span> unmarshalEvent(jStr <span style="">string</span>) (Event, <span style="">error</span>) {
+	<span style="font-weight:bold">var</span> tmpEvent <span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">interface</span>{} <span style="font-style:italic">// 备注1
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">if</span> err := json.Unmarshal([]byte(jStr), &amp;tmpEvent); err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+
+	<span style="font-weight:bold">switch</span> tmpEvent[<span style="font-style:italic">&#34;event_type&#34;</span>].(<span style="">string</span>) { <span style="font-style:italic">// 备注2
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">case</span> <span style="font-style:italic">&#34;click&#34;</span>:
+		<span style="font-weight:bold">var</span> clickEvent ClickEvent
+		err := json.Unmarshal([]byte(jStr), &amp;clickEvent)
+		<span style="font-weight:bold">return</span> &amp;clickEvent, err
+	<span style="font-weight:bold">case</span> <span style="font-style:italic">&#34;drag&#34;</span>:
+		<span style="font-weight:bold">var</span> dragEvent DragEvent
+		err := json.Unmarshal([]byte(jStr), &amp;dragEvent)
+		<span style="font-weight:bold">return</span> &amp;dragEvent, err
+	<span style="font-weight:bold">default</span>:
+		<span style="font-style:italic">//todo another type
+</span><span style="font-style:italic"></span>	}
+
+	<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>, errors.New(<span style="font-style:italic">&#34;invalid type:&#34;</span> + tmpEvent[<span style="font-style:italic">&#34;event_type&#34;</span>].(<span style="">string</span>))
+}
+</code></pre></div><p>这里将<code>unmarshalEvent</code>方法的返回值类型由<code>interface</code>变更为了<code>Event</code>。代价就是在判断当前事件类型时不能使用<code>Event</code>接收反序列化结果了，<em>备注1</em>处和<em>备注2</em>处必须使用<code>map[string]interface{}</code>，稍微复杂了些。</p>
+<p>在<em>备注3</em>处，为了获取原始的事件，还是需要进行类型的探测以及强转，不过这里好一点的是无需进行类型检测，只需要检测<code>event.GetEventType()</code>即可。另外在<em>备注4</em>处，我们可以无需进行类型探测和强转即可去调用各个实现事件的<code>Process</code>函数，这个就比之前使用<code>interface{}</code>的方式好很多。这真是接口&quot;抽象行为&quot;上的优势体现。但是使用接口的方式问题在于无法提取共性的参数进行复用，可以结合使用&quot;组合&quot;和&quot;接口&quot;两种方式来获取二者的优势。</p>
+<h2 id="4-支持自定义的事件">4. 支持自定义的事件</h2>
+<p>到目前为止看来问题几乎已经完全得到了解决，除了上一章提到的一个问题：</p>
+<blockquote>
+<p>我们需要再反序列化时枚举所有可能的<code>Event</code>类型。也就是说每当我需要新增一个<code>Event</code>类型，都需要修改<em>备注1</em>的代码，不符合开闭原则。</p>
+</blockquote>
+<p>在我们需要支持用户自定义事件时，每次新增都需要修改一次<code>unmarshalEvent</code>的函数代码。这个该怎么改进呢？</p>
+<p>退一步想一下，如果我自定义了一个事件，然后在<code>unmarshalEvent</code>中反序列化一个json成为这个自定义事件的类型实例，需要哪些必要的信息？</p>
+<p>首先很明确的一点，就是当前提供的json具体是哪个类型，这个信息通过字段<code>event_type</code>已经可以知道了；其次，如果是自定义的扩展类型，还需要的数据就是“当前扩展类型的结构体定义”，或者说有一种机制能够让<code>unmarshalEvent</code>在读取到<code>event_type</code>之后还能够知道这种<code>event_type</code>对应的类型就行了。</p>
+<p>这样看的话，我们可以为<code>unmarshalEvent</code>函数维护一个可以扩展的映射，维护<code>event_type</code>到具体结构体类型的映射关系。在我们新增一个<code>event_type</code>及其定义时，将其注册到这个扩展映射中即可。这样的话在事件类型扩展时<code>unmarshalEvent</code>本身不用做任何改动。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">var</span> mutex sync.RWMutex
+<span style="font-weight:bold">var</span> extendEventType <span style="font-weight:bold">map</span>[<span style="">string</span>]reflect.Type
+
+<span style="font-weight:bold">func</span> RegisterExtendEvent(eventType <span style="">string</span>, p reflect.Type) {
+	mutex.Lock()
+	<span style="font-weight:bold">defer</span> mutex.Unlock()
+
+	<span style="font-weight:bold">if</span> extendEventType == <span style="font-weight:bold">nil</span> {
+		extendEventType = make(<span style="font-weight:bold">map</span>[<span style="">string</span>]reflect.Type)
+	}
+
+	extendEventType[eventType] = p
+}
+
+<span style="font-weight:bold">func</span> GetEventByType(eventType <span style="">string</span>) (reflect.Type, <span style="">error</span>) {
+	mutex.RLock()
+	<span style="font-weight:bold">defer</span> mutex.RUnlock()
+
+	<span style="font-weight:bold">if</span> extendEventType == <span style="font-weight:bold">nil</span> || extendEventType[eventType] == <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>, errors.New(<span style="font-style:italic">&#34;Unregistered extendEventType:&#34;</span> + eventType)
+	}
+	<span style="font-weight:bold">return</span> extendEventType[eventType], <span style="font-weight:bold">nil</span>
+}
+
+<span style="font-weight:bold">func</span> unmarshalEvent(jStr <span style="">string</span>) (Event, <span style="">error</span>) {
+	<span style="font-weight:bold">var</span> tmpEvent <span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">interface</span>{}
+	<span style="font-weight:bold">if</span> err := json.Unmarshal([]byte(jStr), &amp;tmpEvent); err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+
+	eventType := tmpEvent[<span style="font-style:italic">&#34;event_type&#34;</span>].(<span style="">string</span>)
+	t, err := GetEventByType(eventType)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>, err
+	}
+	extendEvent := reflect.New(t).Interface()
+	err = json.Unmarshal([]byte(jStr), &amp;extendEvent)
+	<span style="font-weight:bold">return</span> extendEvent.(Event), err
+}
+</code></pre></div><p>然后再需要扩展<code>Event</code>类型时进行注册即可：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go">RegisterExtendEvent(<span style="font-style:italic">&#34;click&#34;</span>, reflect.TypeOf(ClickEvent{}))
+RegisterExtendEvent(<span style="font-style:italic">&#34;drag&#34;</span>, reflect.TypeOf(DragEvent{}))
+</code></pre></div><p>到目前为止，我们似乎完成了所有的需求。看上去不错，但这里有一个限制就是<code>unmarshalEvent()</code>结果获取的是<code>Event</code>接口，也就是说我们可以调用其中的接口方法，但是无法调用实际类型的方法（强制转换后是可以的，但是还是需要switch判断实际类型后进行转换，不是我所需要的）。</p>
+<p>假如我们需要的通用操作不只是<code>Process()</code>，需要扩展一个新的操作<code>Cancel()</code>，这个时候只有两种办法：
+要么修改<code>Event</code>接口定义然后实现：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">type</span> Event <span style="font-weight:bold">interface</span> {
+	GetEventType() <span style="">string</span>
+	Process()
+	Cancel()
+}
+</code></pre></div><p>要么我重新定义一个<code>Canceler</code>接口：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">type</span> Canceler <span style="font-weight:bold">interface</span> {
+	Cancel()
+}
+</code></pre></div><p>重新定义一个<code>Canceler</code>接口是不合适的，<code>unmarshalEvent()</code>无法返回多个接口的变量，毕竟没有泛型；而如果我修改<code>Event</code>接口定义，那么我需要修改所有的<code>Event</code>实现，这工作量也太大了些。</p>
+<p>参考接口类型的注册模式，我们也可以定义一个不同操作的注册机制。<code>Event</code>实现类只需要在需要的时候调用操作的注册方法即可；而在相应方法未注册时进行查找调用的话会忽略或者抛出异常：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">var</span> handleMutex sync.RWMutex
+<span style="font-weight:bold">var</span> handlerMap <span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">func</span>(e Event)
+
+<span style="font-weight:bold">func</span> RegisterEventHandler(eventType <span style="">string</span>, handlerName <span style="">string</span>, f <span style="font-weight:bold">func</span>(e Event)) {
+	handleMutex.Lock()
+	<span style="font-weight:bold">defer</span> handleMutex.Unlock()
+
+	<span style="font-weight:bold">if</span> handlerMap == <span style="font-weight:bold">nil</span> {
+		handlerMap = make(<span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">func</span>(e Event))
+	}
+
+	<span style="font-weight:bold">if</span> handlerMap[eventType] == <span style="font-weight:bold">nil</span> {
+		handlerMap[eventType] = make(<span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">func</span>(e Event))
+	}
+
+	handlerMap[eventType][handlerName] = f
+}
+
+<span style="font-weight:bold">func</span> GetEventHandler(eventType <span style="">string</span>, handlerName <span style="">string</span>) (f <span style="font-weight:bold">func</span>(e Event), <span style="">error</span>) {
+	handleMutex.RLock()
+	<span style="font-weight:bold">defer</span> handleMutex.RUnlock()
+
+	<span style="font-weight:bold">if</span> handlerMap == <span style="font-weight:bold">nil</span> || handlerMap[eventType] == <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>, errors.New(<span style="font-style:italic">&#34;Unregistered handler for eventType:&#34;</span> + eventType + <span style="font-style:italic">&#34; and handlerName:&#34;</span> + handlerName)
+	}
+	<span style="font-weight:bold">return</span> handlerMap[eventType][handlerName], <span style="font-weight:bold">nil</span>
+}
+</code></pre></div><p>然后记得注册和使用即可：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">func</span> ProcessClickEvent(e Event) {
+	ce := e.(*ClickEvent)
+	fmt.Println(<span style="font-style:italic">&#34;process ClickEvent with on pos: &#34;</span>, ce.OnPosX, <span style="font-style:italic">&#34;, &#34;</span>, ce.OnPosY)
+}
+
+<span style="font-weight:bold">func</span> CancelClickEvent(e Event) {
+	ce := e.(*ClickEvent)
+	fmt.Println(<span style="font-style:italic">&#34;cancel ClickEvent with on pos: &#34;</span>, ce.OnPosX, <span style="font-style:italic">&#34;, &#34;</span>, ce.OnPosY)
+}
+
+<span style="font-weight:bold">func</span> ProcessDragEvent(e Event) {
+	de := e.(*DragEvent)
+	fmt.Println(<span style="font-style:italic">&#34;process DragEvent with to pos: &#34;</span>, de.ToPosX, <span style="font-style:italic">&#34;, &#34;</span>, de.ToPosY)
+}
+
+<span style="font-weight:bold">func</span> CancelDragEvent(e Event) {
+	de := e.(*DragEvent)
+	fmt.Println(<span style="font-style:italic">&#34;cancel DragEvent with to pos: &#34;</span>, de.ToPosX, <span style="font-style:italic">&#34;, &#34;</span>, de.ToPosY)
+}
+
+<span style="font-weight:bold">func</span> main() {
+
+	RegisterExtendEvent(<span style="font-style:italic">&#34;click&#34;</span>, reflect.TypeOf(ClickEvent{}))
+	RegisterExtendEvent(<span style="font-style:italic">&#34;drag&#34;</span>, reflect.TypeOf(DragEvent{}))
+
+	RegisterEventHandler(<span style="font-style:italic">&#34;click&#34;</span>, <span style="font-style:italic">&#34;process&#34;</span>, ProcessClickEvent)
+	RegisterEventHandler(<span style="font-style:italic">&#34;click&#34;</span>, <span style="font-style:italic">&#34;cancel&#34;</span>, CancelClickEvent)
+	RegisterEventHandler(<span style="font-style:italic">&#34;drag&#34;</span>, <span style="font-style:italic">&#34;process&#34;</span>, ProcessDragEvent)
+	RegisterEventHandler(<span style="font-style:italic">&#34;drag&#34;</span>, <span style="font-style:italic">&#34;cancel&#34;</span>, CancelDragEvent)
+
+	jsonStr := <span style="font-style:italic">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	event, err := unmarshalEvent(jsonStr)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+
+	processFunc, err := GetEventHandler(event.GetEventType(), <span style="font-style:italic">&#34;process&#34;</span>)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+	<span style="font-weight:bold">if</span> processFunc != <span style="font-weight:bold">nil</span> {
+		processFunc(event)
+	}
+}
+</code></pre></div><h2 id="5-自定义反序列化">5. 自定义反序列化</h2>
+<p>前面几节使用了<code>unmarshalEvent</code>进行了事件的反序列化。我们的<code>Event</code>是独立的实体还好说，如果是某个结构体的一部分怎么办？这时候就必须自定义json的反序列化方法了。
+比如我们有如下的结构体，然后尝试反序列化:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">type</span> Panel <span style="font-weight:bold">struct</span> {
+	Height <span style="">int64</span> <span style="font-style:italic">`json:&#34;height&#34;`</span>
+	Row    <span style="">int64</span> <span style="font-style:italic">`json:&#34;row&#34;`</span>
+	Event  Event <span style="font-style:italic">`json:&#34;event&#34;`</span>
+}
+
+<span style="font-weight:bold">func</span> main() {
+	<span style="font-weight:bold">var</span> panel Panel
+	panelJson := <span style="font-style:italic">`{&#34;height&#34;: 200, &#34;row&#34;: 100, &#34;event&#34;: {&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
+	<span style="font-weight:bold">if</span> err := json.Unmarshal([]byte(panelJson), &amp;panel); err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+
+	fmt.Println(reflect.TypeOf(panel.Event))
+}
+</code></pre></div><p>很可惜，上面的程序报错了：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-fallback" data-lang="fallback">panic: json: cannot unmarshal object into Go struct field Panel.event of type main.Event
+</code></pre></div><p>也就是说，<code>Panel</code>的<code>Event</code>无法反序列化。这是就需要自定义反序列化函数。为了<code>Event</code>的自定义反序列化不影响<code>Panel</code>的其他正常字段，这里可以使用一个小技巧：将<code>Event</code>包装起来：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">type</span> Panel <span style="font-weight:bold">struct</span> {
+	Height <span style="">int64</span>        <span style="font-style:italic">`json:&#34;height&#34;`</span>
+	Row    <span style="">int64</span>        <span style="font-style:italic">`json:&#34;row&#34;`</span>
+	Event  EventWrapper <span style="font-style:italic">`json:&#34;event&#34;`</span>
+}
+
+<span style="font-weight:bold">type</span> EventWrapper <span style="font-weight:bold">struct</span> {
+	Event Event
+}
+
+<span style="font-weight:bold">func</span> (w EventWrapper) MarshalJSON() ([]<span style="">byte</span>, <span style="">error</span>) {
+	<span style="font-weight:bold">return</span> json.Marshal(w.Event)
+}
+
+<span style="font-weight:bold">func</span> (w *EventWrapper) UnmarshalJSON(data []<span style="">byte</span>) <span style="">error</span> {
+	<span style="font-weight:bold">var</span> tmpEvent <span style="font-weight:bold">map</span>[<span style="">string</span>]<span style="font-weight:bold">interface</span>{}
+	<span style="font-weight:bold">if</span> err := json.Unmarshal(data, &amp;tmpEvent); err != <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> err
+	}
+
+	eventType := tmpEvent[<span style="font-style:italic">&#34;event_type&#34;</span>].(<span style="">string</span>)
+	t, err := GetEventByType(eventType)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> err
+	}
+	extendEvent := reflect.New(t).Interface()
+	err = json.Unmarshal(data, &amp;extendEvent)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> err
+	}
+
+	w.Event = extendEvent.(Event)
+	<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>
+}
+
+<span style="font-weight:bold">func</span> main() {
+	RegisterExtendEvent(<span style="font-style:italic">&#34;click&#34;</span>, reflect.TypeOf(ClickEvent{}))
+	RegisterExtendEvent(<span style="font-style:italic">&#34;drag&#34;</span>, reflect.TypeOf(DragEvent{}))
+
+	<span style="font-weight:bold">var</span> panel Panel
+	panelJson := <span style="font-style:italic">`{&#34;height&#34;: 200, &#34;row&#34;: 100, &#34;event&#34;: {&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
+	<span style="font-weight:bold">if</span> err := json.Unmarshal([]byte(panelJson), &amp;panel); err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+
+	fmt.Println(reflect.TypeOf(panel.Event))
+
+	b, err := json.Marshal(panel)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+	fmt.Println(string(b))
+}
+</code></pre></div><p>回过头来，如果我们从一开始不是使用接口而是直接使用结构体来定义<code>Event</code>，事情又会变得不一样。我们只需要处理一件事情，那就是结构体之间的相互转换。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:2;-o-tab-size:2;tab-size:2"><code class="language-go" data-lang="go"><span style="font-weight:bold">type</span> Event <span style="font-weight:bold">struct</span> {
+	EventType  <span style="">string</span>      <span style="font-style:italic">`json:&#34;event_type&#34;`</span>
+	EventParam <span style="font-weight:bold">interface</span>{} <span style="font-style:italic">`json:&#34;event_param&#34;`</span>
+}
+
+<span style="font-weight:bold">func</span> (e *Event) UnmarshalJSON(data []<span style="">byte</span>) <span style="">error</span> {
+
+	<span style="font-style:italic">// 使用新类型，避免递归调用
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">type</span> cloneType Event
+
+	rawMsg := json.RawMessage{}
+	e.EventParam = &amp;rawMsg <span style="font-style:italic">//将Param强制赋值为json.RawMessage，避免使用默认的map[string]interface{}
+</span><span style="font-style:italic"></span>	<span style="font-weight:bold">if</span> err := json.Unmarshal(data, (*cloneType)(e)); err != <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> err
+	}
+
+	t, err := GetEventByType(e.EventType)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		<span style="font-weight:bold">return</span> err
+	}
+	extendEvent := reflect.New(t).Interface()
+	<span style="font-weight:bold">if</span> len(rawMsg) != 0 {
+		<span style="font-weight:bold">if</span> err := json.Unmarshal(rawMsg, &amp;extendEvent); err != <span style="font-weight:bold">nil</span> { <span style="font-style:italic">//使用rawMsg进行序列化，rawMsg由前面的反序列化得来
+</span><span style="font-style:italic"></span>			<span style="font-weight:bold">return</span> err
+		}
+	}
+	e.EventParam = extendEvent
+	<span style="font-weight:bold">return</span> <span style="font-weight:bold">nil</span>
+}
+
+<span style="font-weight:bold">func</span> main() {
+	RegisterExtendEvent(<span style="font-style:italic">&#34;click&#34;</span>, reflect.TypeOf(ClickEvent{}))
+	RegisterExtendEvent(<span style="font-style:italic">&#34;drag&#34;</span>, reflect.TypeOf(DragEvent{}))
+
+	jsonStr := <span style="font-style:italic">`{&#34;event_type&#34;:&#34;click&#34;, &#34;event_param&#34;: {&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
+	<span style="font-weight:bold">var</span> event Event
+	err := json.Unmarshal([]byte(jsonStr), &amp;event)
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		panic(err)
+	}
+	fmt.Println(reflect.TypeOf(event))
+	fmt.Println(event.EventParam.(*ClickEvent).OnPosX)
+}
+</code></pre></div><p>这个时候无需包装结构体，在反序列化的时候使用<code>RawMessage</code>进行延迟处理即可。</p>
+<h2 id="6-总结">6. 总结</h2>
+<p>由于go语言没有完整的面向对象的类型支持和泛型支持，所以在处理时需要自己考虑持久化的数据结构如何以及如何反序列化回来，还有就是怎么进行灵活的类型和方法绑定。最后的实现方式似乎越来越接近面向对象支持的底层实现，说不定有一天看到c++的面向对象实现原理，会有一种“啊，这一块的实现方式我之前也有写过”的奇妙感觉。</p>
+
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-tags">
+              <a href="/tags/go/">
+                go
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        
+          <div class="row">
+            <div class="col-xs-12">
+              <br/><br/><p>Subscribe to：<a target='_blank' href='https://sh1yu.github.io'>psycode's Blog</a></p>
+            </div>
+          </div>
+
+          
+
+<div class="related-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/post/run-gogs-with-docker/">使用docker运行gogs服务</a></li>
+    
+  </ul>
+</div>
+
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+        
+
+        <div class="site-footer">
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  
+
+<script>
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

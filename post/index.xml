@@ -6,7 +6,21 @@
     <description>Recent content in Posts on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 05 Apr 2021 00:11:49 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 04 Sep 2021 19:35:00 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>golang组合、接口以及反序列化</title>
+      <link>https://sh1yu.github.io/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</link>
+      <pubDate>Sat, 04 Sep 2021 19:35:00 +0800</pubDate>
+      
+      <guid>https://sh1yu.github.io/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</guid>
+      <description>现在，我想用Go实现一个Event类，有如下的要求：
+ 有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so easy，直接开搞！ 但是真正实现时，才发现没有想象中的那么简单&amp;hellip;
+1. 结构体实现 首先我们使用go来实现结构体Event，然后利用组合的方式实现两个Event:
+type Event struct { EventType string `json:&amp;#34;event_type&amp;#34;` } type ClickEvent struct { Event `json:&amp;#34;,inline&amp;#34;` OnPosX int64 `json:&amp;#34;on_pos_x&amp;#34;` OnPosY int64 `json:&amp;#34;on_pos_y&amp;#34;` } type DragEvent struct { Event `json:&amp;#34;,inline&amp;#34;` OnPosX int64 `json:&amp;#34;on_pos_x&amp;#34;` OnPosY int64 `json:&amp;#34;on_pos_y&amp;#34;` ToPosX int64 `json:&amp;#34;to_pos_x&amp;#34;` ToPosY int64 `json:&amp;#34;to_pos_y&amp;#34;` } 很简单，没有问题。
+2. 序列化与反序列化 让我们尝试将其序列化到json，以便持久化存储：
+func main() { event1 := ClickEvent{ Event: Event{EventType: &amp;#34;click&amp;#34;}, OnPosX: 0, OnPosY: 0, } b1, _ := json.</description>
+    </item>
+    
     <item>
       <title>一次springboot&#43;dubbo的项目实战</title>
       <link>https://sh1yu.github.io/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/</link>
