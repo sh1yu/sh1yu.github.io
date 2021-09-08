@@ -1,109 +1,327 @@
 <!DOCTYPE html>
-<html class="nojs" lang="zh-cn" dir="ltr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<title>archlinux使用操作拾遗 – psycode - better code, better life.</title>
-<meta name="description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。 检测网卡的PCI-ID lspci -vnn | grep 14e4: 获取驱动    驱动 描述     brcmsmac/brcmfmac …">
-<meta name="created" content="2019-02-13T11:22:54+0800">
-<meta name="modified" content="2019-02-13T11:22:54+0800">
-<meta name="author" content="sypeng">
-<meta name="contact" content="psyucc@163.com">
-<meta property="og:site_name" content="psycode - better code, better life.">
-<meta property="og:title" content="archlinux使用操作拾遗">
-<meta property="og:url" content="https://sh1yu.github.io/post/archlinux-operation/">
-<meta property="og:type" content="article">
-
-<meta name="generator" content="Hugo 0.87.0" />
-<meta name="msapplication-TileColor" content="#ffffff">
-<meta name="theme-color" content="#ffffff">
+<html
+  dir="ltr"
+  lang="en"
+  data-theme="light"
+><head>
+  <title>
+    psycode
+      |
+      archlinux使用操作拾遗
 
 
-<link rel="canonical" href="https://sh1yu.github.io/post/archlinux-operation/">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    
 
-<link rel="stylesheet" href="/css/mobile.2ab74aa64785dcab8114959e76ca140cf76207cd85989bc6d4fc3b12f734a09e.css" media="screen">
-<link rel="stylesheet" href="/css/styles.220f12cbeefa3ca61dd63c4390295bf3974c4ba9557837d5e408db1b40a477ee.css">
-<link rel="stylesheet" href="/css/print.27fc184f8670f41a2690985390779e7b20335a8fadff8fa015cf9417ffe50c36.css" media="print">
+  </title>
 
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": "archlinux使用操作拾遗",
-    "datePublished": "2019-02-13T11:22:54+08:00",
-    "dateModified": "2019-02-13T11:22:54+08:00",
-    "url" : "https://sh1yu.github.io/post/archlinux-operation/",
-    "description": "这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。 archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。 检测网卡的PCI-ID lspci -vnn | grep 14e4: 获取驱动    驱动 描述     brcmsmac/brcmfmac …",
-    "keywords": ["archlinux","linux"],
-    "author": {
-      "@type": "Person",
-      "name": "sypeng"
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": "https://sh1yu.github.io"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "psycode - better code, better life.",
-      "url": "https://sh1yu.github.io"
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.87.0" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta
+    name="description"
+    content="
+      better code, better life.
+
+
+    "
+  />
+  
+  
+  
+  <link
+    rel="stylesheet"
+    href="/css/main.min.62c68e6209f6e0ad6a21a6c89488202f1ac09c13fc07856ebd509ecd54ab3196.css"
+    integrity="sha256-YsaOYgn24K1qIabIlIggLxrAnBP8B4VuvVCezVSrMZY="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.8e4c8f0a940b1596fb4c64d28a00a5ceed671fc303cb65178b4947417da9c674.css"
+    integrity="sha256-jkyPCpQLFZb7TGTSigClzu1nH8MDy2UXi0lHQX2pxnQ="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+    crossorigin="anonymous"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="/post/archlinux-operation/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.2a2cd9614b7d007dfbb75e8da19e3a0fa872ceab53c6d000c00b7a0c89b85bfc.js"
+    integrity="sha256-KizZYUt9AH37t16NoZ46D6hyzqtTxtAAwAt6DIm4W/w="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.7fd87181cdd7e8413aa64b6867bb32f3a8dc242e684fc7d5bbb9f600dbc2b6eb.js"
+      integrity="sha256-f9hxgc3X6EE6pktoZ7sy86jcJC5oT8fVu7n2ANvCtus="
+      crossorigin="anonymous"
+    ></script>
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="archlinux使用操作拾遗"/>
+<meta name="twitter:description" content="这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。
+archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。
+检测网卡的PCI-ID
+lspci -vnn | grep 14e4: 获取驱动"/>
+
+
+
+  
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "post",
+        "name": "archlinux使用操作拾遗",
+        "headline": "archlinux使用操作拾遗",
+        "alternativeHeadline": "",
+        "description": "
+      
+        这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。\narchlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。\n检测网卡的PCI-ID\nlspci -vnn | grep 14e4: 获取驱动
+
+
+      
+
+
+    ",
+        "inLanguage": "en",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/sh1yu.github.io\/post\/archlinux-operation\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "sypeng"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "sypeng"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "sypeng"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "sypeng"
+        },
+        "copyrightYear" : "2019",
+        "dateCreated": "2019-02-13T11:22:54.00Z",
+        "datePublished": "2019-02-13T11:22:54.00Z",
+        "dateModified": "2019-02-13T11:22:54.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "sypeng",
+            "url": "https://sh1yu.github.io",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/sh1yu.github.iofavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/sh1yu.github.io\/post\/archlinux-operation\/",
+        "wordCount" : "150",
+        "genre" : [ 
+      
+      "devops"
+
+    ],
+        "keywords" : [ 
+      
+      "archlinux"
+
+    
+      
+        ,
+
+      
+      "linux"
+
+    ]
     }
-  }
-</script>
+  </script>
 
-<script src="/js/script-early.min.3b0e641814c87f6a1d6ffa5e7d597f29faa8ce11482541e8801dc34013817c91.js"></script>
-<script defer src="/js/lib/jquery.slim.min.bbb7b9921ca2b61948753a6edb63c78443663dc45d1621d18e102e1dcb34e512.js"></script>
-<script defer src="/js/lib/umbrella.min.6e17830ccdded0a13b96d6993865b58202bc2ee750e5892a51858ab048b2bebb.js"></script>
-<script defer src="/js/mobile.min.abb9438113cb72181ecda30b9375cc0771c7ce2e7354414a7c1296b45cf47135.js"></script>
-<script src="/js/lib/js.cookie.min.31d1799663bbb6029214d90ba7db9cdc725fa02c16d4b090add3721e44238b6b.js"></script>
-<script defer src="/js/cookieconsent.min.21a8d7c181aecb9bb5b91b2e1735d9fd9d283a8a752e9dcdf33c052137987f2b.js"></script>
-<script defer src="/js/script.min.c2752732454d16255cfd30375b9a3e48a37b7b809c917b33920889c859ba1300.js"></script>
 
 
 </head>
+<body>
+    <header><div
+  class="page-top 
+    animated fadeInDown
 
-<body class="single-page">
-<div class="page layout__page layout__sidebar-second">
-<header class="header layout__header">
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+  </a>
+  <nav>
+    <ul class="nav__list" id="navMenu">
+      <div class="nav__links">
+        
+        
+          
+          <li>
+            <a
+              
+              href="/"
+              
+              title=""
+              >主页</a
+            >
+          </li>
 
-<h1 class="header__site-name">
-<a href="/" title="Home" class="header__site-link" rel="home"><span>psycode - better code, better life.</span></a>
-</h1>
-<div class="region header__region">
+        
+          
+          <li>
+            <a
+              
+              href="/post/"
+              
+              title=""
+              >文章</a
+            >
+          </li>
+
+        
+          
+          <li>
+            <a
+              
+              href="/about/"
+              
+              title=""
+              >关于我</a
+            >
+          </li>
+
+        
+        
+      </div>
+      <li>
+        
+          <a class="theme-switch" title="Switch Theme">
+            <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+          </a>
+
+        
+      </li>
+    </ul>
+  </nav>
 </div>
 </header>
+    <div class="wrapper">
+      <aside><div
+  class="sidebar
+    animated fadeInDown
 
-<nav class="main-menu layout__navigation">
-<h2 class="visually-hidden">Main menu</h2>
-<ul class="navbar">
-<li><a href="/">Home</a></li>
-<li><a href="/post/" class="active" aria-current="page">Posts</a></li>
-</ul>
-</nav>
+  "
+>
+  <div class="sidebar__content">
+    <div class="logo-title">
+      <div class="title">
+        <img src="https://avatars.githubusercontent.com/u/4922741?s=400&amp;u=c325c94d790c852dca971de31d50d93dc50a1e74&amp;v=4" alt="profile picture" />
+        <h3 title=""><a href="/">psy&#39;s code</a></h3>
+        <div class="description">
+          <p>better code, better life.</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links">
+      
+    </ul>
+  </div><footer class="footer footer--sidebar">
+  <div class="by_farbox">
+    <ul class="footer__list">
+      <li class="footer__item">
+        &copy;
+        
+          2019-2021
+
+        
+      </li>
+      
+    </ul>
+  </div>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.71100d84fab0ad794b8399a66ac810700cc78d703f715dc10af4d7ba7b761362.js"
+    integrity="sha256-cRANhPqwrXlLg5mmasgQcAzHjXA/cV3BCvTXunt2E2I="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main>
+        <div class="autopagerize_page_element">
+          <div class="content">
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    <div class="post-content">
+      
+      <div class="post-title">
+        <h1>archlinux使用操作拾遗</h1>
+        
+          <div class="info">
+            <em class="fas fa-calendar-day"></em>
+            <span class="date"
+              >
+                Wed, Feb 13, 2019
 
 
-<main class="main layout__main">
-<article class="section-post single-view">
-<header>
-<h1 class="title title-submitted">archlinux使用操作拾遗</h1>
-<div class="submitted">
-<span class="author" itemprop="author">sypeng</span> - <time class="created-date" datetime="2019-02-13T11:22:54&#43;08:00">13 February, 2019</time>
-</div>
-<div class="tags">
-Tags:
-<ul>
-<li><a href="/tags/archlinux">archlinux</a></li>
-<li><a href="/tags/linux">linux</a></li>
-</ul>
-</div>
-</header>
-<div class="content">
-<p>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。</p>
+              </span
+            >
+            <em class="fas fa-stopwatch"></em>
+            <span class="reading-time">One-minute read</span>
+          </div>
+
+        
+      </div><p>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。</p>
 <h1 id="archlinux无线联网问题">archlinux无线联网问题</h1>
 <p>我安装的archinux是命令行版本，只能无线联网。</p>
 <p>检测网卡的PCI-ID</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">lspci -vnn | grep 14e4:
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">lspci -vnn <span class="p">|</span> grep 14e4:
 </code></pre></div><p>获取驱动</p>
 <table>
 <thead>
@@ -128,100 +346,89 @@ Tags:
 </tbody>
 </table>
 <p>b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">lsmod |grep b43
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">lsmod <span class="p">|</span>grep b43
 </code></pre></div><p>发现b43驱动已经安装</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">systemctl status NetworkManager
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">systemctl status NetworkManager
 </code></pre></div><p>发现<code>NetworkManager</code>已经安装（<code>pacman</code>安装包为<code>networkmanager</code>）</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">nmcli dev
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">nmcli dev
 </code></pre></div><p>发现无线网尚未连接。使用如下命令成功连接wifi：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">nmcli dev wifi connect &lt;SSID&gt; password &lt;password&gt;
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">nmcli dev wifi connect &lt;SSID&gt; password &lt;password&gt;
 </code></pre></div><h1 id="archlinux-软件全部升级签名问题">archlinux 软件全部升级签名问题</h1>
 <p>使用<code>sudo pacman -Syu</code>遇到了 <code>invalid or corrupted package ... unknown trust</code>的问题，应该是签名验证不通过，使用如下方法解决了：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman-key --init
-sudo vim /etc/pacman.conf <span style="color:#75715e">#设置SigLevel = Optional TrustAll</span>
-sudo vim /etc/pacman.d/gnupg/gpg.conf <span style="color:#75715e">#设置keyserver hkp://pgp.mit.edu</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo pacman-key --init
+sudo vim /etc/pacman.conf <span class="c1">#设置SigLevel = Optional TrustAll</span>
+sudo vim /etc/pacman.d/gnupg/gpg.conf <span class="c1">#设置keyserver hkp://pgp.mit.edu</span>
 sudo pacman -Syu 
 </code></pre></div><h1 id="archlinux-防火墙配置问题">archlinux 防火墙配置问题</h1>
 <p>archlinux的iptable使用systemctl启动时需要先创建<code>iptables.rules</code>文件</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo touch /etc/iptables/iptables.rules
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo touch /etc/iptables/iptables.rules
 sudo systemctl start iptables
 </code></pre></div><p>使用<code>systemctl</code>启动<code>iptables</code>或者<code>sudo iptables -L</code>时遇到问题：</p>
-<pre><code>can't initialize iptables table `filter': Table does not exist (do you need to insmod?)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">can&#39;t initialize iptables table `filter&#39;: Table does not exist (do you need to insmod?)
 Perhaps iptables or your kernel needs to be upgraded.
-</code></pre><p>使用如下命令：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">modprobe ip_tables
+</code></pre></div><p>使用如下命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">modprobe ip_tables
 </code></pre></div><p>得到如下错误：</p>
-<pre><code>FATAL: Module ip_tables not found
-</code></pre><p>最后发现<code>/boot/</code>下<code>config-*</code>文件表示的内核版本与<code>uname -r</code>的版本不一致，原来是 <code>sudo pacman -Syu</code>升级了内核，系统没有重启。重启系统后问题解决。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">FATAL: Module ip_tables not found
+</code></pre></div><p>最后发现<code>/boot/</code>下<code>config-*</code>文件表示的内核版本与<code>uname -r</code>的版本不一致，原来是 <code>sudo pacman -Syu</code>升级了内核，系统没有重启。重启系统后问题解决。</p>
 <h1 id="mariadb初始化与远程访问配置问题">mariaDB初始化与远程访问配置问题</h1>
 <p>archlinux下安装了mariaDB，需要执行初始化才能正常启动服务：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pacman -S mariadb
-sudo mysql_install_db --user<span style="color:#f92672">=</span>mysql --basedir<span style="color:#f92672">=</span>/usr --datadir<span style="color:#f92672">=</span>/var/lib/mysql
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">sudo pacman -S mariadb
+sudo mysql_install_db --user<span class="o">=</span>mysql --basedir<span class="o">=</span>/usr --datadir<span class="o">=</span>/var/lib/mysql
 sudo systemctl start mariadb
-mysqladmin -u root password <span style="color:#e6db74">&#39;12345678&#39;</span> 
+mysqladmin -u root password <span class="s1">&#39;12345678&#39;</span> 
 </code></pre></div><p>允许远程访问，需要首先确保防火墙配置正常，<code>my.cnf</code>的<code>bind-address</code>配置不为<code>localhost</code>，没有配置<code>skip-networking </code>； 之后配置权限：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">GRANT</span> <span style="color:#66d9ef">ALL</span> <span style="color:#66d9ef">PRIVILEGES</span> <span style="color:#66d9ef">ON</span> <span style="color:#f92672">*</span>.<span style="color:#f92672">*</span> <span style="color:#66d9ef">TO</span> <span style="color:#e6db74">&#39;root&#39;</span><span style="color:#f92672">@</span><span style="color:#e6db74">&#39;%&#39;</span>IDENTIFIED <span style="color:#66d9ef">BY</span> <span style="color:#e6db74">&#39;123456&#39;</span> <span style="color:#66d9ef">WITH</span> <span style="color:#66d9ef">GRANT</span> <span style="color:#66d9ef">OPTION</span>;
-flush <span style="color:#66d9ef">privileges</span>;
-</code></pre></div><h1 id="go语言访问mariadb日期格式datetime映射">go语言访问mariaDB日期格式DATETIME映射</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="o">*</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;root&#39;</span><span class="o">@</span><span class="s1">&#39;%&#39;</span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;123456&#39;</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">GRANT</span><span class="w"> </span><span class="k">OPTION</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="n">flush</span><span class="w"> </span><span class="k">privileges</span><span class="p">;</span><span class="w">
+</span></code></pre></div><h1 id="go语言访问mariadb日期格式datetime映射">go语言访问mariaDB日期格式DATETIME映射</h1>
 <p>go语言连接mariaDB时如果没有配置<code>parseTime=true</code>，scan到的日期数据为[]int8格式，使用string类型接收时为日期的&quot;2006-01-02 15:04:05&quot;格式化字符串（可以使用sql.NullString接收处理空值）。如果配置了<code>parseTime=true</code>，<code>scan</code>时可以直接使用<code>time.Time</code> ，但是时间为空时会抛出异常。如果使用<code>string</code>类型接收，则字符串格式为<code>time.RFC3339</code>(<code>2006-01-02T15:04:05Z07:00</code>)</p>
-
-
-<aside class="related layout__related">
-</aside>
 </div>
-</article>
-</main>
+    <div class="post-footer">
+      <div class="info">
+        
+          <span class="separator"><a class="category" href="/categories/devops/">devops</a></span>
 
 
-<aside class="sidebar layout__second-sidebar">
-<section>
-<h4 class="menu"><a href="/post/" class="active" aria-current="page">Posts</a></h4>
-<ul class="menu">
-<li><a href="/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">golang组合、接口以及反序列化</a></li>
-<li><a href="/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">一次springboot&#43;dubbo的项目实战</a></li>
-<li><a href="/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/">Vscode配置cpp外部头文件依赖</a></li>
-<li><a href="/post/install-mysql-in-k8s/">在k8s集群中部署mysql</a></li>
-<li><a href="/post/sign-model/">SIGN模型找到天赋</a></li>
-<li><a href="/post/knowledge-to-ability/">将知识内化成能力</a></li>
-<li><a href="/post/iceberg-model/">冰山模型</a></li>
-<li><a href="/post/kubernetes-statefulset/">kubernetes之StatefulSet</a></li>
-<li><a href="/post/vert.x-and-future/">Vert.x线程与Future</a></li>
-<li><a href="/post/archlinux-operation/" class="active" aria-current="page">archlinux使用操作拾遗</a></li>
-<li><a href="/post/run-gogs-with-docker/">使用docker运行gogs服务</a></li>
-</ul>
-</section>
-</aside>
-<footer class="footer layout__footer">
-<p>This site is licensed under a (<a href="https://creativecommons.org/licenses/by-sa/4.0/)">https://creativecommons.org/licenses/by-sa/4.0/)</a>. [Creative Commons Attribution-ShareAlike 4.0 International License]</p>
-<p>A <a href="https://example.org/">example.org</a> production.</p>
-<p>Powered by <a href="https://gohugo.io/">Hugo</a> and the <a href="https://github.com/frjo/hugo-theme-zen">Zen theme</a>.</p>
-</footer>
-<div class="cookieconsent layout__cookieconsent hidden">
-  <div class="cookieconsent__message">
-    This website uses non essential cookies for tracking and analytics that you can accept or decline.
-    
-  </div>
-  <div class="cookieconsent__actions">
-    <button class="button button--small button--cookieconsent button--decline" type="button" data-consent="false">Decline tracking</button>
-    <button class="button button--small button--cookieconsent button--accept" type="button" data-consent="true">Accept tracking</button>
-  </div>
-</div>
-</div>
-<div class="mobile-nav" dir="ltr">
-  <div class="mobile-nav__cover"></div>
-  <a href="#navigation" class="mobile-nav__toggle" aria-haspopup="true" role="button">Menu</a>
-  <div class="mobile-nav__sheet">
-    <div class="mobile-nav__region">
-    
+
+
+        
+
+        
+          <span class="separator"><a class="tag" href="/tags/archlinux/">archlinux</a><a class="tag" href="/tags/linux/">linux</a></span>
+
+
+
+
+        
+      </div>
     </div>
-    <nav class="mobile-nav__main-menu">
-    <h2 class="visually-hidden">Main menu</h2>
-    <ul class="mobile-nav__navbar">
-    <li><a href="/">Home</a></li>
-    <li><a href="/post/" class="active" aria-current="page">Posts</a></li>
-    </ul>
-    </nav>
+
+    
   </div>
-</div>
-</body>
+
+
+          </div>
+        </div>
+      </main>
+    </div><footer class="footer footer--base">
+  <div class="by_farbox">
+    <ul class="footer__list">
+      <li class="footer__item">
+        &copy;
+        
+          2019-2021
+
+        
+      </li>
+      
+    </ul>
+  </div>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.71100d84fab0ad794b8399a66ac810700cc78d703f715dc10af4d7ba7b761362.js"
+    integrity="sha256-cRANhPqwrXlLg5mmasgQcAzHjXA/cV3BCvTXunt2E2I="
+    crossorigin="anonymous"
+  ></script></body>
 </html>

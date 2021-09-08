@@ -103,5 +103,8 @@
   </url><url>
     <loc>https://sh1yu.github.io/post/run-gogs-with-docker/</loc>
     <lastmod>2019-02-13T11:22:54+08:00</lastmod>
+  </url><url>
+    <loc>https://sh1yu.github.io/about/</loc>
+    <priority>0</priority>
   </url>
 </urlset>

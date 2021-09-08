@@ -1,100 +1,315 @@
 <!DOCTYPE html>
-<html class="nojs" lang="zh-cn" dir="ltr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<title>golang组合、接口以及反序列化 – psycode - better code, better life.</title>
-<meta name="description" content="现在，我想用Go实现一个Event类，有如下的要求：  有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so …">
-<meta name="created" content="2021-09-04T19:35:00+0800">
-<meta name="modified" content="2021-09-04T19:35:00+0800">
-
-<meta name="contact" content="psyucc@163.com">
-<meta property="og:site_name" content="psycode - better code, better life.">
-<meta property="og:title" content="golang组合、接口以及反序列化">
-<meta property="og:url" content="https://sh1yu.github.io/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
-<meta property="og:type" content="article">
-
-<meta name="generator" content="Hugo 0.87.0" />
-<meta name="msapplication-TileColor" content="#ffffff">
-<meta name="theme-color" content="#ffffff">
+<html
+  dir="ltr"
+  lang="en"
+  data-theme="light"
+><head>
+  <title>
+    psycode
+      |
+      golang组合、接口以及反序列化
 
 
-<link rel="canonical" href="https://sh1yu.github.io/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    
 
-<link rel="stylesheet" href="/css/mobile.2ab74aa64785dcab8114959e76ca140cf76207cd85989bc6d4fc3b12f734a09e.css" media="screen">
-<link rel="stylesheet" href="/css/styles.220f12cbeefa3ca61dd63c4390295bf3974c4ba9557837d5e408db1b40a477ee.css">
-<link rel="stylesheet" href="/css/print.27fc184f8670f41a2690985390779e7b20335a8fadff8fa015cf9417ffe50c36.css" media="print">
+  </title>
 
-<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": "golang组合、接口以及反序列化",
-    "datePublished": "2021-09-04T19:35:00+08:00",
-    "dateModified": "2021-09-04T19:35:00+08:00",
-    "url" : "https://sh1yu.github.io/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/",
-    "description": "现在，我想用Go实现一个Event类，有如下的要求：  有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so …",
-    "keywords": ["go"],
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": "https://sh1yu.github.io"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "psycode - better code, better life.",
-      "url": "https://sh1yu.github.io"
+  
+  <meta charset="utf-8" /><meta name="generator" content="Hugo 0.87.0" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta
+    name="description"
+    content="
+      better code, better life.
+
+
+    "
+  />
+  
+  
+  
+  <link
+    rel="stylesheet"
+    href="/css/main.min.62c68e6209f6e0ad6a21a6c89488202f1ac09c13fc07856ebd509ecd54ab3196.css"
+    integrity="sha256-YsaOYgn24K1qIabIlIggLxrAnBP8B4VuvVCezVSrMZY="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  
+  <link
+    rel="stylesheet"
+    href="/css/markupHighlight.min.8e4c8f0a940b1596fb4c64d28a00a5ceed671fc303cb65178b4947417da9c674.css"
+    integrity="sha256-jkyPCpQLFZb7TGTSigClzu1nH8MDy2UXi0lHQX2pxnQ="
+    crossorigin="anonymous"
+    type="text/css"
+  />
+  
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+    crossorigin="anonymous"
+  />
+  
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <link rel="canonical" href="/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" />
+
+  
+  
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/anatole-header.min.2a2cd9614b7d007dfbb75e8da19e3a0fa872ceab53c6d000c00b7a0c89b85bfc.js"
+    integrity="sha256-KizZYUt9AH37t16NoZ46D6hyzqtTxtAAwAt6DIm4W/w="
+    crossorigin="anonymous"
+  ></script>
+
+  
+    
+    
+    <script
+      type="text/javascript"
+      src="/js/anatole-theme-switcher.min.7fd87181cdd7e8413aa64b6867bb32f3a8dc242e684fc7d5bbb9f600dbc2b6eb.js"
+      integrity="sha256-f9hxgc3X6EE6pktoZ7sy86jcJC5oT8fVu7n2ANvCtus="
+      crossorigin="anonymous"
+    ></script>
+
+  
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="golang组合、接口以及反序列化"/>
+<meta name="twitter:description" content="现在，我想用Go实现一个Event类，有如下的要求：
+ 有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so easy，直接开搞！ 但是真正实现时，才发现没有想象中的那么简单&hellip;
+1. 结构体实现 首先我们使用go来实现结构体Event，然后利用组合的方式实现两个Event:"/>
+
+
+
+  
+
+
+  
+  
+  
+  
+  <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "articleSection": "post",
+        "name": "golang组合、接口以及反序列化",
+        "headline": "golang组合、接口以及反序列化",
+        "alternativeHeadline": "",
+        "description": "
+      
+        现在，我想用Go实现一个Event类，有如下的要求：\n 有多种Event类型，不同的Event类型拥有不同的参数； 这些Event会被持久化到存储中，在需要时反序列化回来； 每个Event都有Process方法，具体的方法实现逻辑存放在不同的Event具体类型中。  ok，看需求并不复杂，不就是面向对象的继承、重载那一套吗，so easy，直接开搞！ 但是真正实现时，才发现没有想象中的那么简单\u0026hellip;\n1. 结构体实现 首先我们使用go来实现结构体Event，然后利用组合的方式实现两个Event:
+
+
+      
+
+
+    ",
+        "inLanguage": "en",
+        "isFamilyFriendly": "true",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/sh1yu.github.io\/post\/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96\/"
+        },
+        "author" : {
+            "@type": "Person",
+            "name": "psycode"
+        },
+        "creator" : {
+            "@type": "Person",
+            "name": "psycode"
+        },
+        "accountablePerson" : {
+            "@type": "Person",
+            "name": "psycode"
+        },
+        "copyrightHolder" : {
+            "@type": "Person",
+            "name": "psycode"
+        },
+        "copyrightYear" : "2021",
+        "dateCreated": "2021-09-04T19:35:00.00Z",
+        "datePublished": "2021-09-04T19:35:00.00Z",
+        "dateModified": "2021-09-04T19:35:00.00Z",
+        "publisher":{
+            "@type":"Organization",
+            "name": "psycode",
+            "url": "https://sh1yu.github.io",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https:\/\/sh1yu.github.iofavicon-32x32.png",
+                "width":"32",
+                "height":"32"
+            }
+        },
+        "image": 
+      [
+      ]
+
+    ,
+        "url" : "https:\/\/sh1yu.github.io\/post\/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96\/",
+        "wordCount" : "1171",
+        "genre" : [ 
+      
+      "coding"
+
+    ],
+        "keywords" : [ 
+      
+      "go"
+
+    ]
     }
-  }
-</script>
+  </script>
 
-<script src="/js/script-early.min.3b0e641814c87f6a1d6ffa5e7d597f29faa8ce11482541e8801dc34013817c91.js"></script>
-<script defer src="/js/lib/jquery.slim.min.bbb7b9921ca2b61948753a6edb63c78443663dc45d1621d18e102e1dcb34e512.js"></script>
-<script defer src="/js/lib/umbrella.min.6e17830ccdded0a13b96d6993865b58202bc2ee750e5892a51858ab048b2bebb.js"></script>
-<script defer src="/js/mobile.min.abb9438113cb72181ecda30b9375cc0771c7ce2e7354414a7c1296b45cf47135.js"></script>
-<script src="/js/lib/js.cookie.min.31d1799663bbb6029214d90ba7db9cdc725fa02c16d4b090add3721e44238b6b.js"></script>
-<script defer src="/js/cookieconsent.min.21a8d7c181aecb9bb5b91b2e1735d9fd9d283a8a752e9dcdf33c052137987f2b.js"></script>
-<script defer src="/js/script.min.c2752732454d16255cfd30375b9a3e48a37b7b809c917b33920889c859ba1300.js"></script>
 
 
 </head>
+<body>
+    <header><div
+  class="page-top 
+    animated fadeInDown
 
-<body class="single-page">
-<div class="page layout__page layout__sidebar-second">
-<header class="header layout__header">
+  "
+>
+  <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+  </a>
+  <nav>
+    <ul class="nav__list" id="navMenu">
+      <div class="nav__links">
+        
+        
+          
+          <li>
+            <a
+              
+              href="/"
+              
+              title=""
+              >主页</a
+            >
+          </li>
 
-<h1 class="header__site-name">
-<a href="/" title="Home" class="header__site-link" rel="home"><span>psycode - better code, better life.</span></a>
-</h1>
-<div class="region header__region">
+        
+          
+          <li>
+            <a
+              
+              href="/post/"
+              
+              title=""
+              >文章</a
+            >
+          </li>
+
+        
+          
+          <li>
+            <a
+              
+              href="/about/"
+              
+              title=""
+              >关于我</a
+            >
+          </li>
+
+        
+        
+      </div>
+      <li>
+        
+          <a class="theme-switch" title="Switch Theme">
+            <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+          </a>
+
+        
+      </li>
+    </ul>
+  </nav>
 </div>
 </header>
+    <div class="wrapper">
+      <aside><div
+  class="sidebar
+    animated fadeInDown
 
-<nav class="main-menu layout__navigation">
-<h2 class="visually-hidden">Main menu</h2>
-<ul class="navbar">
-<li><a href="/">Home</a></li>
-<li><a href="/post/" class="active" aria-current="page">Posts</a></li>
-</ul>
-</nav>
+  "
+>
+  <div class="sidebar__content">
+    <div class="logo-title">
+      <div class="title">
+        <img src="https://avatars.githubusercontent.com/u/4922741?s=400&amp;u=c325c94d790c852dca971de31d50d93dc50a1e74&amp;v=4" alt="profile picture" />
+        <h3 title=""><a href="/">psy&#39;s code</a></h3>
+        <div class="description">
+          <p>better code, better life.</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links">
+      
+    </ul>
+  </div><footer class="footer footer--sidebar">
+  <div class="by_farbox">
+    <ul class="footer__list">
+      <li class="footer__item">
+        &copy;
+        
+          2019-2021
+
+        
+      </li>
+      
+    </ul>
+  </div>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.71100d84fab0ad794b8399a66ac810700cc78d703f715dc10af4d7ba7b761362.js"
+    integrity="sha256-cRANhPqwrXlLg5mmasgQcAzHjXA/cV3BCvTXunt2E2I="
+    crossorigin="anonymous"
+  ></script></div>
+</aside>
+      <main>
+        <div class="autopagerize_page_element">
+          <div class="content">
+  <div
+    class="post 
+      animated fadeInDown
+
+    "
+  >
+    <div class="post-content">
+      
+      <div class="post-title">
+        <h1>golang组合、接口以及反序列化</h1>
+        
+          <div class="info">
+            <em class="fas fa-calendar-day"></em>
+            <span class="date"
+              >
+                Sat, Sep 4, 2021
 
 
-<main class="main layout__main">
-<article class="section-post single-view">
-<header>
-<h1 class="title title-submitted">golang组合、接口以及反序列化</h1>
-<div class="submitted">
-<time class="created-date" datetime="2021-09-04T19:35:00&#43;08:00">4 September, 2021</time>
-</div>
-<div class="tags">
-Tags:
-<ul>
-<li><a href="/tags/go">go</a></li>
-</ul>
-</div>
-</header>
-<div class="content">
-<p>现在，我想用Go实现一个<code>Event</code>类，有如下的要求：</p>
+              </span
+            >
+            <em class="fas fa-stopwatch"></em>
+            <span class="reading-time">6-minute read</span>
+          </div>
+
+        
+      </div><p>现在，我想用Go实现一个<code>Event</code>类，有如下的要求：</p>
 <ol>
 <li>有多种Event类型，不同的Event类型拥有不同的参数；</li>
 <li>这些Event会被持久化到存储中，在需要时反序列化回来；</li>
@@ -104,114 +319,114 @@ Tags:
 但是真正实现时，才发现没有想象中的那么简单&hellip;</p>
 <h2 id="1-结构体实现">1. 结构体实现</h2>
 <p>首先我们使用go来实现结构体<code>Event</code>，然后利用<strong>组合</strong>的方式实现两个<code>Event</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Event</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">EventType</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;event_type&#34;`</span>
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Event</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">EventType</span> <span class="kt">string</span> <span class="s">`json:&#34;event_type&#34;`</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ClickEvent</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Event</span> <span style="color:#e6db74">`json:&#34;,inline&#34;`</span>
-	<span style="color:#a6e22e">OnPosX</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_x&#34;`</span>
-	<span style="color:#a6e22e">OnPosY</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_y&#34;`</span>
-}
+<span class="kd">type</span> <span class="nx">ClickEvent</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Event</span> <span class="s">`json:&#34;,inline&#34;`</span>
+	<span class="nx">OnPosX</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_x&#34;`</span>
+	<span class="nx">OnPosY</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_y&#34;`</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">DragEvent</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Event</span> <span style="color:#e6db74">`json:&#34;,inline&#34;`</span>
-	<span style="color:#a6e22e">OnPosX</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_x&#34;`</span>
-	<span style="color:#a6e22e">OnPosY</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_y&#34;`</span>
-	<span style="color:#a6e22e">ToPosX</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;to_pos_x&#34;`</span>
-	<span style="color:#a6e22e">ToPosY</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;to_pos_y&#34;`</span>
-}
+<span class="kd">type</span> <span class="nx">DragEvent</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Event</span> <span class="s">`json:&#34;,inline&#34;`</span>
+	<span class="nx">OnPosX</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_x&#34;`</span>
+	<span class="nx">OnPosY</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_y&#34;`</span>
+	<span class="nx">ToPosX</span> <span class="kt">int64</span> <span class="s">`json:&#34;to_pos_x&#34;`</span>
+	<span class="nx">ToPosY</span> <span class="kt">int64</span> <span class="s">`json:&#34;to_pos_y&#34;`</span>
+<span class="p">}</span>
 </code></pre></div><p>很简单，没有问题。</p>
 <h2 id="2-序列化与反序列化">2. 序列化与反序列化</h2>
 <p>让我们尝试将其序列化到json，以便持久化存储：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">event1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ClickEvent</span>{
-		<span style="color:#a6e22e">Event</span>:  <span style="color:#a6e22e">Event</span>{<span style="color:#a6e22e">EventType</span>: <span style="color:#e6db74">&#34;click&#34;</span>},
-		<span style="color:#a6e22e">OnPosX</span>: <span style="color:#ae81ff">0</span>,
-		<span style="color:#a6e22e">OnPosY</span>: <span style="color:#ae81ff">0</span>,
-	}
-	<span style="color:#a6e22e">b1</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">event1</span>)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">event1</span> <span class="o">:=</span> <span class="nx">ClickEvent</span><span class="p">{</span>
+		<span class="nx">Event</span><span class="p">:</span>  <span class="nx">Event</span><span class="p">{</span><span class="nx">EventType</span><span class="p">:</span> <span class="s">&#34;click&#34;</span><span class="p">},</span>
+		<span class="nx">OnPosX</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+		<span class="nx">OnPosY</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="nx">b1</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">event1</span><span class="p">)</span>
 
-	<span style="color:#a6e22e">event2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">DragEvent</span>{
-		<span style="color:#a6e22e">Event</span>:  <span style="color:#a6e22e">Event</span>{<span style="color:#a6e22e">EventType</span>: <span style="color:#e6db74">&#34;drag&#34;</span>},
-		<span style="color:#a6e22e">OnPosX</span>: <span style="color:#ae81ff">1</span>,
-		<span style="color:#a6e22e">OnPosY</span>: <span style="color:#ae81ff">2</span>,
-		<span style="color:#a6e22e">ToPosX</span>: <span style="color:#ae81ff">3</span>,
-		<span style="color:#a6e22e">ToPosY</span>: <span style="color:#ae81ff">4</span>,
-	}
-	<span style="color:#a6e22e">b2</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">event2</span>)
+	<span class="nx">event2</span> <span class="o">:=</span> <span class="nx">DragEvent</span><span class="p">{</span>
+		<span class="nx">Event</span><span class="p">:</span>  <span class="nx">Event</span><span class="p">{</span><span class="nx">EventType</span><span class="p">:</span> <span class="s">&#34;drag&#34;</span><span class="p">},</span>
+		<span class="nx">OnPosX</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+		<span class="nx">OnPosY</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+		<span class="nx">ToPosX</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+		<span class="nx">ToPosY</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="nx">b2</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">event2</span><span class="p">)</span>
 
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(string(<span style="color:#a6e22e">b1</span>))
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(string(<span style="color:#a6e22e">b2</span>))
-}
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">b1</span><span class="p">))</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">b2</span><span class="p">))</span>
+<span class="p">}</span>
 </code></pre></div><p>看上去也不难。对每个具体的Event直接json反序列化即可。以上程序会输出如下的序列化之后的字符串：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{<span style="color:#f92672">&#34;event_type&#34;</span>:<span style="color:#e6db74">&#34;click&#34;</span>,<span style="color:#f92672">&#34;on_pos_x&#34;</span>:<span style="color:#ae81ff">0</span>,<span style="color:#f92672">&#34;on_pos_y&#34;</span>:<span style="color:#ae81ff">0</span>}
-{<span style="color:#f92672">&#34;event_type&#34;</span>:<span style="color:#e6db74">&#34;drag&#34;</span>,<span style="color:#f92672">&#34;on_pos_x&#34;</span>:<span style="color:#ae81ff">1</span>,<span style="color:#f92672">&#34;on_pos_y&#34;</span>:<span style="color:#ae81ff">2</span>,<span style="color:#f92672">&#34;to_pos_x&#34;</span>:<span style="color:#ae81ff">3</span>,<span style="color:#f92672">&#34;to_pos_y&#34;</span>:<span style="color:#ae81ff">4</span>}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;event_type&#34;</span><span class="p">:</span><span class="s2">&#34;click&#34;</span><span class="p">,</span><span class="nt">&#34;on_pos_x&#34;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="nt">&#34;on_pos_y&#34;</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+<span class="p">{</span><span class="nt">&#34;event_type&#34;</span><span class="p">:</span><span class="s2">&#34;drag&#34;</span><span class="p">,</span><span class="nt">&#34;on_pos_x&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&#34;on_pos_y&#34;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nt">&#34;to_pos_x&#34;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="nt">&#34;to_pos_y&#34;</span><span class="p">:</span><span class="mi">4</span><span class="p">}</span>
 </code></pre></div><p>那如果反序列化呢？</p>
 <p>为了使程序更加通用，我们假设并不清楚读取得到的json究竟是哪一种事件类型。一般会有一个函数能反序列化所有的事件类型，根据其中的<code>EventType</code>类型不同反序列化成不同的事件类型的实例。</p>
 <p>让我们先试试直接反序列化成组合的根结构体会怎么样？</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">jsonStr</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
-	<span style="color:#a6e22e">event</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jsonStr</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v\n&#34;</span>, <span style="color:#a6e22e">event</span>)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">jsonStr</span> <span class="o">:=</span> <span class="s">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	<span class="nx">event</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jsonStr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%+v\n&#34;</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span>
 
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">event</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>).<span style="color:#a6e22e">OnPosX</span>) <span style="color:#75715e">//备注2
-</span><span style="color:#75715e"></span>}
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">event</span><span class="p">.(</span><span class="o">*</span><span class="nx">ClickEvent</span><span class="p">).</span><span class="nx">OnPosX</span><span class="p">)</span> <span class="c1">//备注2
+</span><span class="c1"></span><span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jStr</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">Event</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tmpEvent</span> <span style="color:#a6e22e">Event</span> <span style="color:#75715e">// //备注1
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tmpEvent</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tmpEvent</span>, <span style="color:#a6e22e">err</span>
-}
+<span class="kd">func</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jStr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Event</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">tmpEvent</span> <span class="nx">Event</span> <span class="c1">// //备注1
+</span><span class="c1"></span>	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">tmpEvent</span><span class="p">)</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">tmpEvent</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
 </code></pre></div><p>在<em>备注2</em>的位置我们遇到了麻烦。这里json从类型上看是<code>ClickEvent</code>类型，但是使用组合结构体<code>Event</code>进行反序列化之后并没有得到想要的类型。该<code>Event</code>无法强制转换为<code>ClickEvent</code>类型，就算<code>ClickEvent</code>中组合了<code>Event</code>也不行。我们需要另想办法。</p>
 <p>需要注意的是，以上程序报的错误是</p>
-<pre><code>invalid type assertion: tmpEvent.(*ClickEvent) (non-interface type Event on left)
-</code></pre><p>这里似乎说的是<em>备注1</em>的位置没有使用<code>interface{}</code>导致的该问题。但是就算改成了<code>var tmpEvent interface{}</code>, 也依旧会报错，变成如下错误：</p>
-<pre><code>panic: interface conversion: interface {} is map[string]interface {}, not *main.ClickEvent
-</code></pre><p>也就是说json直接被反序列化成了<code>map[string]interface {}</code>，似乎更糟了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">invalid type assertion: tmpEvent.(*ClickEvent) (non-interface type Event on left)
+</code></pre></div><p>这里似乎说的是<em>备注1</em>的位置没有使用<code>interface{}</code>导致的该问题。但是就算改成了<code>var tmpEvent interface{}</code>, 也依旧会报错，变成如下错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">panic: interface conversion: interface {} is map[string]interface {}, not *main.ClickEvent
+</code></pre></div><p>也就是说json直接被反序列化成了<code>map[string]interface {}</code>，似乎更糟了。</p>
 <p>这里有一种解决方案，就是在<code>unmarshalEvent</code>函数中先反序列化为<code>Event</code>，然后再根据其类型反序列化为其他类型。代码如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">jsonStr</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
-	<span style="color:#a6e22e">event</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jsonStr</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">jsonStr</span> <span class="o">:=</span> <span class="s">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	<span class="nx">event</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jsonStr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 	
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">event</span>)) <span style="color:#75715e">//备注2
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">event</span>.(<span style="color:#66d9ef">type</span>) { <span style="color:#75715e">//备注3
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>:
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">event</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>).<span style="color:#a6e22e">OnPosX</span>)
-	<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>:
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">event</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>).<span style="color:#a6e22e">ToPosX</span>)
-	<span style="color:#66d9ef">default</span>:
-		<span style="color:#75715e">// todo more judge
-</span><span style="color:#75715e"></span>	}
-}
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">event</span><span class="p">))</span> <span class="c1">//备注2
+</span><span class="c1"></span>	<span class="k">switch</span> <span class="nx">event</span><span class="p">.(</span><span class="kd">type</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//备注3
+</span><span class="c1"></span>	<span class="k">case</span> <span class="o">*</span><span class="nx">ClickEvent</span><span class="p">:</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">event</span><span class="p">.(</span><span class="o">*</span><span class="nx">ClickEvent</span><span class="p">).</span><span class="nx">OnPosX</span><span class="p">)</span>
+	<span class="k">case</span> <span class="o">*</span><span class="nx">DragEvent</span><span class="p">:</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">event</span><span class="p">.(</span><span class="o">*</span><span class="nx">DragEvent</span><span class="p">).</span><span class="nx">ToPosX</span><span class="p">)</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="c1">// todo more judge
+</span><span class="c1"></span>	<span class="p">}</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jStr</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">interface</span>{}, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tmpEvent</span> <span style="color:#a6e22e">Event</span>
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tmpEvent</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
+<span class="kd">func</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jStr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">tmpEvent</span> <span class="nx">Event</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">tmpEvent</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
 
-	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">tmpEvent</span>.<span style="color:#a6e22e">EventType</span> { <span style="color:#75715e">// 备注1
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;click&#34;</span>:
-		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">clickEvent</span> <span style="color:#a6e22e">ClickEvent</span>
-		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">clickEvent</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">clickEvent</span>, <span style="color:#a6e22e">err</span>
-	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;drag&#34;</span>:
-		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">dragEvent</span> <span style="color:#a6e22e">DragEvent</span>
-		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">dragEvent</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">dragEvent</span>, <span style="color:#a6e22e">err</span>
-	<span style="color:#66d9ef">default</span>:
-		<span style="color:#75715e">//todo another type
-</span><span style="color:#75715e"></span>	}
+	<span class="k">switch</span> <span class="nx">tmpEvent</span><span class="p">.</span><span class="nx">EventType</span> <span class="p">{</span> <span class="c1">// 备注1
+</span><span class="c1"></span>	<span class="k">case</span> <span class="s">&#34;click&#34;</span><span class="p">:</span>
+		<span class="kd">var</span> <span class="nx">clickEvent</span> <span class="nx">ClickEvent</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">clickEvent</span><span class="p">)</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">clickEvent</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="k">case</span> <span class="s">&#34;drag&#34;</span><span class="p">:</span>
+		<span class="kd">var</span> <span class="nx">dragEvent</span> <span class="nx">DragEvent</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">dragEvent</span><span class="p">)</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">dragEvent</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="c1">//todo another type
+</span><span class="c1"></span>	<span class="p">}</span>
 
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;invalid type:&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">tmpEvent</span>.<span style="color:#a6e22e">EventType</span>)
-}
+	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;invalid type:&#34;</span> <span class="o">+</span> <span class="nx">tmpEvent</span><span class="p">.</span><span class="nx">EventType</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div><p>代码可以正常运行，我们成功地识别出了json中的<code>Event</code>类型，并将其反序列化成了想要的具体类型。
 由<em>备注2</em>的输出可以看到，我们得到的类型的确是<code>*ClickEvent</code>，而不是<code>*Event</code>。</p>
 <p>这里有两个问题：</p>
@@ -222,104 +437,104 @@ Tags:
 <p>第一个问题我们暂时先放一放；对于第二个问题，我们能否使用接口来解决？</p>
 <h2 id="3-使用接口实现扩展">3. 使用接口实现扩展</h2>
 <p>我们修改一下第1节的结构体定义，改成使用接口而非组合的方式进行<code>Event</code>的扩展：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Event</span> <span style="color:#66d9ef">interface</span> {
-	<span style="color:#a6e22e">GetEventType</span>() <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">Process</span>()
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Event</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">GetEventType</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="nf">Process</span><span class="p">()</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ClickEvent</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">OnPosX</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_x&#34;`</span>
-	<span style="color:#a6e22e">OnPosY</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_y&#34;`</span>
-}
+<span class="kd">type</span> <span class="nx">ClickEvent</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">OnPosX</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_x&#34;`</span>
+	<span class="nx">OnPosY</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_y&#34;`</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>) <span style="color:#a6e22e">GetEventType</span>() <span style="color:#66d9ef">string</span> {
-	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;click&#34;</span>
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">ClickEvent</span><span class="p">)</span> <span class="nf">GetEventType</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="s">&#34;click&#34;</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>) <span style="color:#a6e22e">Process</span>() {
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;process ClickEvent with on pos: &#34;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">OnPosX</span>, <span style="color:#e6db74">&#34;, &#34;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">OnPosY</span>)
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">ClickEvent</span><span class="p">)</span> <span class="nf">Process</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;process ClickEvent with on pos: &#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">OnPosX</span><span class="p">,</span> <span class="s">&#34;, &#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">OnPosY</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>) <span style="color:#a6e22e">MarshalJSON</span>() ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">copyType</span> <span style="color:#a6e22e">ClickEvent</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#66d9ef">struct</span> {
-		<span style="color:#a6e22e">copyType</span>
-		<span style="color:#a6e22e">EventType</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;event_type&#34;`</span>
-	}{
-		<span style="color:#a6e22e">copyType</span>:  <span style="color:#a6e22e">copyType</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">e</span>),
-		<span style="color:#a6e22e">EventType</span>: <span style="color:#e6db74">&#34;click&#34;</span>,
-	})
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">ClickEvent</span><span class="p">)</span> <span class="nf">MarshalJSON</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">type</span> <span class="nx">copyType</span> <span class="nx">ClickEvent</span>
+	<span class="k">return</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="kd">struct</span> <span class="p">{</span>
+		<span class="nx">copyType</span>
+		<span class="nx">EventType</span> <span class="kt">string</span> <span class="s">`json:&#34;event_type&#34;`</span>
+	<span class="p">}{</span>
+		<span class="nx">copyType</span><span class="p">:</span>  <span class="nf">copyType</span><span class="p">(</span><span class="o">*</span><span class="nx">e</span><span class="p">),</span>
+		<span class="nx">EventType</span><span class="p">:</span> <span class="s">&#34;click&#34;</span><span class="p">,</span>
+	<span class="p">})</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">DragEvent</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">OnPosX</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_x&#34;`</span>
-	<span style="color:#a6e22e">OnPosY</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;on_pos_y&#34;`</span>
-	<span style="color:#a6e22e">ToPosX</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;to_pos_x&#34;`</span>
-	<span style="color:#a6e22e">ToPosY</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;to_pos_y&#34;`</span>
-}
+<span class="kd">type</span> <span class="nx">DragEvent</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">OnPosX</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_x&#34;`</span>
+	<span class="nx">OnPosY</span> <span class="kt">int64</span> <span class="s">`json:&#34;on_pos_y&#34;`</span>
+	<span class="nx">ToPosX</span> <span class="kt">int64</span> <span class="s">`json:&#34;to_pos_x&#34;`</span>
+	<span class="nx">ToPosY</span> <span class="kt">int64</span> <span class="s">`json:&#34;to_pos_y&#34;`</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>) <span style="color:#a6e22e">GetEventType</span>() <span style="color:#66d9ef">string</span> {
-	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;drag&#34;</span>
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">DragEvent</span><span class="p">)</span> <span class="nf">GetEventType</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="s">&#34;drag&#34;</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>) <span style="color:#a6e22e">Process</span>() {
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;process DragEvent with to pos: &#34;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">ToPosX</span>, <span style="color:#e6db74">&#34;, &#34;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">ToPosY</span>)
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">DragEvent</span><span class="p">)</span> <span class="nf">Process</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;process DragEvent with to pos: &#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">ToPosX</span><span class="p">,</span> <span class="s">&#34;, &#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">ToPosY</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>) <span style="color:#a6e22e">MarshalJSON</span>() ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">copyType</span> <span style="color:#a6e22e">DragEvent</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#66d9ef">struct</span> {
-		<span style="color:#a6e22e">copyType</span>
-		<span style="color:#a6e22e">EventType</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;event_type&#34;`</span>
-	}{
-		<span style="color:#a6e22e">copyType</span>:  <span style="color:#a6e22e">copyType</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">e</span>),
-		<span style="color:#a6e22e">EventType</span>: <span style="color:#e6db74">&#34;drag&#34;</span>,
-	})
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">DragEvent</span><span class="p">)</span> <span class="nf">MarshalJSON</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">type</span> <span class="nx">copyType</span> <span class="nx">DragEvent</span>
+	<span class="k">return</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="kd">struct</span> <span class="p">{</span>
+		<span class="nx">copyType</span>
+		<span class="nx">EventType</span> <span class="kt">string</span> <span class="s">`json:&#34;event_type&#34;`</span>
+	<span class="p">}{</span>
+		<span class="nx">copyType</span><span class="p">:</span>  <span class="nf">copyType</span><span class="p">(</span><span class="o">*</span><span class="nx">e</span><span class="p">),</span>
+		<span class="nx">EventType</span><span class="p">:</span> <span class="s">&#34;drag&#34;</span><span class="p">,</span>
+	<span class="p">})</span>
+<span class="p">}</span>
 </code></pre></div><p>在这里，<code>Event</code>变成了一个接口而非结构体，除了提供<code>GetEventType</code>方法之外，也定义了必须实现的<code>Process</code>方法。注意其中为了保证序列化结果中包含<code>event_type</code>，这里重新定义了<code>ClickEvent</code>和<code>DragEvent</code>的<code>MarshalJSON</code>方法。</p>
 <p>使用接口的方式实现的各个事件定义的序列化的使用方式和之前没有什么不同，这里直接看反序列化:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">jsonStr</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
-	<span style="color:#a6e22e">event</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jsonStr</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">jsonStr</span> <span class="o">:=</span> <span class="s">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	<span class="nx">event</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jsonStr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">event</span>)) 
-	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">GetEventType</span>() { <span style="color:#75715e">//备注3
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;click&#34;</span>:
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">event</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>).<span style="color:#a6e22e">OnPosX</span>)
-	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;drag&#34;</span>:
-		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">event</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>).<span style="color:#a6e22e">ToPosX</span>)
-	<span style="color:#66d9ef">default</span>:
-		<span style="color:#75715e">// todo more judge
-</span><span style="color:#75715e"></span>	}
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">event</span><span class="p">))</span> 
+	<span class="k">switch</span> <span class="nx">event</span><span class="p">.</span><span class="nf">GetEventType</span><span class="p">()</span> <span class="p">{</span> <span class="c1">//备注3
+</span><span class="c1"></span>	<span class="k">case</span> <span class="s">&#34;click&#34;</span><span class="p">:</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">event</span><span class="p">.(</span><span class="o">*</span><span class="nx">ClickEvent</span><span class="p">).</span><span class="nx">OnPosX</span><span class="p">)</span>
+	<span class="k">case</span> <span class="s">&#34;drag&#34;</span><span class="p">:</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">event</span><span class="p">.(</span><span class="o">*</span><span class="nx">DragEvent</span><span class="p">).</span><span class="nx">ToPosX</span><span class="p">)</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="c1">// todo more judge
+</span><span class="c1"></span>	<span class="p">}</span>
 
-    <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">Process</span>() <span style="color:#75715e">//备注4
-</span><span style="color:#75715e"></span>}
+    <span class="nx">event</span><span class="p">.</span><span class="nf">Process</span><span class="p">()</span> <span class="c1">//备注4
+</span><span class="c1"></span><span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jStr</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">Event</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tmpEvent</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">interface</span>{} <span style="color:#75715e">// 备注1
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tmpEvent</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
+<span class="kd">func</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jStr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">Event</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">tmpEvent</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span> <span class="c1">// 备注1
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">tmpEvent</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">tmpEvent</span>[<span style="color:#e6db74">&#34;event_type&#34;</span>].(<span style="color:#66d9ef">string</span>) { <span style="color:#75715e">// 备注2
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;click&#34;</span>:
-		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">clickEvent</span> <span style="color:#a6e22e">ClickEvent</span>
-		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">clickEvent</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">clickEvent</span>, <span style="color:#a6e22e">err</span>
-	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;drag&#34;</span>:
-		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">dragEvent</span> <span style="color:#a6e22e">DragEvent</span>
-		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">dragEvent</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">dragEvent</span>, <span style="color:#a6e22e">err</span>
-	<span style="color:#66d9ef">default</span>:
-		<span style="color:#75715e">//todo another type
-</span><span style="color:#75715e"></span>	}
+	<span class="k">switch</span> <span class="nx">tmpEvent</span><span class="p">[</span><span class="s">&#34;event_type&#34;</span><span class="p">].(</span><span class="kt">string</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 备注2
+</span><span class="c1"></span>	<span class="k">case</span> <span class="s">&#34;click&#34;</span><span class="p">:</span>
+		<span class="kd">var</span> <span class="nx">clickEvent</span> <span class="nx">ClickEvent</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">clickEvent</span><span class="p">)</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">clickEvent</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="k">case</span> <span class="s">&#34;drag&#34;</span><span class="p">:</span>
+		<span class="kd">var</span> <span class="nx">dragEvent</span> <span class="nx">DragEvent</span>
+		<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">dragEvent</span><span class="p">)</span>
+		<span class="k">return</span> <span class="o">&amp;</span><span class="nx">dragEvent</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="k">default</span><span class="p">:</span>
+		<span class="c1">//todo another type
+</span><span class="c1"></span>	<span class="p">}</span>
 
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;invalid type:&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">tmpEvent</span>[<span style="color:#e6db74">&#34;event_type&#34;</span>].(<span style="color:#66d9ef">string</span>))
-}
+	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;invalid type:&#34;</span> <span class="o">+</span> <span class="nx">tmpEvent</span><span class="p">[</span><span class="s">&#34;event_type&#34;</span><span class="p">].(</span><span class="kt">string</span><span class="p">))</span>
+<span class="p">}</span>
 </code></pre></div><p>这里将<code>unmarshalEvent</code>方法的返回值类型由<code>interface</code>变更为了<code>Event</code>。代价就是在判断当前事件类型时不能使用<code>Event</code>接收反序列化结果了，<em>备注1</em>处和<em>备注2</em>处必须使用<code>map[string]interface{}</code>，稍微复杂了些。</p>
 <p>在<em>备注3</em>处，为了获取原始的事件，还是需要进行类型的探测以及强转，不过这里好一点的是无需进行类型检测，只需要检测<code>event.GetEventType()</code>即可。另外在<em>备注4</em>处，我们可以无需进行类型探测和强转即可去调用各个实现事件的<code>Process</code>函数，这个就比之前使用<code>interface{}</code>的方式好很多。这真是接口&quot;抽象行为&quot;上的优势体现。但是使用接口的方式问题在于无法提取共性的参数进行复用，可以结合使用&quot;组合&quot;和&quot;接口&quot;两种方式来获取二者的优势。</p>
 <h2 id="4-支持自定义的事件">4. 支持自定义的事件</h2>
@@ -331,317 +546,302 @@ Tags:
 <p>退一步想一下，如果我自定义了一个事件，然后在<code>unmarshalEvent</code>中反序列化一个json成为这个自定义事件的类型实例，需要哪些必要的信息？</p>
 <p>首先很明确的一点，就是当前提供的json具体是哪个类型，这个信息通过字段<code>event_type</code>已经可以知道了；其次，如果是自定义的扩展类型，还需要的数据就是“当前扩展类型的结构体定义”，或者说有一种机制能够让<code>unmarshalEvent</code>在读取到<code>event_type</code>之后还能够知道这种<code>event_type</code>对应的类型就行了。</p>
 <p>这样看的话，我们可以为<code>unmarshalEvent</code>函数维护一个可以扩展的映射，维护<code>event_type</code>到具体结构体类型的映射关系。在我们新增一个<code>event_type</code>及其定义时，将其注册到这个扩展映射中即可。这样的话在事件类型扩展时<code>unmarshalEvent</code>本身不用做任何改动。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mutex</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">RWMutex</span>
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">extendEventType</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Type</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">mutex</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+<span class="kd">var</span> <span class="nx">extendEventType</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#a6e22e">eventType</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">p</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Type</span>) {
-	<span style="color:#a6e22e">mutex</span>.<span style="color:#a6e22e">Lock</span>()
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mutex</span>.<span style="color:#a6e22e">Unlock</span>()
+<span class="kd">func</span> <span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="nx">eventType</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">p</span> <span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">mutex</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+	<span class="k">defer</span> <span class="nx">mutex</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
 
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">extendEventType</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">extendEventType</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Type</span>)
-	}
+	<span class="k">if</span> <span class="nx">extendEventType</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">extendEventType</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">extendEventType</span>[<span style="color:#a6e22e">eventType</span>] = <span style="color:#a6e22e">p</span>
-}
+	<span class="nx">extendEventType</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="p">=</span> <span class="nx">p</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GetEventByType</span>(<span style="color:#a6e22e">eventType</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Type</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">mutex</span>.<span style="color:#a6e22e">RLock</span>()
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">mutex</span>.<span style="color:#a6e22e">RUnlock</span>()
+<span class="kd">func</span> <span class="nf">GetEventByType</span><span class="p">(</span><span class="nx">eventType</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">reflect</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">mutex</span><span class="p">.</span><span class="nf">RLock</span><span class="p">()</span>
+	<span class="k">defer</span> <span class="nx">mutex</span><span class="p">.</span><span class="nf">RUnlock</span><span class="p">()</span>
 
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">extendEventType</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">extendEventType</span>[<span style="color:#a6e22e">eventType</span>] <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;Unregistered extendEventType:&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">eventType</span>)
-	}
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">extendEventType</span>[<span style="color:#a6e22e">eventType</span>], <span style="color:#66d9ef">nil</span>
-}
+	<span class="k">if</span> <span class="nx">extendEventType</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">||</span> <span class="nx">extendEventType</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;Unregistered extendEventType:&#34;</span> <span class="o">+</span> <span class="nx">eventType</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">extendEventType</span><span class="p">[</span><span class="nx">eventType</span><span class="p">],</span> <span class="kc">nil</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jStr</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">Event</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tmpEvent</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">interface</span>{}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tmpEvent</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
+<span class="kd">func</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jStr</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">Event</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">tmpEvent</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">tmpEvent</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">eventType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tmpEvent</span>[<span style="color:#e6db74">&#34;event_type&#34;</span>].(<span style="color:#66d9ef">string</span>)
-	<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GetEventByType</span>(<span style="color:#a6e22e">eventType</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#a6e22e">extendEvent</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">t</span>).<span style="color:#a6e22e">Interface</span>()
-	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">extendEvent</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">extendEvent</span>.(<span style="color:#a6e22e">Event</span>), <span style="color:#a6e22e">err</span>
-}
+	<span class="nx">eventType</span> <span class="o">:=</span> <span class="nx">tmpEvent</span><span class="p">[</span><span class="s">&#34;event_type&#34;</span><span class="p">].(</span><span class="kt">string</span><span class="p">)</span>
+	<span class="nx">t</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">GetEventByType</span><span class="p">(</span><span class="nx">eventType</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">extendEvent</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">t</span><span class="p">).</span><span class="nf">Interface</span><span class="p">()</span>
+	<span class="nx">err</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">extendEvent</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">extendEvent</span><span class="p">.(</span><span class="nx">Event</span><span class="p">),</span> <span class="nx">err</span>
+<span class="p">}</span>
 </code></pre></div><p>然后再需要扩展<code>Event</code>类型时进行注册即可：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">ClickEvent</span>{}))
-<span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;drag&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">DragEvent</span>{}))
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;click&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">ClickEvent</span><span class="p">{}))</span>
+<span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;drag&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">DragEvent</span><span class="p">{}))</span>
 </code></pre></div><p>到目前为止，我们似乎完成了所有的需求。看上去不错，但这里有一个限制就是<code>unmarshalEvent()</code>结果获取的是<code>Event</code>接口，也就是说我们可以调用其中的接口方法，但是无法调用实际类型的方法（强制转换后是可以的，但是还是需要switch判断实际类型后进行转换，不是我所需要的）。</p>
 <p>假如我们需要的通用操作不只是<code>Process()</code>，需要扩展一个新的操作<code>Cancel()</code>，这个时候只有两种办法：
 要么修改<code>Event</code>接口定义然后实现：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Event</span> <span style="color:#66d9ef">interface</span> {
-	<span style="color:#a6e22e">GetEventType</span>() <span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">Process</span>()
-	<span style="color:#a6e22e">Cancel</span>()
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Event</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">GetEventType</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="nf">Process</span><span class="p">()</span>
+	<span class="nf">Cancel</span><span class="p">()</span>
+<span class="p">}</span>
 </code></pre></div><p>要么我重新定义一个<code>Canceler</code>接口：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Canceler</span> <span style="color:#66d9ef">interface</span> {
-	<span style="color:#a6e22e">Cancel</span>()
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Canceler</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Cancel</span><span class="p">()</span>
+<span class="p">}</span>
 </code></pre></div><p>重新定义一个<code>Canceler</code>接口是不合适的，<code>unmarshalEvent()</code>无法返回多个接口的变量，毕竟没有泛型；而如果我修改<code>Event</code>接口定义，那么我需要修改所有的<code>Event</code>实现，这工作量也太大了些。</p>
 <p>参考接口类型的注册模式，我们也可以定义一个不同操作的注册机制。<code>Event</code>实现类只需要在需要的时候调用操作的注册方法即可；而在相应方法未注册时进行查找调用的话会忽略或者抛出异常：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">handleMutex</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">RWMutex</span>
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">handlerMap</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">handleMutex</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+<span class="kd">var</span> <span class="nx">handlerMap</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">func</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">)</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">RegisterEventHandler</span>(<span style="color:#a6e22e">eventType</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">handlerName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>)) {
-	<span style="color:#a6e22e">handleMutex</span>.<span style="color:#a6e22e">Lock</span>()
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">handleMutex</span>.<span style="color:#a6e22e">Unlock</span>()
+<span class="kd">func</span> <span class="nf">RegisterEventHandler</span><span class="p">(</span><span class="nx">eventType</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">handlerName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">f</span> <span class="kd">func</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">))</span> <span class="p">{</span>
+	<span class="nx">handleMutex</span><span class="p">.</span><span class="nf">Lock</span><span class="p">()</span>
+	<span class="k">defer</span> <span class="nx">handleMutex</span><span class="p">.</span><span class="nf">Unlock</span><span class="p">()</span>
 
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">handlerMap</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">handlerMap</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>))
-	}
+	<span class="k">if</span> <span class="nx">handlerMap</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">handlerMap</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">func</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">))</span>
+	<span class="p">}</span>
 
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">handlerMap</span>[<span style="color:#a6e22e">eventType</span>] <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">handlerMap</span>[<span style="color:#a6e22e">eventType</span>] = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>))
-	}
+	<span class="k">if</span> <span class="nx">handlerMap</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">handlerMap</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="p">=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">func</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">))</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">handlerMap</span>[<span style="color:#a6e22e">eventType</span>][<span style="color:#a6e22e">handlerName</span>] = <span style="color:#a6e22e">f</span>
-}
+	<span class="nx">handlerMap</span><span class="p">[</span><span class="nx">eventType</span><span class="p">][</span><span class="nx">handlerName</span><span class="p">]</span> <span class="p">=</span> <span class="nx">f</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GetEventHandler</span>(<span style="color:#a6e22e">eventType</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">handlerName</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>), <span style="color:#66d9ef">error</span>) {
-	<span style="color:#a6e22e">handleMutex</span>.<span style="color:#a6e22e">RLock</span>()
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">handleMutex</span>.<span style="color:#a6e22e">RUnlock</span>()
+<span class="kd">func</span> <span class="nf">GetEventHandler</span><span class="p">(</span><span class="nx">eventType</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">handlerName</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">f</span> <span class="kd">func</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">),</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">handleMutex</span><span class="p">.</span><span class="nf">RLock</span><span class="p">()</span>
+	<span class="k">defer</span> <span class="nx">handleMutex</span><span class="p">.</span><span class="nf">RUnlock</span><span class="p">()</span>
 
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">handlerMap</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">handlerMap</span>[<span style="color:#a6e22e">eventType</span>] <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;Unregistered handler for eventType:&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">eventType</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; and handlerName:&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">handlerName</span>)
-	}
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">handlerMap</span>[<span style="color:#a6e22e">eventType</span>][<span style="color:#a6e22e">handlerName</span>], <span style="color:#66d9ef">nil</span>
-}
+	<span class="k">if</span> <span class="nx">handlerMap</span> <span class="o">==</span> <span class="kc">nil</span> <span class="o">||</span> <span class="nx">handlerMap</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;Unregistered handler for eventType:&#34;</span> <span class="o">+</span> <span class="nx">eventType</span> <span class="o">+</span> <span class="s">&#34; and handlerName:&#34;</span> <span class="o">+</span> <span class="nx">handlerName</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">handlerMap</span><span class="p">[</span><span class="nx">eventType</span><span class="p">][</span><span class="nx">handlerName</span><span class="p">],</span> <span class="kc">nil</span>
+<span class="p">}</span>
 </code></pre></div><p>然后记得注册和使用即可：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ProcessClickEvent</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>) {
-	<span style="color:#a6e22e">ce</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">e</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>)
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;process ClickEvent with on pos: &#34;</span>, <span style="color:#a6e22e">ce</span>.<span style="color:#a6e22e">OnPosX</span>, <span style="color:#e6db74">&#34;, &#34;</span>, <span style="color:#a6e22e">ce</span>.<span style="color:#a6e22e">OnPosY</span>)
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">ProcessClickEvent</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">ce</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.(</span><span class="o">*</span><span class="nx">ClickEvent</span><span class="p">)</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;process ClickEvent with on pos: &#34;</span><span class="p">,</span> <span class="nx">ce</span><span class="p">.</span><span class="nx">OnPosX</span><span class="p">,</span> <span class="s">&#34;, &#34;</span><span class="p">,</span> <span class="nx">ce</span><span class="p">.</span><span class="nx">OnPosY</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">CancelClickEvent</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>) {
-	<span style="color:#a6e22e">ce</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">e</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>)
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;cancel ClickEvent with on pos: &#34;</span>, <span style="color:#a6e22e">ce</span>.<span style="color:#a6e22e">OnPosX</span>, <span style="color:#e6db74">&#34;, &#34;</span>, <span style="color:#a6e22e">ce</span>.<span style="color:#a6e22e">OnPosY</span>)
-}
+<span class="kd">func</span> <span class="nf">CancelClickEvent</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">ce</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.(</span><span class="o">*</span><span class="nx">ClickEvent</span><span class="p">)</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;cancel ClickEvent with on pos: &#34;</span><span class="p">,</span> <span class="nx">ce</span><span class="p">.</span><span class="nx">OnPosX</span><span class="p">,</span> <span class="s">&#34;, &#34;</span><span class="p">,</span> <span class="nx">ce</span><span class="p">.</span><span class="nx">OnPosY</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ProcessDragEvent</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>) {
-	<span style="color:#a6e22e">de</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">e</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>)
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;process DragEvent with to pos: &#34;</span>, <span style="color:#a6e22e">de</span>.<span style="color:#a6e22e">ToPosX</span>, <span style="color:#e6db74">&#34;, &#34;</span>, <span style="color:#a6e22e">de</span>.<span style="color:#a6e22e">ToPosY</span>)
-}
+<span class="kd">func</span> <span class="nf">ProcessDragEvent</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">de</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.(</span><span class="o">*</span><span class="nx">DragEvent</span><span class="p">)</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;process DragEvent with to pos: &#34;</span><span class="p">,</span> <span class="nx">de</span><span class="p">.</span><span class="nx">ToPosX</span><span class="p">,</span> <span class="s">&#34;, &#34;</span><span class="p">,</span> <span class="nx">de</span><span class="p">.</span><span class="nx">ToPosY</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">CancelDragEvent</span>(<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">Event</span>) {
-	<span style="color:#a6e22e">de</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">e</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">DragEvent</span>)
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;cancel DragEvent with to pos: &#34;</span>, <span style="color:#a6e22e">de</span>.<span style="color:#a6e22e">ToPosX</span>, <span style="color:#e6db74">&#34;, &#34;</span>, <span style="color:#a6e22e">de</span>.<span style="color:#a6e22e">ToPosY</span>)
-}
+<span class="kd">func</span> <span class="nf">CancelDragEvent</span><span class="p">(</span><span class="nx">e</span> <span class="nx">Event</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">de</span> <span class="o">:=</span> <span class="nx">e</span><span class="p">.(</span><span class="o">*</span><span class="nx">DragEvent</span><span class="p">)</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;cancel DragEvent with to pos: &#34;</span><span class="p">,</span> <span class="nx">de</span><span class="p">.</span><span class="nx">ToPosX</span><span class="p">,</span> <span class="s">&#34;, &#34;</span><span class="p">,</span> <span class="nx">de</span><span class="p">.</span><span class="nx">ToPosY</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
 
-	<span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">ClickEvent</span>{}))
-	<span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;drag&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">DragEvent</span>{}))
+	<span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;click&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">ClickEvent</span><span class="p">{}))</span>
+	<span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;drag&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">DragEvent</span><span class="p">{}))</span>
 
-	<span style="color:#a6e22e">RegisterEventHandler</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#e6db74">&#34;process&#34;</span>, <span style="color:#a6e22e">ProcessClickEvent</span>)
-	<span style="color:#a6e22e">RegisterEventHandler</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#e6db74">&#34;cancel&#34;</span>, <span style="color:#a6e22e">CancelClickEvent</span>)
-	<span style="color:#a6e22e">RegisterEventHandler</span>(<span style="color:#e6db74">&#34;drag&#34;</span>, <span style="color:#e6db74">&#34;process&#34;</span>, <span style="color:#a6e22e">ProcessDragEvent</span>)
-	<span style="color:#a6e22e">RegisterEventHandler</span>(<span style="color:#e6db74">&#34;drag&#34;</span>, <span style="color:#e6db74">&#34;cancel&#34;</span>, <span style="color:#a6e22e">CancelDragEvent</span>)
+	<span class="nf">RegisterEventHandler</span><span class="p">(</span><span class="s">&#34;click&#34;</span><span class="p">,</span> <span class="s">&#34;process&#34;</span><span class="p">,</span> <span class="nx">ProcessClickEvent</span><span class="p">)</span>
+	<span class="nf">RegisterEventHandler</span><span class="p">(</span><span class="s">&#34;click&#34;</span><span class="p">,</span> <span class="s">&#34;cancel&#34;</span><span class="p">,</span> <span class="nx">CancelClickEvent</span><span class="p">)</span>
+	<span class="nf">RegisterEventHandler</span><span class="p">(</span><span class="s">&#34;drag&#34;</span><span class="p">,</span> <span class="s">&#34;process&#34;</span><span class="p">,</span> <span class="nx">ProcessDragEvent</span><span class="p">)</span>
+	<span class="nf">RegisterEventHandler</span><span class="p">(</span><span class="s">&#34;drag&#34;</span><span class="p">,</span> <span class="s">&#34;cancel&#34;</span><span class="p">,</span> <span class="nx">CancelDragEvent</span><span class="p">)</span>
 
-	<span style="color:#a6e22e">jsonStr</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
-	<span style="color:#a6e22e">event</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unmarshalEvent</span>(<span style="color:#a6e22e">jsonStr</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
+	<span class="nx">jsonStr</span> <span class="o">:=</span> <span class="s">`{&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}`</span>
+	<span class="nx">event</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">unmarshalEvent</span><span class="p">(</span><span class="nx">jsonStr</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">processFunc</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GetEventHandler</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">GetEventType</span>(), <span style="color:#e6db74">&#34;process&#34;</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">processFunc</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#a6e22e">processFunc</span>(<span style="color:#a6e22e">event</span>)
-	}
-}
+	<span class="nx">processFunc</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">GetEventHandler</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nf">GetEventType</span><span class="p">(),</span> <span class="s">&#34;process&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">processFunc</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nf">processFunc</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div><h2 id="5-自定义反序列化">5. 自定义反序列化</h2>
 <p>前面几节使用了<code>unmarshalEvent</code>进行了事件的反序列化。我们的<code>Event</code>是独立的实体还好说，如果是某个结构体的一部分怎么办？这时候就必须自定义json的反序列化方法了。
 比如我们有如下的结构体，然后尝试反序列化:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Panel</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Height</span> <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;height&#34;`</span>
-	<span style="color:#a6e22e">Row</span>    <span style="color:#66d9ef">int64</span> <span style="color:#e6db74">`json:&#34;row&#34;`</span>
-	<span style="color:#a6e22e">Event</span>  <span style="color:#a6e22e">Event</span> <span style="color:#e6db74">`json:&#34;event&#34;`</span>
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Panel</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Height</span> <span class="kt">int64</span> <span class="s">`json:&#34;height&#34;`</span>
+	<span class="nx">Row</span>    <span class="kt">int64</span> <span class="s">`json:&#34;row&#34;`</span>
+	<span class="nx">Event</span>  <span class="nx">Event</span> <span class="s">`json:&#34;event&#34;`</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">panel</span> <span style="color:#a6e22e">Panel</span>
-	<span style="color:#a6e22e">panelJson</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`{&#34;height&#34;: 200, &#34;row&#34;: 100, &#34;event&#34;: {&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">panelJson</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">panel</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">panel</span> <span class="nx">Panel</span>
+	<span class="nx">panelJson</span> <span class="o">:=</span> <span class="s">`{&#34;height&#34;: 200, &#34;row&#34;: 100, &#34;event&#34;: {&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">panelJson</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">panel</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">panel</span>.<span style="color:#a6e22e">Event</span>))
-}
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">panel</span><span class="p">.</span><span class="nx">Event</span><span class="p">))</span>
+<span class="p">}</span>
 </code></pre></div><p>很可惜，上面的程序报错了：</p>
-<pre><code>panic: json: cannot unmarshal object into Go struct field Panel.event of type main.Event
-</code></pre><p>也就是说，<code>Panel</code>的<code>Event</code>无法反序列化。这是就需要自定义反序列化函数。为了<code>Event</code>的自定义反序列化不影响<code>Panel</code>的其他正常字段，这里可以使用一个小技巧：将<code>Event</code>包装起来：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Panel</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Height</span> <span style="color:#66d9ef">int64</span>        <span style="color:#e6db74">`json:&#34;height&#34;`</span>
-	<span style="color:#a6e22e">Row</span>    <span style="color:#66d9ef">int64</span>        <span style="color:#e6db74">`json:&#34;row&#34;`</span>
-	<span style="color:#a6e22e">Event</span>  <span style="color:#a6e22e">EventWrapper</span> <span style="color:#e6db74">`json:&#34;event&#34;`</span>
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">panic: json: cannot unmarshal object into Go struct field Panel.event of type main.Event
+</code></pre></div><p>也就是说，<code>Panel</code>的<code>Event</code>无法反序列化。这是就需要自定义反序列化函数。为了<code>Event</code>的自定义反序列化不影响<code>Panel</code>的其他正常字段，这里可以使用一个小技巧：将<code>Event</code>包装起来：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Panel</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Height</span> <span class="kt">int64</span>        <span class="s">`json:&#34;height&#34;`</span>
+	<span class="nx">Row</span>    <span class="kt">int64</span>        <span class="s">`json:&#34;row&#34;`</span>
+	<span class="nx">Event</span>  <span class="nx">EventWrapper</span> <span class="s">`json:&#34;event&#34;`</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">EventWrapper</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">Event</span> <span style="color:#a6e22e">Event</span>
-}
+<span class="kd">type</span> <span class="nx">EventWrapper</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Event</span> <span class="nx">Event</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">EventWrapper</span>) <span style="color:#a6e22e">MarshalJSON</span>() ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Event</span>)
-}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="nx">EventWrapper</span><span class="p">)</span> <span class="nf">MarshalJSON</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Event</span><span class="p">)</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventWrapper</span>) <span style="color:#a6e22e">UnmarshalJSON</span>(<span style="color:#a6e22e">data</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">error</span> {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tmpEvent</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">interface</span>{}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>(<span style="color:#a6e22e">data</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tmpEvent</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
+<span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="o">*</span><span class="nx">EventWrapper</span><span class="p">)</span> <span class="nf">UnmarshalJSON</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">tmpEvent</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">tmpEvent</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">eventType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tmpEvent</span>[<span style="color:#e6db74">&#34;event_type&#34;</span>].(<span style="color:#66d9ef">string</span>)
-	<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GetEventByType</span>(<span style="color:#a6e22e">eventType</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#a6e22e">extendEvent</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">t</span>).<span style="color:#a6e22e">Interface</span>()
-	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>(<span style="color:#a6e22e">data</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">extendEvent</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
+	<span class="nx">eventType</span> <span class="o">:=</span> <span class="nx">tmpEvent</span><span class="p">[</span><span class="s">&#34;event_type&#34;</span><span class="p">].(</span><span class="kt">string</span><span class="p">)</span>
+	<span class="nx">t</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">GetEventByType</span><span class="p">(</span><span class="nx">eventType</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">extendEvent</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">t</span><span class="p">).</span><span class="nf">Interface</span><span class="p">()</span>
+	<span class="nx">err</span> <span class="p">=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">extendEvent</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Event</span> = <span style="color:#a6e22e">extendEvent</span>.(<span style="color:#a6e22e">Event</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
+	<span class="nx">w</span><span class="p">.</span><span class="nx">Event</span> <span class="p">=</span> <span class="nx">extendEvent</span><span class="p">.(</span><span class="nx">Event</span><span class="p">)</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">ClickEvent</span>{}))
-	<span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;drag&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">DragEvent</span>{}))
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;click&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">ClickEvent</span><span class="p">{}))</span>
+	<span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;drag&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">DragEvent</span><span class="p">{}))</span>
 
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">panel</span> <span style="color:#a6e22e">Panel</span>
-	<span style="color:#a6e22e">panelJson</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`{&#34;height&#34;: 200, &#34;row&#34;: 100, &#34;event&#34;: {&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">panelJson</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">panel</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
+	<span class="kd">var</span> <span class="nx">panel</span> <span class="nx">Panel</span>
+	<span class="nx">panelJson</span> <span class="o">:=</span> <span class="s">`{&#34;height&#34;: 200, &#34;row&#34;: 100, &#34;event&#34;: {&#34;event_type&#34;:&#34;click&#34;,&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">panelJson</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">panel</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">panel</span>.<span style="color:#a6e22e">Event</span>))
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">panel</span><span class="p">.</span><span class="nx">Event</span><span class="p">))</span>
 
-	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">panel</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(string(<span style="color:#a6e22e">b</span>))
-}
+	<span class="nx">b</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">panel</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">b</span><span class="p">))</span>
+<span class="p">}</span>
 </code></pre></div><p>回过头来，如果我们从一开始不是使用接口而是直接使用结构体来定义<code>Event</code>，事情又会变得不一样。我们只需要处理一件事情，那就是结构体之间的相互转换。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Event</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">EventType</span>  <span style="color:#66d9ef">string</span>      <span style="color:#e6db74">`json:&#34;event_type&#34;`</span>
-	<span style="color:#a6e22e">EventParam</span> <span style="color:#66d9ef">interface</span>{} <span style="color:#e6db74">`json:&#34;event_param&#34;`</span>
-}
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Event</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">EventType</span>  <span class="kt">string</span>      <span class="s">`json:&#34;event_type&#34;`</span>
+	<span class="nx">EventParam</span> <span class="kd">interface</span><span class="p">{}</span> <span class="s">`json:&#34;event_param&#34;`</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Event</span>) <span style="color:#a6e22e">UnmarshalJSON</span>(<span style="color:#a6e22e">data</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">error</span> {
+<span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">Event</span><span class="p">)</span> <span class="nf">UnmarshalJSON</span><span class="p">(</span><span class="nx">data</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
 
-	<span style="color:#75715e">// 使用新类型，避免递归调用
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">cloneType</span> <span style="color:#a6e22e">Event</span>
+	<span class="c1">// 使用新类型，避免递归调用
+</span><span class="c1"></span>	<span class="kd">type</span> <span class="nx">cloneType</span> <span class="nx">Event</span>
 
-	<span style="color:#a6e22e">rawMsg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">RawMessage</span>{}
-	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">EventParam</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rawMsg</span> <span style="color:#75715e">//将Param强制赋值为json.RawMessage，避免使用默认的map[string]interface{}
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>(<span style="color:#a6e22e">data</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">cloneType</span>)(<span style="color:#a6e22e">e</span>)); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
+	<span class="nx">rawMsg</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">RawMessage</span><span class="p">{}</span>
+	<span class="nx">e</span><span class="p">.</span><span class="nx">EventParam</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">rawMsg</span> <span class="c1">//将Param强制赋值为json.RawMessage，避免使用默认的map[string]interface{}
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="nx">cloneType</span><span class="p">)(</span><span class="nx">e</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
 
-	<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GetEventByType</span>(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">EventType</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#a6e22e">extendEvent</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">t</span>).<span style="color:#a6e22e">Interface</span>()
-	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">rawMsg</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>(<span style="color:#a6e22e">rawMsg</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">extendEvent</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> { <span style="color:#75715e">//使用rawMsg进行序列化，rawMsg由前面的反序列化得来
-</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-		}
-	}
-	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">EventParam</span> = <span style="color:#a6e22e">extendEvent</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
+	<span class="nx">t</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">GetEventByType</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">EventType</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">extendEvent</span> <span class="o">:=</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">t</span><span class="p">).</span><span class="nf">Interface</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">rawMsg</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">rawMsg</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">extendEvent</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span> <span class="c1">//使用rawMsg进行序列化，rawMsg由前面的反序列化得来
+</span><span class="c1"></span>			<span class="k">return</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">e</span><span class="p">.</span><span class="nx">EventParam</span> <span class="p">=</span> <span class="nx">extendEvent</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-	<span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;click&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">ClickEvent</span>{}))
-	<span style="color:#a6e22e">RegisterExtendEvent</span>(<span style="color:#e6db74">&#34;drag&#34;</span>, <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">DragEvent</span>{}))
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;click&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">ClickEvent</span><span class="p">{}))</span>
+	<span class="nf">RegisterExtendEvent</span><span class="p">(</span><span class="s">&#34;drag&#34;</span><span class="p">,</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">DragEvent</span><span class="p">{}))</span>
 
-	<span style="color:#a6e22e">jsonStr</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`{&#34;event_type&#34;:&#34;click&#34;, &#34;event_param&#34;: {&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">event</span> <span style="color:#a6e22e">Event</span>
-	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">jsonStr</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">event</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		panic(<span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">event</span>))
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">EventParam</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">ClickEvent</span>).<span style="color:#a6e22e">OnPosX</span>)
-}
+	<span class="nx">jsonStr</span> <span class="o">:=</span> <span class="s">`{&#34;event_type&#34;:&#34;click&#34;, &#34;event_param&#34;: {&#34;on_pos_x&#34;:10,&#34;on_pos_y&#34;:20}}`</span>
+	<span class="kd">var</span> <span class="nx">event</span> <span class="nx">Event</span>
+	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">jsonStr</span><span class="p">),</span> <span class="o">&amp;</span><span class="nx">event</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">reflect</span><span class="p">.</span><span class="nf">TypeOf</span><span class="p">(</span><span class="nx">event</span><span class="p">))</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">EventParam</span><span class="p">.(</span><span class="o">*</span><span class="nx">ClickEvent</span><span class="p">).</span><span class="nx">OnPosX</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div><p>这个时候无需包装结构体，在反序列化的时候使用<code>RawMessage</code>进行延迟处理即可。</p>
 <h2 id="6-总结">6. 总结</h2>
 <p>由于go语言没有完整的面向对象的类型支持和泛型支持，所以在处理时需要自己考虑持久化的数据结构如何以及如何反序列化回来，还有就是怎么进行灵活的类型和方法绑定。最后的实现方式似乎越来越接近面向对象支持的底层实现，说不定有一天看到c++的面向对象实现原理，会有一种“啊，这一块的实现方式我之前也有写过”的奇妙感觉。</p>
-
-
-<aside class="related layout__related">
-<h2>See also</h2>
-<ul>
-<li><a href="/post/run-gogs-with-docker/">使用docker运行gogs服务</a></li>
-</ul>
-</aside>
 </div>
-</article>
-</main>
+    <div class="post-footer">
+      <div class="info">
+        
+          <span class="separator"><a class="category" href="/categories/coding/">coding</a></span>
 
 
-<aside class="sidebar layout__second-sidebar">
-<section>
-<h4 class="menu"><a href="/post/" class="active" aria-current="page">Posts</a></h4>
-<ul class="menu">
-<li><a href="/post/golang%E7%BB%84%E5%90%88%E6%8E%A5%E5%8F%A3%E4%BB%A5%E5%8F%8A%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="active" aria-current="page">golang组合、接口以及反序列化</a></li>
-<li><a href="/post/%E4%B8%80%E6%AC%A1springboot&#43;dubbo%E7%9A%84%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">一次springboot&#43;dubbo的项目实战</a></li>
-<li><a href="/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/">Vscode配置cpp外部头文件依赖</a></li>
-<li><a href="/post/install-mysql-in-k8s/">在k8s集群中部署mysql</a></li>
-<li><a href="/post/sign-model/">SIGN模型找到天赋</a></li>
-<li><a href="/post/knowledge-to-ability/">将知识内化成能力</a></li>
-<li><a href="/post/iceberg-model/">冰山模型</a></li>
-<li><a href="/post/kubernetes-statefulset/">kubernetes之StatefulSet</a></li>
-<li><a href="/post/vert.x-and-future/">Vert.x线程与Future</a></li>
-<li><a href="/post/archlinux-operation/">archlinux使用操作拾遗</a></li>
-<li><a href="/post/run-gogs-with-docker/">使用docker运行gogs服务</a></li>
-</ul>
-</section>
-</aside>
-<footer class="footer layout__footer">
-<p>This site is licensed under a (<a href="https://creativecommons.org/licenses/by-sa/4.0/)">https://creativecommons.org/licenses/by-sa/4.0/)</a>. [Creative Commons Attribution-ShareAlike 4.0 International License]</p>
-<p>A <a href="https://example.org/">example.org</a> production.</p>
-<p>Powered by <a href="https://gohugo.io/">Hugo</a> and the <a href="https://github.com/frjo/hugo-theme-zen">Zen theme</a>.</p>
-</footer>
-<div class="cookieconsent layout__cookieconsent hidden">
-  <div class="cookieconsent__message">
-    This website uses non essential cookies for tracking and analytics that you can accept or decline.
-    
-  </div>
-  <div class="cookieconsent__actions">
-    <button class="button button--small button--cookieconsent button--decline" type="button" data-consent="false">Decline tracking</button>
-    <button class="button button--small button--cookieconsent button--accept" type="button" data-consent="true">Accept tracking</button>
-  </div>
-</div>
-</div>
-<div class="mobile-nav" dir="ltr">
-  <div class="mobile-nav__cover"></div>
-  <a href="#navigation" class="mobile-nav__toggle" aria-haspopup="true" role="button">Menu</a>
-  <div class="mobile-nav__sheet">
-    <div class="mobile-nav__region">
-    
+
+
+        
+
+        
+          <span class="separator"><a class="tag" href="/tags/go/">go</a></span>
+
+
+
+
+        
+      </div>
     </div>
-    <nav class="mobile-nav__main-menu">
-    <h2 class="visually-hidden">Main menu</h2>
-    <ul class="mobile-nav__navbar">
-    <li><a href="/">Home</a></li>
-    <li><a href="/post/" class="active" aria-current="page">Posts</a></li>
-    </ul>
-    </nav>
+
+    
   </div>
-</div>
-</body>
+
+
+          </div>
+        </div>
+      </main>
+    </div><footer class="footer footer--base">
+  <div class="by_farbox">
+    <ul class="footer__list">
+      <li class="footer__item">
+        &copy;
+        
+          2019-2021
+
+        
+      </li>
+      
+    </ul>
+  </div>
+</footer>
+  
+  <script
+    type="text/javascript"
+    src="/js/medium-zoom.min.71100d84fab0ad794b8399a66ac810700cc78d703f715dc10af4d7ba7b761362.js"
+    integrity="sha256-cRANhPqwrXlLg5mmasgQcAzHjXA/cV3BCvTXunt2E2I="
+    crossorigin="anonymous"
+  ></script></body>
 </html>
