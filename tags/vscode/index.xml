@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>vscode on psycode - better code, better life.</title>
@@ -6,21 +6,119 @@
     <description>Recent content in vscode on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 06 Feb 2021 12:33:49 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/tags/vscode/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Feb 2021 12:33:49 +0800</lastBuildDate>
+    <atom:link href="https://sh1yu.github.io/tags/vscode/index.xml" rel="self" type="application/rss+xml" />
+    
     <item>
       <title>Vscode配置cpp外部头文件依赖</title>
       <link>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</link>
       <pubDate>Sat, 06 Feb 2021 12:33:49 +0800</pubDate>
-      
       <guid>https://sh1yu.github.io/post/vscode%E9%85%8D%E7%BD%AEcpp%E5%A4%96%E9%83%A8%E5%A4%B4%E6%96%87%E4%BB%B6%E4%BE%9D%E8%B5%96/</guid>
-      <description>最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：
-vscode的settings.json中可以通过配置项C_Cpp.default.includePath配置默认的头文件路径，配置如下:
-{ &amp;#34;files.associations&amp;#34;: { &amp;#34;iostream&amp;#34;: &amp;#34;cpp&amp;#34; }, &amp;#34;C_Cpp.default.includePath&amp;#34;: [&amp;#34;/home/psy&amp;#34;] } 在配置文件c_cpp_properties.json配置文件中可以指定includePath，示例如下：
-{ &amp;#34;configurations&amp;#34;: [ { &amp;#34;name&amp;#34;: &amp;#34;Linux&amp;#34;, &amp;#34;includePath&amp;#34;: [ &amp;#34;${default}&amp;#34; ], &amp;#34;defines&amp;#34;: [], &amp;#34;compilerPath&amp;#34;: &amp;#34;/usr/bin/clang++&amp;#34;, &amp;#34;cStandard&amp;#34;: &amp;#34;c11&amp;#34;, &amp;#34;cppStandard&amp;#34;: &amp;#34;c++14&amp;#34;, &amp;#34;intelliSenseMode&amp;#34;: &amp;#34;linux-clang-x64&amp;#34; } ], &amp;#34;version&amp;#34;: 4 } 其中includePath配置的为${default}，表示加载前面settings.json中的C_Cpp.default.includePath配置。也可以直接在此配置其他路径。 经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在/home/psy下存在a.hpp：
-#include &amp;lt;iostream&amp;gt;void printHello() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello cpp!&amp;#34; &amp;lt;&amp;lt; std::endl; } 在项目中的hello.cpp:
-#include &amp;lt;iostream&amp;gt;#include &amp;lt;a.hpp&amp;gt; int main() { std::cout &amp;lt;&amp;lt; &amp;#34;Hello C++!&amp;#34; &amp;lt;&amp;lt; std::endl; printHello(); return 0; } 这个&amp;lt;a.hpp&amp;gt;和printHello就能被vscode正常找到和跳转。
-但是如果此时直接F5运行，依旧会出现找不到a.hpp的情况出现。因为运行时执行的是launch.json配置：
-{ // Use IntelliSense to learn about possible attributes.</description>
+      <description>&lt;p&gt;最近尝试在vscode中配置加载外部的hpp头文件依赖，记录如下：&lt;/p&gt;
+&lt;p&gt;vscode的&lt;code&gt;settings.json&lt;/code&gt;中可以通过配置项&lt;code&gt;C_Cpp.default.includePath&lt;/code&gt;配置默认的头文件路径，配置如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;files.associations&amp;#34;&lt;/span&gt;: {
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;iostream&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cpp&amp;#34;&lt;/span&gt;
+    },
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;C_Cpp.default.includePath&amp;#34;&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/home/psy&amp;#34;&lt;/span&gt;]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在配置文件&lt;code&gt;c_cpp_properties.json&lt;/code&gt;配置文件中可以指定&lt;code&gt;includePath&lt;/code&gt;，示例如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;configurations&amp;#34;&lt;/span&gt;: [
+        {
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Linux&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;includePath&amp;#34;&lt;/span&gt;: [
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;${default}&amp;#34;&lt;/span&gt;
+            ],
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;defines&amp;#34;&lt;/span&gt;: [],
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;compilerPath&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/usr/bin/clang++&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;cStandard&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c11&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;cppStandard&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;c++14&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;intelliSenseMode&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;linux-clang-x64&amp;#34;&lt;/span&gt;
+        }
+    ],
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;version&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中&lt;code&gt;includePath&lt;/code&gt;配置的为&lt;code&gt;${default}&lt;/code&gt;，表示加载前面&lt;code&gt;settings.json&lt;/code&gt;中的&lt;code&gt;C_Cpp.default.includePath&lt;/code&gt;配置。也可以直接在此配置其他路径。
+经过上面两个配置，项目中无法找到头文件的错误提示基本上就没有了。比如在&lt;code&gt;/home/psy&lt;/code&gt;下存在&lt;code&gt;a.hpp&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;printHello&lt;/span&gt;() {
+    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello cpp!&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在项目中的&lt;code&gt;hello.cpp&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;a.hpp&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+{
+    std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;cout &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello C++!&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;endl;
+    printHello();
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个&lt;code&gt;&amp;lt;a.hpp&amp;gt;&lt;/code&gt;和&lt;code&gt;printHello&lt;/code&gt;就能被vscode正常找到和跳转。&lt;/p&gt;
+&lt;p&gt;但是如果此时直接F5运行，依旧会出现找不到&lt;code&gt;a.hpp&lt;/code&gt;的情况出现。因为运行时执行的是&lt;code&gt;launch.json&lt;/code&gt;配置：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
+    &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;//&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;Use&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;IntelliSense&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;to&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;learn&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;about&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;possible&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;attributes.&lt;/span&gt;
+    &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;//&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;Hover&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;to&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;view&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;descriptions&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;of&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;existing&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;attributes.&lt;/span&gt;
+    &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;//&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;For&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;more&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;information,&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;visit:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;https://go.microsoft.com/fwlink/?linkid=830387&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;version&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.2.0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;configurations&amp;#34;&lt;/span&gt;: [
+        {
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;clang++ - Build and debug active file&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cppdbg&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;request&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;launch&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;program&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;${fileDirname}/${fileBasenameNoExtension}&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;args&amp;#34;&lt;/span&gt;: [],
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;stopAtEntry&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;cwd&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;${workspaceFolder}&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;environment&amp;#34;&lt;/span&gt;: [],
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;console&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;externalTerminal&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;MIMode&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;lldb&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;setupCommands&amp;#34;&lt;/span&gt;: [
+                {
+                    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Enable pretty-printing for gdb&amp;#34;&lt;/span&gt;,
+                    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-enable-pretty-printing&amp;#34;&lt;/span&gt;,
+                    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;ignoreFailures&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+                }
+            ],
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;preLaunchTask&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;C/C++: clang++ build active file&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;miDebuggerPath&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/usr/bin/lldb-mi&amp;#34;&lt;/span&gt;
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中&lt;code&gt;preLaunchTask&lt;/code&gt;指定了需要先运行的task，这个在&lt;code&gt;tasks.json&lt;/code&gt;中配置:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;tasks&amp;#34;&lt;/span&gt;: [
+        {
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cppbuild&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;label&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;C/C++: clang++ build active file&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;command&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/usr/bin/clang++&amp;#34;&lt;/span&gt;,
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;args&amp;#34;&lt;/span&gt;: [
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-g&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;${file}&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-I&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/home/sypeng&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-o&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;${fileDirname}/${fileBasenameNoExtension}&amp;#34;&lt;/span&gt;
+            ],
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;options&amp;#34;&lt;/span&gt;: {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;cwd&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;${workspaceFolder}&amp;#34;&lt;/span&gt;
+            },
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;problemMatcher&amp;#34;&lt;/span&gt;: [
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;$gcc&amp;#34;&lt;/span&gt;
+            ],
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;group&amp;#34;&lt;/span&gt;: {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;build&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;isDefault&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+            },
+            &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;detail&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Task generated by Debugger.&amp;#34;&lt;/span&gt;
+        }
+    ],
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;version&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2.0.0&amp;#34;&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;需要在其中&lt;code&gt;args&lt;/code&gt;中添加头文件的路径依赖(使用&lt;code&gt;-I&lt;/code&gt;参数，如果是添加库路径依赖需要使用&lt;code&gt;-L&lt;/code&gt;参数)，这样&lt;code&gt;F5&lt;/code&gt;运行时就能正常执行了。
+需要注意的是，&lt;code&gt;F5&lt;/code&gt;执行的是当前鼠标选中的文件，需要选中cpp文件（比如&lt;code&gt;hello.cpp&lt;/code&gt;），然后&lt;code&gt;F5&lt;/code&gt;执行。&lt;/p&gt;
+</description>
     </item>
     
   </channel>

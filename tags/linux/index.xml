@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>linux on psycode - better code, better life.</title>
@@ -6,23 +6,80 @@
     <description>Recent content in linux on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 13 Feb 2019 11:22:54 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 13 Feb 2019 11:22:54 +0800</lastBuildDate>
+    <atom:link href="https://sh1yu.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    
     <item>
       <title>archlinux使用操作拾遗</title>
       <link>https://sh1yu.github.io/post/archlinux-operation/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
-      
       <guid>https://sh1yu.github.io/post/archlinux-operation/</guid>
-      <description>这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。
-archlinux无线联网问题 我安装的archinux是命令行版本，只能无线联网。
-检测网卡的PCI-ID
-lspci -vnn | grep 14e4: 获取驱动
-   驱动 描述     brcmsmac/brcmfmac 开源内核驱动   b43 逆向工程内核驱动   broadcom-wl 专有的 Broadcom STA 驱动    b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。
-lsmod |grep b43 发现b43驱动已经安装
-systemctl status NetworkManager 发现NetworkManager已经安装（pacman安装包为networkmanager）
-nmcli dev 发现无线网尚未连接。使用如下命令成功连接wifi：
-nmcli dev wifi connect &amp;lt;SSID&amp;gt; password &amp;lt;password&amp;gt; archlinux 软件全部升级签名问题 使用sudo pacman -Syu遇到了 invalid or corrupted package ... unknown trust的问题，应该是签名验证不通过，使用如下方法解决了：
-sudo pacman-key --init sudo vim /etc/pacman.</description>
+      <description>&lt;p&gt;这周末打开了未经常使用的archlinux，使用过程中遇到了一些问题，进行了解决，在此做个记录。&lt;/p&gt;
+&lt;h1 id=&#34;archlinux无线联网问题&#34;&gt;archlinux无线联网问题&lt;/h1&gt;
+&lt;p&gt;我安装的archinux是命令行版本，只能无线联网。&lt;/p&gt;
+&lt;p&gt;检测网卡的PCI-ID&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;lspci -vnn | grep 14e4:
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;获取驱动&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;驱动&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;brcmsmac/brcmfmac&lt;/td&gt;
+&lt;td&gt;开源内核驱动&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;b43&lt;/td&gt;
+&lt;td&gt;逆向工程内核驱动&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;broadcom-wl&lt;/td&gt;
+&lt;td&gt;专有的 Broadcom STA 驱动&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;b43/b43legacy的运行都需要安装闭源固件， 请从AUR安装b43-firmware， b43-firmware-classic或者 b43-firmware-legacy。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;lsmod |grep b43
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;发现b43驱动已经安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;systemctl status NetworkManager
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;发现&lt;code&gt;NetworkManager&lt;/code&gt;已经安装（&lt;code&gt;pacman&lt;/code&gt;安装包为&lt;code&gt;networkmanager&lt;/code&gt;）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;nmcli dev
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;发现无线网尚未连接。使用如下命令成功连接wifi：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;nmcli dev wifi connect &amp;lt;SSID&amp;gt; password &amp;lt;password&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;archlinux-软件全部升级签名问题&#34;&gt;archlinux 软件全部升级签名问题&lt;/h1&gt;
+&lt;p&gt;使用&lt;code&gt;sudo pacman -Syu&lt;/code&gt;遇到了 &lt;code&gt;invalid or corrupted package ... unknown trust&lt;/code&gt;的问题，应该是签名验证不通过，使用如下方法解决了：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo pacman-key --init
+sudo vim /etc/pacman.conf &lt;span style=&#34;color:#75715e&#34;&gt;#设置SigLevel = Optional TrustAll&lt;/span&gt;
+sudo vim /etc/pacman.d/gnupg/gpg.conf &lt;span style=&#34;color:#75715e&#34;&gt;#设置keyserver hkp://pgp.mit.edu&lt;/span&gt;
+sudo pacman -Syu 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;archlinux-防火墙配置问题&#34;&gt;archlinux 防火墙配置问题&lt;/h1&gt;
+&lt;p&gt;archlinux的iptable使用systemctl启动时需要先创建&lt;code&gt;iptables.rules&lt;/code&gt;文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo touch /etc/iptables/iptables.rules
+sudo systemctl start iptables
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用&lt;code&gt;systemctl&lt;/code&gt;启动&lt;code&gt;iptables&lt;/code&gt;或者&lt;code&gt;sudo iptables -L&lt;/code&gt;时遇到问题：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;can&#39;t initialize iptables table `filter&#39;: Table does not exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;使用如下命令：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;modprobe ip_tables
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;得到如下错误：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FATAL: Module ip_tables not found
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最后发现&lt;code&gt;/boot/&lt;/code&gt;下&lt;code&gt;config-*&lt;/code&gt;文件表示的内核版本与&lt;code&gt;uname -r&lt;/code&gt;的版本不一致，原来是 &lt;code&gt;sudo pacman -Syu&lt;/code&gt;升级了内核，系统没有重启。重启系统后问题解决。&lt;/p&gt;
+&lt;h1 id=&#34;mariadb初始化与远程访问配置问题&#34;&gt;mariaDB初始化与远程访问配置问题&lt;/h1&gt;
+&lt;p&gt;archlinux下安装了mariaDB，需要执行初始化才能正常启动服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo pacman -S mariadb
+sudo mysql_install_db --user&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;mysql --basedir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/usr --datadir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/var/lib/mysql
+sudo systemctl start mariadb
+mysqladmin -u root password &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;12345678&amp;#39;&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;允许远程访问，需要首先确保防火墙配置正常，&lt;code&gt;my.cnf&lt;/code&gt;的&lt;code&gt;bind-address&lt;/code&gt;配置不为&lt;code&gt;localhost&lt;/code&gt;，没有配置&lt;code&gt;skip-networking &lt;/code&gt;； 之后配置权限：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;GRANT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ALL&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;PRIVILEGES&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;ON&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;.&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TO&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;root&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%&amp;#39;&lt;/span&gt;IDENTIFIED &lt;span style=&#34;color:#66d9ef&#34;&gt;BY&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;123456&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;WITH&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;GRANT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;OPTION&lt;/span&gt;;
+flush &lt;span style=&#34;color:#66d9ef&#34;&gt;privileges&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;go语言访问mariadb日期格式datetime映射&#34;&gt;go语言访问mariaDB日期格式DATETIME映射&lt;/h1&gt;
+&lt;p&gt;go语言连接mariaDB时如果没有配置&lt;code&gt;parseTime=true&lt;/code&gt;，scan到的日期数据为[]int8格式，使用string类型接收时为日期的&amp;quot;2006-01-02 15:04:05&amp;quot;格式化字符串（可以使用sql.NullString接收处理空值）。如果配置了&lt;code&gt;parseTime=true&lt;/code&gt;，&lt;code&gt;scan&lt;/code&gt;时可以直接使用&lt;code&gt;time.Time&lt;/code&gt; ，但是时间为空时会抛出异常。如果使用&lt;code&gt;string&lt;/code&gt;类型接收，则字符串格式为&lt;code&gt;time.RFC3339&lt;/code&gt;(&lt;code&gt;2006-01-02T15:04:05Z07:00&lt;/code&gt;)&lt;/p&gt;
+</description>
     </item>
     
   </channel>

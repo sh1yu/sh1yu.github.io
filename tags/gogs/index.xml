@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>gogs on psycode - better code, better life.</title>
@@ -6,19 +6,135 @@
     <description>Recent content in gogs on psycode - better code, better life.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 13 Feb 2019 11:22:54 +0800</lastBuildDate><atom:link href="https://sh1yu.github.io/tags/gogs/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 13 Feb 2019 11:22:54 +0800</lastBuildDate>
+    <atom:link href="https://sh1yu.github.io/tags/gogs/index.xml" rel="self" type="application/rss+xml" />
+    
     <item>
       <title>使用docker运行gogs服务</title>
       <link>https://sh1yu.github.io/post/run-gogs-with-docker/</link>
       <pubDate>Wed, 13 Feb 2019 11:22:54 +0800</pubDate>
-      
       <guid>https://sh1yu.github.io/post/run-gogs-with-docker/</guid>
-      <description>学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。
- 目标   使用 docker 和 docker-compose 运行并管理 gogs 服务
-  使用 caddy 为 gogs 搭建反向代理
-  简单配置 caddy 与 gogs 容器的 docker 网络
-  工具与组件  docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令 gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx  创建caddy配置 创建caddy文件夹，并在文件夹下创建文件Caddyfile
-localhost { proxy / gogs:3000 { header_upstream Host {host} header_upstream X-Real-IP {remote} header_upstream X-Forwarded-For {remote} header_upstream X-Forwarded-Proto {scheme} } log /var/log/caddy.</description>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;学习使用 gogs 搭建自己的 git 托管服务，但是不想在安装 gogs 时创建系统用户污染当前的 Mac 系统环境，决定使用 docker 启动该服务，同时学习一些基础的 docker 命令。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;目标&#34;&gt;目标&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使用 docker 和 docker-compose 运行并管理 gogs 服务&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用 caddy 为 gogs 搭建反向代理&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;简单配置 caddy 与 gogs 容器的 docker 网络&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;工具与组件&#34;&gt;工具与组件&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;docker for Mac：Mac环境下的 docker 服务版本，提供 docker 环境以及 docker-compose等命令&lt;/li&gt;
+&lt;li&gt;gogs : 一个 go 语言实现的简单快速的git代码托管服务，类似于 github 和 gitlab&lt;/li&gt;
+&lt;li&gt;caddy: go 语言实现的简单的web服务器，可进行反向代理，类似于 nginx&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;创建caddy配置&#34;&gt;创建caddy配置&lt;/h1&gt;
+&lt;p&gt;创建&lt;code&gt;caddy&lt;/code&gt;文件夹，并在文件夹下创建文件&lt;code&gt;Caddyfile&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-nginx&#34; data-lang=&#34;nginx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;localhost&lt;/span&gt; {
+    &lt;span style=&#34;color:#f92672&#34;&gt;proxy&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;/&lt;/span&gt; gogs:&lt;span style=&#34;color:#ae81ff&#34;&gt;3000&lt;/span&gt; {
+        &lt;span style=&#34;color:#f92672&#34;&gt;header_upstream&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;Host&lt;/span&gt; {&lt;span style=&#34;color:#f92672&#34;&gt;host}&lt;/span&gt;
+        &lt;span style=&#34;color:#e6db74&#34;&gt;header_upstream&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;X-Real-IP&lt;/span&gt; {&lt;span style=&#34;color:#f92672&#34;&gt;remote}&lt;/span&gt;
+        &lt;span style=&#34;color:#e6db74&#34;&gt;header_upstream&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;X-Forwarded-For&lt;/span&gt; {&lt;span style=&#34;color:#f92672&#34;&gt;remote}&lt;/span&gt;
+        &lt;span style=&#34;color:#e6db74&#34;&gt;header_upstream&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;X-Forwarded-Proto&lt;/span&gt; {&lt;span style=&#34;color:#f92672&#34;&gt;scheme}&lt;/span&gt;
+    &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;log&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;/var/log/caddy.log&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;gzip&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;#tls name@domain.com # 你的邮箱
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;使用-docker-compose-编排服务&#34;&gt;使用 docker-compose 编排服务&lt;/h1&gt;
+&lt;p&gt;创建&lt;code&gt;docker-compose.yml&lt;/code&gt;配置文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;version&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;3&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;services&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;caddy&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;container_name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;caddy&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;abiosoft/caddy&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/home/caddy/Caddyfile:/etc/Caddyfile&amp;#34;&lt;/span&gt; 
+    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8081:2015&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#    links:&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#      - gogs&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;restart&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;always&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;gogs&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;container_name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;gogs&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;gogs/gogs&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
+      - &lt;span style=&#34;color:#ae81ff&#34;&gt;/home/gogs/data:/data&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;3022:22&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;restart&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;always&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;docker-compose-启动服务&#34;&gt;docker-compose 启动服务&lt;/h1&gt;
+&lt;p&gt;在&lt;code&gt;docker-compose.yml&lt;/code&gt;所在文件夹下运行命令&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker-compose up -d
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查看运行的容器，使用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker-compose ps
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;或者&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker ps
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中 gogs 服务会使用&lt;code&gt;3000&lt;/code&gt;端口，但是没有进行端口绑定，无法从外部访问。caddy 使用&lt;code&gt;2015&lt;/code&gt;端口，并对外绑定&lt;code&gt;8081&lt;/code&gt;端口，该访问通过&lt;code&gt;Caddyfile&lt;/code&gt;配置文件转发到了 gogs 机器的&lt;code&gt;3000&lt;/code&gt;端口。docker-compose 可以自动发现主机名称的地址，无需通过IP。通过如下地址访问 gogs 服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-http&#34; data-lang=&#34;http&#34;&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;http://127.0.0.1:8081
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查看容器详细状态&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker inspect gogs
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以进入正在运行的容器进行系统的状态、文件查看等操作&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker exec -it gogs /bin/bash
+docker exec -it caddy /bin/sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;关闭服务&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker-compose stop
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;正常情况下关闭服务时容器不会被删除，重新启动时如果容器存在则不会再创建。&lt;code&gt;docker-compose.yml&lt;/code&gt;有修改时旧的容器不会自动更新，需要关闭服务并删除容器，然后重新创建容器启动&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker-compose down
+docker-compose up -d
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;或者直接强制重新创建容器启动&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker-compose up -d --force-recreate
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;网络配置固定ip&#34;&gt;网络配置固定IP&lt;/h1&gt;
+&lt;p&gt;也可以自定义网络，然后给 gogs 和 caddy 容器分配固定的ip。&lt;/p&gt;
+&lt;p&gt;查看当前的docker网络&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker network ls
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;docker-compose.yml&lt;/code&gt;配置网络&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;version&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;3&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;services&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;caddy&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;container_name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;caddy&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;abiosoft/caddy&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/home/caddy/Caddyfile:/etc/Caddyfile&amp;#34;&lt;/span&gt; 
+    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8081:2015&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;networks&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;default&lt;/span&gt;:
+            &lt;span style=&#34;color:#f92672&#34;&gt;ipv4_address&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;172.18.0.23&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#    links:&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#      - gogs&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;restart&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;always&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;gogs&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;container_name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;gogs&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;gogs/gogs&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
+      - &lt;span style=&#34;color:#ae81ff&#34;&gt;/home/gogs/data:/data&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;3022:22&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;networks&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;default&lt;/span&gt;:
+            &lt;span style=&#34;color:#f92672&#34;&gt;ipv4_address&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;172.18.0.25&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;restart&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;always&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;networks&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;default&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;ipam&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;config&lt;/span&gt;:
+        - &lt;span style=&#34;color:#f92672&#34;&gt;subnet&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;172.18.0.0&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;/16&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#          gateway: 172.18.0.1&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#          ip_range: 172.18.0.0/24&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查看网络配置详情&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker network inspect gogs_default
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;docker-compose down&lt;/code&gt;命令会同时移除网络。也可以手动移除网络:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;docker network rm gogs_default
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>
